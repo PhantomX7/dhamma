@@ -1,0 +1,15 @@
+*.env
+storage/
+assets/
+volumes/
+vendor/
+node_modules/
+.idea/
+bin/
+
+cp.out
+package-lock.json
+yarn.lock
+error-log.log
+firebase.json
+firebase.json
