@@ -4,7 +4,8 @@ import (
 	"context"
 	"math"
 
-	"github.com/PhantomX7/dhamma/dto"
+	"github.com/PhantomX7/dhamma/dto/request"
+	"github.com/PhantomX7/dhamma/dto/response"
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utils/scopes"
 	"gorm.io/gorm"
@@ -13,7 +14,7 @@ import (
 type (
 	UserRepository interface {
 		RegisterUser(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error)
-		GetAllUserWithPagination(ctx context.Context, tx *gorm.DB, req dto.PaginationRequest) (dto.GetAllUserRepositoryResponse, error)
+		GetAllUserWithPagination(ctx context.Context, tx *gorm.DB, req request.PaginationRequest) (response.GetAllUserRepositoryResponse, error)
 		GetUserById(ctx context.Context, tx *gorm.DB, userId string) (entity.User, error)
 		GetUserByEmail(ctx context.Context, tx *gorm.DB, email string) (entity.User, error)
 		CheckEmail(ctx context.Context, tx *gorm.DB, email string) (entity.User, bool, error)
@@ -44,7 +45,9 @@ func (r *userRepository) RegisterUser(ctx context.Context, tx *gorm.DB, user ent
 	return user, nil
 }
 
-func (r *userRepository) GetAllUserWithPagination(ctx context.Context, tx *gorm.DB, req dto.PaginationRequest) (dto.GetAllUserRepositoryResponse, error) {
+func (r *userRepository) GetAllUserWithPagination(
+	ctx context.Context, tx *gorm.DB, req request.PaginationRequest,
+) (response.GetAllUserRepositoryResponse, error) {
 	if tx == nil {
 		tx = r.db
 	}
@@ -62,18 +65,18 @@ func (r *userRepository) GetAllUserWithPagination(ctx context.Context, tx *gorm.
 	}
 
 	if err := tx.WithContext(ctx).Model(&entity.User{}).Count(&count).Error; err != nil {
-		return dto.GetAllUserRepositoryResponse{}, err
+		return response.GetAllUserRepositoryResponse{}, err
 	}
 
 	if err := tx.WithContext(ctx).Scopes(scopes.Paginate(req.Page, req.PerPage)).Find(&users).Error; err != nil {
-		return dto.GetAllUserRepositoryResponse{}, err
+		return response.GetAllUserRepositoryResponse{}, err
 	}
 
 	totalPage := int64(math.Ceil(float64(count) / float64(req.PerPage)))
 
-	return dto.GetAllUserRepositoryResponse{
+	return response.GetAllUserRepositoryResponse{
 		Users: users,
-		PaginationResponse: dto.PaginationResponse{
+		PaginationResponse: response.PaginationResponse{
 			Page:    req.Page,
 			PerPage: req.PerPage,
 			Count:   count,

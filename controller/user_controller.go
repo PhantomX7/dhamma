@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/PhantomX7/dhamma/dto"
+	"github.com/PhantomX7/dhamma/dto/request"
 	"github.com/PhantomX7/dhamma/service"
 	"github.com/PhantomX7/dhamma/utils"
 
@@ -16,10 +17,10 @@ type (
 		Login(ctx *gin.Context)
 		Me(ctx *gin.Context)
 		GetAllUser(ctx *gin.Context)
-		SendVerificationEmail(ctx *gin.Context)
-		VerifyEmail(ctx *gin.Context)
 		Update(ctx *gin.Context)
 		Delete(ctx *gin.Context)
+		// SendVerificationEmail(ctx *gin.Context)
+		// VerifyEmail(ctx *gin.Context)
 	}
 
 	userController struct {
@@ -34,7 +35,7 @@ func NewUserController(us service.UserService) UserController {
 }
 
 func (c *userController) Register(ctx *gin.Context) {
-	var user dto.UserCreateRequest
+	var user request.UserCreateRequest
 	if err := ctx.ShouldBind(&user); err != nil {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
@@ -53,7 +54,7 @@ func (c *userController) Register(ctx *gin.Context) {
 }
 
 func (c *userController) GetAllUser(ctx *gin.Context) {
-	var req dto.PaginationRequest
+	var req request.PaginationRequest
 	if err := ctx.ShouldBind(&req); err != nil {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
@@ -92,7 +93,7 @@ func (c *userController) Me(ctx *gin.Context) {
 }
 
 func (c *userController) Login(ctx *gin.Context) {
-	var req dto.UserLoginRequest
+	var req request.UserLoginRequest
 	if err := ctx.ShouldBind(&req); err != nil {
 		response := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
@@ -110,46 +111,8 @@ func (c *userController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-func (c *userController) SendVerificationEmail(ctx *gin.Context) {
-	var req dto.SendVerificationEmailRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	err := c.userService.SendVerificationEmail(ctx.Request.Context(), req)
-	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_PROSES_REQUEST, err.Error(), nil)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	res := utils.BuildResponseSuccess(dto.MESSAGE_SEND_VERIFICATION_EMAIL_SUCCESS, nil)
-	ctx.JSON(http.StatusOK, res)
-}
-
-func (c *userController) VerifyEmail(ctx *gin.Context) {
-	var req dto.VerifyEmailRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	result, err := c.userService.VerifyEmail(ctx.Request.Context(), req)
-	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_VERIFY_EMAIL, err.Error(), nil)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_VERIFY_EMAIL, result)
-	ctx.JSON(http.StatusOK, res)
-}
-
 func (c *userController) Update(ctx *gin.Context) {
-	var req dto.UserUpdateRequest
+	var req request.UserUpdateRequest
 	if err := ctx.ShouldBind(&req); err != nil {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
@@ -180,3 +143,41 @@ func (c *userController) Delete(ctx *gin.Context) {
 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_DELETE_USER, nil)
 	ctx.JSON(http.StatusOK, res)
 }
+
+// func (c *userController) SendVerificationEmail(ctx *gin.Context) {
+// 	var req request.SendVerificationEmailRequest
+// 	if err := ctx.ShouldBind(&req); err != nil {
+// 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
+// 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+// 		return
+// 	}
+
+// 	err := c.userService.SendVerificationEmail(ctx.Request.Context(), req)
+// 	if err != nil {
+// 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_PROSES_REQUEST, err.Error(), nil)
+// 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+// 		return
+// 	}
+
+// 	res := utils.BuildResponseSuccess(dto.MESSAGE_SEND_VERIFICATION_EMAIL_SUCCESS, nil)
+// 	ctx.JSON(http.StatusOK, res)
+// }
+
+// func (c *userController) VerifyEmail(ctx *gin.Context) {
+// 	var req request.VerifyEmailRequest
+// 	if err := ctx.ShouldBind(&req); err != nil {
+// 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
+// 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+// 		return
+// 	}
+
+// 	result, err := c.userService.VerifyEmail(ctx.Request.Context(), req)
+// 	if err != nil {
+// 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_VERIFY_EMAIL, err.Error(), nil)
+// 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+// 		return
+// 	}
+
+// 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_VERIFY_EMAIL, result)
+// 	ctx.JSON(http.StatusOK, res)
+// }

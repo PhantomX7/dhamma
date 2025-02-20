@@ -35,12 +35,10 @@ func InsertTestUser() ([]entity.User, error) {
 	db := SetUpDatabaseConnection()
 	users := []entity.User{
 		{
-			Name:  "admin",
-			Email: "admin1234@gmail.com",
+			Username: "admin",
 		},
 		{
-			Name:  "user",
-			Email: "user1234@gmail.com",
+			Username: "user",
 		},
 	}
 
@@ -85,7 +83,7 @@ func Test_GetAllUser_OK(t *testing.T) {
 	for _, expectedUser := range expectedUsers {
 		found := false
 		for _, actualUser := range actualUsers {
-			if expectedUser.Name == actualUser.Name && expectedUser.Email == actualUser.Email {
+			if expectedUser.Username == actualUser.Username {
 				found = true
 				break
 			}

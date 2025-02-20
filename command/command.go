@@ -14,7 +14,7 @@ func Commands(db *gorm.DB) bool {
 	var scriptName string
 
 	migrate := false
-	seed := false
+	// seed := false
 	run := false
 	scriptFlag := false
 
@@ -22,9 +22,9 @@ func Commands(db *gorm.DB) bool {
 		if arg == "--migrate" {
 			migrate = true
 		}
-		if arg == "--seed" {
-			seed = true
-		}
+		// if arg == "--seed" {
+		// 	seed = true
+		// }
 		if arg == "--run" {
 			run = true
 		}
@@ -41,12 +41,12 @@ func Commands(db *gorm.DB) bool {
 		log.Println("migration completed successfully")
 	}
 
-	if seed {
-		if err := migrations.Seeder(db); err != nil {
-			log.Fatalf("error migration seeder: %v", err)
-		}
-		log.Println("seeder completed successfully")
-	}
+	// if seed {
+	// 	if err := migrations.Seeder(db); err != nil {
+	// 		log.Fatalf("error migration seeder: %v", err)
+	// 	}
+	// 	log.Println("seeder completed successfully")
+	// }
 
 	if scriptFlag {
 		if err := script.Script(scriptName, db); err != nil {
