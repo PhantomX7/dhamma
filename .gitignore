@@ -1,7 +1,5 @@
-*.env
-storage/
-assets/
-volumes/
+.env
+
 vendor/
 node_modules/
 .idea/
@@ -13,3 +11,6 @@ yarn.lock
 error-log.log
 firebase.json
 firebase.json
+
+.env.*
+.env

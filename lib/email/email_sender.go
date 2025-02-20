@@ -31,7 +31,7 @@ func (s *Email) Send(subject string, message string, destination string) error {
 	password := os.Getenv("EMAIL_SMTP_PASSWORD")
 
 	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", "test@gmail.com")
+	mailer.SetHeader("From", "phantomdev.sindomas@gmail.com")
 	mailer.SetHeader("To", destination)
 	mailer.SetHeader("Subject", subject)
 	mailer.SetBody("text/html", message)

@@ -1,28 +1,30 @@
-# Commands
-dep: 
+dep:
 	go mod tidy
 	go mod vendor
 
-run: 
-	go run main.go
-
-build: 
+dev:
 	go build -o bin/main main.go
-
-run-build: build
 	./bin/main
 
 test:
-	go test -v ./tests
+	go test ./... -coverprofile cp.out
 
-init-docker:
-	docker compose up -d --build
+test-html:
+	go test $(go list ./... | grep -v /mock/) -coverprofile cp.out
+	go tool cover -html=cp.out
 
-up: 
-	docker-compose up -d
+migrate:
+	npx sequelize db:migrate
 
-down:
-	docker-compose down
+refresh:
+	npx sequelize db:migrate:undo:all
+	npx sequelize db:migrate
 
-logs:
-	docker-compose logs -f
+seed:
+	go run ./seeder/main.go
+
+build:
+	set GOOS=linux&& set GOARCH=amd64&& go build -o bin/main app/main.go
+
+swag:
+	swag init -d app
