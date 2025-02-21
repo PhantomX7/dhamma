@@ -5,11 +5,11 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/PhantomX7/dhamma/model"
+	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/go-core/utility/errors"
 )
 
-func (r *repository) FindByID(userID uint64) (userM model.User, err error) {
+func (r *repository) FindByID(userID uint64) (userM entity.User, err error) {
 
 	err = r.db.Where("id = ?", userID).Take(&userM).Error
 

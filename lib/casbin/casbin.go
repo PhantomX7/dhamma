@@ -2,6 +2,7 @@ package casbin
 
 import (
 	"fmt"
+
 	"github.com/casbin/casbin/v2"
 	casbinModel "github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"

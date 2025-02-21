@@ -1,11 +1,13 @@
 package http
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
 func (c *controller) SignUp(ctx *gin.Context) {
@@ -13,7 +15,10 @@ func (c *controller) SignUp(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		_ = ctx.Error(err).SetType(gin.ErrorTypeBind)
+		log.Println(err)
+		res := utility.ValidationErrorResponse(err)
+		// _ = ctx.Error(err).SetType(gin.ErrorTypeBind)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
 

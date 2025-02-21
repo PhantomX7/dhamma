@@ -6,7 +6,7 @@ type SignInRequest struct {
 }
 
 type SignUpRequest struct {
-	Username string `form:"username" json:"username" binding:"required"`
+	Username string `form:"username" json:"username" binding:"required,unique=users.username"`
 	Password string `form:"password" json:"password" binding:"required"`
 }
 

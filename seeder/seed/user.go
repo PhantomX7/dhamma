@@ -3,14 +3,13 @@ package seed
 import (
 	"os"
 
-	"github.com/PhantomX7/dhamma/model"
-
+	"github.com/PhantomX7/dhamma/entity"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 func SeedRootUser(db *gorm.DB) error {
-	users := []model.User{
+	users := []entity.User{
 		{
 			Username: os.Getenv("ADMIN_USERNAME"),
 			IsActive: true,
@@ -18,7 +17,7 @@ func SeedRootUser(db *gorm.DB) error {
 	}
 
 	for _, user := range users {
-		if db.First(&model.User{}, model.User{
+		if db.First(&entity.User{}, entity.User{
 			Username: user.Username,
 		}).Error != gorm.ErrRecordNotFound {
 			continue

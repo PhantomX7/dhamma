@@ -3,13 +3,13 @@ package repository
 import (
 	"log"
 
-	"github.com/PhantomX7/dhamma/model"
+	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/go-core/utility/errors"
 	"github.com/PhantomX7/go-core/utility/request_util"
 )
 
-func (r *repository) FindAll(config request_util.PaginationConfig) ([]model.User, error) {
-	results := make([]model.User, 0)
+func (r *repository) FindAll(config request_util.PaginationConfig) ([]entity.User, error) {
+	results := make([]entity.User, 0)
 
 	err := r.db.
 		Scopes(config.MetaScopes()...).

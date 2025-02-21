@@ -5,11 +5,11 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/PhantomX7/dhamma/model"
+	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/go-core/utility/errors"
 )
 
-func (r *repository) Update(user *model.User, tx *gorm.DB) error {
+func (r *repository) Update(user *entity.User, tx *gorm.DB) error {
 	var db = r.db
 	if tx != nil {
 		db = tx

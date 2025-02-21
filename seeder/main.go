@@ -5,13 +5,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/PhantomX7/dhamma/utility"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/subosito/gotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
+	"github.com/PhantomX7/dhamma/migration"
 	"github.com/PhantomX7/dhamma/seeder/seed"
 )
 
@@ -39,7 +38,7 @@ func main() {
 		panic(err)
 	}
 
-	if err = utility.RunMigration(db); err != nil {
+	if err = migration.RunMigration(db); err != nil {
 		panic(err)
 	}
 

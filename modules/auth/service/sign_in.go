@@ -9,14 +9,14 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/PhantomX7/dhamma/model"
+	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 	"github.com/PhantomX7/go-core/utility/errors"
 )
 
 func (u *service) SignIn(request request.SignInRequest) (res response.AuthResponse, err error) {
-	userM := model.User{}
+	userM := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
 

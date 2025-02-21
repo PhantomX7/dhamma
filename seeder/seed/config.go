@@ -1,21 +1,20 @@
 package seed
 
 import (
-	"github.com/PhantomX7/dhamma/model"
-
+	"github.com/PhantomX7/dhamma/entity"
 	"gorm.io/gorm"
 )
 
 func SeedConfig(db *gorm.DB) error {
-	configs := []model.Config{
+	configs := []entity.Config{
 		{
-			Key:   model.ConfigKeyEmailDestination,
+			Key:   entity.ConfigKeyEmailDestination,
 			Value: "",
 		},
 	}
 
 	for _, config := range configs {
-		if db.First(&model.Config{}, model.Config{
+		if db.First(&entity.Config{}, entity.Config{
 			Key:   config.Key,
 			Value: config.Value,
 		}).Error != gorm.ErrRecordNotFound {

@@ -4,20 +4,20 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/migration"
 	"github.com/PhantomX7/dhamma/modules"
 	"github.com/PhantomX7/dhamma/routes"
-	"github.com/PhantomX7/dhamma/utility"
-	"github.com/PhantomX7/go-core/utility/validators"
+	customValidator "github.com/PhantomX7/dhamma/utility/validator"
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 	"go.uber.org/fx"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -35,23 +35,19 @@ import (
 // }
 
 func main() {
-	// load environment
-	err := godotenv.Load(".env")
-	if err != nil {
-		panic(err)
-	}
 
-	// db := config.SetUpDatabaseConnection()
-	// defer config.CloseDatabaseConnection(db)
+	// load config from .env
+	config.LoadEnv()
 
 	// if !args(db) {
 	// 	return
 	// }
-
 	app := fx.New(
+		// fx.NopLogger, // disable logger
 		fx.Provide(
 			setupDatabase,
 			setUpServer,
+			customValidator.New,
 			// initLibs,
 		),
 		modules.RepositoryModule,
@@ -59,7 +55,6 @@ func main() {
 		modules.ControllerModule,
 		routes.Module,
 		fx.Invoke(
-			validators.NewValidator,
 			//startCron,
 			//startQueue,
 			startServer,
@@ -75,18 +70,18 @@ func main() {
 
 }
 
-func startServer(lc fx.Lifecycle, server *gin.Engine, db *gorm.DB) {
+func startServer(lc fx.Lifecycle, server *gin.Engine, db *gorm.DB, cv customValidator.CustomValidator) {
 	myFigure := figure.NewColorFigure("Phantom", "", "green", true)
 	myFigure.Print()
 
 	// register all custom validator here
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		err := v.RegisterValidation("unique",
-			validators.CustomValidator.Unique())
+			cv.Unique())
 		if err != nil {
 			log.Println("error when applying unique validator")
 		}
-		err = v.RegisterValidation("exist", validators.CustomValidator.Exist())
+		err = v.RegisterValidation("exist", cv.Exist())
 		if err != nil {
 			log.Println("error when applying exist validator")
 		}
@@ -99,19 +94,24 @@ func startServer(lc fx.Lifecycle, server *gin.Engine, db *gorm.DB) {
 			return nil
 		},
 		OnStop: func(context.Context) error {
-			// config.CloseDatabaseConnection(db)
+			// close database connection
+			dbSQL, err := db.DB()
+			if err != nil {
+				panic(err)
+			}
+			dbSQL.Close()
 
 			return nil
 		},
 	})
 
-	if err := server.Run(fmt.Sprintf(":%s", os.Getenv("PORT"))); err != nil {
+	if err := server.Run(fmt.Sprintf(":%s", config.PORT)); err != nil {
 		log.Fatalf("error running server: %v", err)
 	}
 }
 
 func setUpServer() *gin.Engine {
-	if os.Getenv("APP_ENV") == constants.ENUM_RUN_PRODUCTION {
+	if config.APP_ENV == constants.ENUM_RUN_PRODUCTION {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -126,11 +126,11 @@ func setUpServer() *gin.Engine {
 func setupDatabase() *gorm.DB {
 	dsn := fmt.Sprintf(
 		"%s:%s@(%s:%s)/%s?charset=utf8mb4&parseTime=true",
-		os.Getenv("DATABASE_USERNAME"),
-		os.Getenv("DATABASE_PASSWORD"),
-		os.Getenv("DATABASE_HOST"),
-		os.Getenv("DATABASE_PORT"),
-		os.Getenv("DATABASE_NAME"),
+		config.DATABASE_USERNAME,
+		config.DATABASE_PASSWORD,
+		config.DATABASE_HOST,
+		config.DATABASE_PORT,
+		config.DATABASE_NAME,
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
@@ -142,7 +142,7 @@ func setupDatabase() *gorm.DB {
 		panic(err)
 	}
 
-	if err = utility.RunMigration(db); err != nil {
+	if err = migration.RunMigration(db); err != nil {
 		log.Println(err)
 		panic(err)
 	}
