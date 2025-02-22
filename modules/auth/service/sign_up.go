@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"os"
 	"strings"
 	"time"
@@ -15,7 +16,7 @@ import (
 	"github.com/PhantomX7/go-core/utility/errors"
 )
 
-func (u *service) SignUp(request request.SignUpRequest) (res response.AuthResponse, err error) {
+func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (res response.AuthResponse, err error) {
 	userM := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
@@ -29,7 +30,7 @@ func (u *service) SignUp(request request.SignUpRequest) (res response.AuthRespon
 	}
 	userM.Password = string(password)
 
-	err = u.userRepo.Insert(&userM, nil)
+	err = u.userRepo.Insert(&userM, nil, ctx)
 	if err != nil {
 		err = errors.ErrFailedAuthentication
 		return

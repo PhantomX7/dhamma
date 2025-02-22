@@ -1,23 +1,23 @@
 package repository
 
 import (
-	"log"
+	"context"
+	"errors"
 
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/go-core/utility/errors"
 )
 
-func (r *repository) Update(user *entity.User, tx *gorm.DB) error {
-	var db = r.db
-	if tx != nil {
-		db = tx
+func (r *repository) Update(user *entity.User, tx *gorm.DB, ctx context.Context) error {
+	// if tx is nil, use default db
+	if tx == nil {
+		tx = r.db
 	}
-	err := db.Save(user).Error
+
+	err := tx.Save(user).Error
 	if err != nil {
-		log.Println("error-update-user:", err)
-		return errors.ErrUnprocessableEntity
+		return errors.New("failed to update user")
 	}
 	return nil
 }

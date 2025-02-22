@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"os"
 	"strings"
 	"time"
@@ -15,12 +16,12 @@ import (
 	"github.com/PhantomX7/go-core/utility/errors"
 )
 
-func (u *service) SignIn(request request.SignInRequest) (res response.AuthResponse, err error) {
+func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (res response.AuthResponse, err error) {
 	userM := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
 
-	userM, err = u.userRepo.FindByUsername(request.Username)
+	userM, err = u.userRepo.FindByUsername(request.Username, ctx)
 	if err != nil {
 		err = errors.ErrFailedAuthentication
 		return

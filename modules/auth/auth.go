@@ -1,16 +1,18 @@
 package auth
 
 import (
+	"context"
+
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 	"github.com/gin-gonic/gin"
 )
 
 type Service interface {
-	SignIn(request request.SignInRequest) (response.AuthResponse, error)
-	SignUp(request request.SignUpRequest) (response.AuthResponse, error)
-	UpdatePassword(request request.UpdatePasswordRequest, ctx *gin.Context) error
-	GetMe(ctx *gin.Context) (response.MeResponse, error)
+	SignIn(request request.SignInRequest, ctx context.Context) (response.AuthResponse, error)
+	SignUp(request request.SignUpRequest, ctx context.Context) (response.AuthResponse, error)
+	UpdatePassword(request request.UpdatePasswordRequest, ctx context.Context) error
+	GetMe(ctx context.Context) (response.MeResponse, error)
 }
 
 type Controller interface {

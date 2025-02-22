@@ -1,7 +1,6 @@
 package http
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,14 +14,11 @@ func (c *controller) SignUp(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		log.Println(err)
-		res := utility.ValidationErrorResponse(err)
-		// _ = ctx.Error(err).SetType(gin.ErrorTypeBind)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
 		return
 	}
 
-	res, err := c.authService.SignUp(req)
+	res, err := c.authService.SignUp(req, ctx.Request.Context())
 	if err != nil {
 		_ = ctx.Error(err).SetType(gin.ErrorTypePublic)
 		return

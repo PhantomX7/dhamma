@@ -1,14 +1,14 @@
 package repository
 
 import (
-	"log"
+	"context"
+	"errors"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/go-core/utility/errors"
 	"github.com/PhantomX7/go-core/utility/request_util"
 )
 
-func (r *repository) Count(config request_util.PaginationConfig) (int64, error) {
+func (r *repository) Count(config request_util.PaginationConfig, ctx context.Context) (int64, error) {
 	var count int64
 
 	err := r.db.
@@ -16,8 +16,8 @@ func (r *repository) Count(config request_util.PaginationConfig) (int64, error) 
 		Scopes(config.Scopes()...).
 		Count(&count).Error
 	if err != nil {
-		log.Println("error-count-user:", err)
-		return 0, errors.ErrUnprocessableEntity
+		err = errors.New("cannot count users")
+		return 0, err
 	}
 
 	return count, nil

@@ -41,42 +41,47 @@ func ValidationErrorResponse(err error) Response {
 	if ok {
 		list := make(map[string]string)
 		for _, err := range errs {
-			list[strcase.SnakeCase(err.Field())] = validationErrorToText(err)
+			list[strcase.SnakeCase(err.Field())] = formatValidationError(err)
 		}
 		return BuildResponseFailed("Validation error", list)
 	}
 
 	return BuildResponseFailed("Validation error", err.Error())
-
 }
 
-func validationErrorToText(e validator.FieldError) string {
-	errorField := strcase.SnakeCase(e.Field())
+func formatValidationError(e validator.FieldError) string {
+	field := strcase.SnakeCase(e.Field())
+
 	switch e.Tag() {
 	case "required":
-		return fmt.Sprintf("%s is required", errorField)
+		return fmt.Sprintf("%s is required", field)
 	case "exists":
-		return fmt.Sprintf("%s is required", errorField)
+		return fmt.Sprintf("%s is required", field)
 	case "max":
-		return fmt.Sprintf("%s cannot be longer than %s character", errorField, e.Param())
+		return fmt.Sprintf("%s must be at most %s characters long", field, e.Param())
 	case "min":
-		return fmt.Sprintf("%s must be longer than %s character", errorField, e.Param())
+		return fmt.Sprintf("%s must be at least %s characters long", field, e.Param())
 	case "email":
 		return "Invalid email format"
 	case "len":
-		return fmt.Sprintf("%s must be %s characters long", errorField, e.Param())
+		return fmt.Sprintf("%s must be exactly %s characters long", field, e.Param())
 	case "unique":
-		return fmt.Sprintf("%s already exist", errorField)
+		return fmt.Sprintf("%s must be unique", field)
 	case "exist":
-		return fmt.Sprintf("%s does not exist", errorField)
+		return fmt.Sprintf("%s does not exist", field)
 	case "gte":
-		return fmt.Sprintf("%s must equal to or greater than %s", errorField, e.Param())
+		return fmt.Sprintf("%s must be greater than or equal to %s", field, e.Param())
 	case "lte":
-		return fmt.Sprintf("%s must equal to or less than %s", errorField, e.Param())
+		return fmt.Sprintf("%s must be less than or equal to %s", field, e.Param())
 	case "date":
-		return fmt.Sprintf("%s must be in date format", errorField)
+		return fmt.Sprintf("%s must be in date format", field)
 	case "value":
-		return fmt.Sprintf("%s value must be any of %s", errorField, strings.Join(strings.Split(e.Param(), "."), ", "))
+		return fmt.Sprintf(
+			"%s must be one of %s",
+			field,
+			strings.Join(strings.Split(e.Param(), "."), ", "),
+		)
+	default:
+		return fmt.Sprintf("%s is not valid", field)
 	}
-	return fmt.Sprintf("%s is not valid", errorField)
 }

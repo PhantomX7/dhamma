@@ -7,7 +7,7 @@ import (
 )
 
 func (c *controller) GetMe(ctx *gin.Context) {
-	res, err := c.authService.GetMe(ctx)
+	res, err := c.authService.GetMe(ctx.Request.Context())
 	if err != nil {
 		_ = ctx.Error(err).SetType(gin.ErrorTypePublic)
 		return

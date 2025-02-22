@@ -5,7 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
 func (c *controller) UpdatePassword(ctx *gin.Context) {
@@ -13,13 +15,15 @@ func (c *controller) UpdatePassword(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		_ = ctx.Error(err).SetType(gin.ErrorTypeBind)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
 		return
 	}
 
 	err := c.authService.UpdatePassword(req, ctx)
 	if err != nil {
-		_ = ctx.Error(err).SetType(gin.ErrorTypePublic)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest,
+			utility.BuildResponseFailed(constants.MESSAGE_FAILED_UPDATE_PASSWORD, err.Error()),
+		)
 		return
 	}
 

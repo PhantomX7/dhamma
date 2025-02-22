@@ -1,26 +1,17 @@
 package repository
 
 import (
-	"log"
-
-	"gorm.io/gorm"
+	"context"
+	"errors"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/go-core/utility/errors"
 )
 
-func (r *repository) FindByUsername(username string) (userM entity.User, err error) {
+func (r *repository) FindByUsername(username string, ctx context.Context) (userM entity.User, err error) {
 
 	err = r.db.Where("username = ?", username).First(&userM).Error
-
-	if err == gorm.ErrRecordNotFound {
-		err = errors.ErrNotFound
-		return
-	}
-
 	if err != nil {
-		log.Println("error-find-user-by-username:", err)
-		err = errors.ErrUnprocessableEntity
+		err = errors.New("cannot find user with username")
 		return
 	}
 

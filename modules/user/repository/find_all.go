@@ -1,14 +1,14 @@
 package repository
 
 import (
-	"log"
+	"context"
+	"errors"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/go-core/utility/errors"
 	"github.com/PhantomX7/go-core/utility/request_util"
 )
 
-func (r *repository) FindAll(config request_util.PaginationConfig) ([]entity.User, error) {
+func (r *repository) FindAll(config request_util.PaginationConfig, ctx context.Context) ([]entity.User, error) {
 	results := make([]entity.User, 0)
 
 	err := r.db.
@@ -16,8 +16,8 @@ func (r *repository) FindAll(config request_util.PaginationConfig) ([]entity.Use
 		Scopes(config.Scopes()...).
 		Find(&results).Error
 	if err != nil {
-		log.Println("error-find-user:", err)
-		return nil, errors.ErrUnprocessableEntity
+		err = errors.New("cannot find users")
+		return results, err
 	}
 
 	return results, nil
