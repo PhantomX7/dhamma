@@ -12,7 +12,7 @@ type Service interface {
 	SignIn(request request.SignInRequest, ctx context.Context) (response.AuthResponse, error)
 	SignUp(request request.SignUpRequest, ctx context.Context) (response.AuthResponse, error)
 	UpdatePassword(request request.UpdatePasswordRequest, ctx context.Context) error
-	GetMe(ctx context.Context) (response.MeResponse, error)
+	GetMe(userID uint64, ctx context.Context) (response.MeResponse, error)
 }
 
 type Controller interface {

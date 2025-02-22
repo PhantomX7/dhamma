@@ -1,11 +1,12 @@
 package routes
 
 import (
+	"github.com/PhantomX7/dhamma/middleware"
 	"github.com/PhantomX7/dhamma/modules/auth"
 	"github.com/gin-gonic/gin"
 )
 
-func Auth(route *gin.Engine, authController auth.Controller) {
+func Auth(route *gin.Engine, middleware *middleware.Middleware, authController auth.Controller) {
 	routes := route.Group("api/auth")
 	{
 		routes.POST("/signin", authController.SignIn)

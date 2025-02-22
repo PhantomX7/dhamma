@@ -7,6 +7,7 @@ import (
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/middleware"
 	"github.com/PhantomX7/dhamma/migration"
 	"github.com/PhantomX7/dhamma/modules"
 	"github.com/PhantomX7/dhamma/routes"
@@ -47,7 +48,8 @@ func main() {
 		fx.Provide(
 			setupDatabase,
 			setUpServer,
-			customValidator.New,
+			customValidator.New, // initiate custom validator
+			middleware.New,      // initiate middleware
 			// initLibs,
 		),
 		modules.RepositoryModule,
@@ -142,6 +144,7 @@ func setupDatabase() *gorm.DB {
 		panic(err)
 	}
 
+	// run migration
 	if err = migration.RunMigration(db); err != nil {
 		log.Println(err)
 		panic(err)

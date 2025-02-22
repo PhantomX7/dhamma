@@ -20,7 +20,10 @@ func (c *controller) SignIn(ctx *gin.Context) {
 
 	res, err := c.authService.SignIn(req, ctx.Request.Context())
 	if err != nil {
-		ctx.Error(err).SetType(gin.ErrorTypePublic)
+		ctx.AbortWithStatusJSON(
+			http.StatusUnprocessableEntity,
+			utility.BuildResponseFailed("failed to sign in", err.Error()),
+		)
 		return
 	}
 

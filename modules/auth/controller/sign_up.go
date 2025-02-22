@@ -20,7 +20,10 @@ func (c *controller) SignUp(ctx *gin.Context) {
 
 	res, err := c.authService.SignUp(req, ctx.Request.Context())
 	if err != nil {
-		_ = ctx.Error(err).SetType(gin.ErrorTypePublic)
+		ctx.AbortWithStatusJSON(
+			http.StatusUnprocessableEntity,
+			utility.BuildResponseFailed("failed to sign up", err.Error()),
+		)
 		return
 	}
 

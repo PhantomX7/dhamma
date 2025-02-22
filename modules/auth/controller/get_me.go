@@ -3,13 +3,17 @@ package http
 import (
 	"net/http"
 
+	"github.com/PhantomX7/dhamma/utility"
 	"github.com/gin-gonic/gin"
 )
 
 func (c *controller) GetMe(ctx *gin.Context) {
-	res, err := c.authService.GetMe(ctx.Request.Context())
+	res, err := c.authService.GetMe(utility.GetIDFromContext(ctx), ctx.Request.Context())
 	if err != nil {
-		_ = ctx.Error(err).SetType(gin.ErrorTypePublic)
+		ctx.AbortWithStatusJSON(
+			http.StatusUnprocessableEntity,
+			utility.BuildResponseFailed("failed to get me", err.Error()),
+		)
 		return
 	}
 

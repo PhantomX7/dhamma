@@ -15,5 +15,5 @@ func (r *repository) FindByUsername(username string, ctx context.Context) (userM
 		return
 	}
 
-	return userM, nil
+	return
 }

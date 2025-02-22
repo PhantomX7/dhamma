@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
 )
@@ -21,8 +20,9 @@ func (c *controller) UpdatePassword(ctx *gin.Context) {
 
 	err := c.authService.UpdatePassword(req, ctx)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest,
-			utility.BuildResponseFailed(constants.MESSAGE_FAILED_UPDATE_PASSWORD, err.Error()),
+		ctx.AbortWithStatusJSON(
+			http.StatusUnprocessableEntity,
+			utility.BuildResponseFailed("failed to update password", err.Error()),
 		)
 		return
 	}

@@ -2,18 +2,14 @@ package service
 
 import (
 	"context"
-	"os"
+	"errors"
 	"strings"
-	"time"
-
-	"github.com/golang-jwt/jwt/v4"
 
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
-	"github.com/PhantomX7/go-core/utility/errors"
 )
 
 func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (res response.AuthResponse, err error) {
@@ -23,31 +19,18 @@ func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (re
 
 	userM, err = u.userRepo.FindByUsername(request.Username, ctx)
 	if err != nil {
-		err = errors.ErrFailedAuthentication
+		err = errors.New("invalid username or password")
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(userM.Password), []byte(request.Password))
 	if err != nil {
-		err = errors.ErrFailedAuthentication
+		err = errors.New("invalid username or password")
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, authClaims{
-		ID:       userM.ID,
-		Username: userM.Username,
-		IssuedAt: time.Now().Unix(),
-		Role:     "admin",
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: &jwt.NumericDate{
-				Time: time.Now().Add(time.Hour * 80000),
-			},
-		},
-	})
-
-	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	tokenString, err := generateTokenByID(userM.ID)
 	if err != nil {
-		err = errors.ErrFailedAuthentication
 		return
 	}
 

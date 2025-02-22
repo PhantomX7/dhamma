@@ -2,18 +2,15 @@ package service
 
 import (
 	"context"
-	"os"
+	"errors"
 	"strings"
-	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
-	"github.com/PhantomX7/go-core/utility/errors"
 )
 
 func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (res response.AuthResponse, err error) {
@@ -25,32 +22,18 @@ func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (re
 
 	password, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
-		err = errors.ErrFailedAuthentication
+		err = errors.New("failed to hash password")
 		return
 	}
 	userM.Password = string(password)
 
-	err = u.userRepo.Insert(&userM, nil, ctx)
+	err = u.userRepo.Create(&userM, nil, ctx)
 	if err != nil {
-		err = errors.ErrFailedAuthentication
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, authClaims{
-		ID:       userM.ID,
-		Username: userM.Username,
-		IssuedAt: time.Now().Unix(),
-		Role:     "admin",
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: &jwt.NumericDate{
-				Time: time.Now().Add(time.Hour * 80000),
-			},
-		},
-	})
-
-	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	tokenString, err := generateTokenByID(userM.ID)
 	if err != nil {
-		err = errors.ErrFailedAuthentication
 		return
 	}
 

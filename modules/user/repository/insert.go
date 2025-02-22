@@ -9,7 +9,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) Insert(user *entity.User, tx *gorm.DB, ctx context.Context) error {
+func (r *repository) Create(user *entity.User, tx *gorm.DB, ctx context.Context) error {
 	// if tx is nil, use default db
 	if tx == nil {
 		tx = r.db
@@ -17,7 +17,7 @@ func (r *repository) Insert(user *entity.User, tx *gorm.DB, ctx context.Context)
 
 	err := tx.Create(user).Error
 	if err != nil {
-		return errors.New("failed to insert user")
+		return errors.New("failed to create user")
 	}
 	return nil
 }
