@@ -11,7 +11,7 @@ func (r *repository) FindByUsername(username string, ctx context.Context) (userM
 
 	err = r.db.Where("username = ?", username).First(&userM).Error
 	if err != nil {
-		err = errors.New("cannot find user with username")
+		err = errors.New("error find user by username")
 		return
 	}
 

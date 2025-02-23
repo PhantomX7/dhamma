@@ -17,7 +17,7 @@ func (r *repository) Create(user *entity.User, tx *gorm.DB, ctx context.Context)
 
 	err := tx.Create(user).Error
 	if err != nil {
-		return errors.New("failed to create user")
+		return errors.New("error create user")
 	}
 	return nil
 }

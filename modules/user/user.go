@@ -6,19 +6,20 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/go-core/utility/request_util"
+	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
 type Repository interface {
 	Create(user *entity.User, tx *gorm.DB, ctx context.Context) error
 	Update(user *entity.User, tx *gorm.DB, ctx context.Context) error
-	FindAll(config request_util.PaginationConfig, ctx context.Context) ([]entity.User, error)
+	FindAll(pg pagination.Pagination, ctx context.Context) ([]entity.User, error)
 	FindByID(userID uint64, ctx context.Context) (entity.User, error)
 	FindByUsername(username string, ctx context.Context) (entity.User, error)
-	Count(config request_util.PaginationConfig, ctx context.Context) (int64, error)
+	Count(pg pagination.Pagination, ctx context.Context) (int64, error)
 }
 
 type Service interface {
-	Index(config request_util.PaginationConfig, ctx context.Context) ([]entity.User, error)
+	Index(pg pagination.Pagination, ctx context.Context) ([]entity.User, utility.PaginationMeta, error)
 	Show(userID uint64, ctx context.Context) (entity.User, error)
 }

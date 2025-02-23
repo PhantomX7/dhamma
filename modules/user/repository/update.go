@@ -17,7 +17,7 @@ func (r *repository) Update(user *entity.User, tx *gorm.DB, ctx context.Context)
 
 	err := tx.Save(user).Error
 	if err != nil {
-		return errors.New("failed to update user")
+		return errors.New("error update user")
 	}
 	return nil
 }
