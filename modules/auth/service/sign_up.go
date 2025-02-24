@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/middleware"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 )
@@ -32,7 +33,7 @@ func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (re
 		return
 	}
 
-	tokenString, err := generateTokenByID(userM.ID)
+	tokenString, err := middleware.GenerateToken(userM.ID, "admin")
 	if err != nil {
 		return
 	}

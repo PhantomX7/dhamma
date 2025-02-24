@@ -7,6 +7,6 @@ const (
 	ENUM_RUN_PRODUCTION = "production"
 	ENUM_RUN_TESTING    = "testing"
 
-	ENUM_PAGINATION_PER_PAGE = 10
-	ENUM_PAGINATION_PAGE     = 1
+	ENUM_JWT_KEY_USER_ID = "user_id"
+	ENUM_JWT_KEY_ROLE    = "role"
 )

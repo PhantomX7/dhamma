@@ -30,10 +30,6 @@ func New() *Middleware {
 	}
 }
 
-func (m *Middleware) AuthHandle() gin.HandlerFunc {
-	return m.authMiddleware.MiddlewareFunc()
-}
-
 func (m *Middleware) RefreshHandle() gin.HandlerFunc {
 	return m.authMiddleware.RefreshHandler
 }

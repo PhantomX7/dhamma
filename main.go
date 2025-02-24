@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
@@ -46,7 +48,7 @@ func main() {
 	// 	return
 	// }
 	app := fx.New(
-		// fx.NopLogger, // disable logger
+		fx.NopLogger, // disable logger for fx
 		fx.Provide(
 			setupDatabase,
 			setUpServer,
@@ -78,40 +80,69 @@ func startServer(lc fx.Lifecycle, server *gin.Engine, db *gorm.DB, cv customVali
 	myFigure := figure.NewColorFigure("Phantom", "", "green", true)
 	myFigure.Print()
 
-	// register all custom validator here
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err := v.RegisterValidation("unique",
-			cv.Unique())
-		if err != nil {
-			log.Println("error when applying unique validator")
-		}
-		err = v.RegisterValidation("exist", cv.Exist())
-		if err != nil {
-			log.Println("error when applying exist validator")
-		}
+	// list of custom validators
+	validators := map[string]validator.Func{
+		"unique": cv.Unique(),
+		"exist":  cv.Exist(),
+	}
+	registerValidators(validators)
+
+	// Initialize HTTP server
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", config.PORT),
+		Handler: server.Handler(),
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
 	}
 
+	// Server lifecycle hooks
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
-			// start server
+			go func() {
+				log.Printf("api is available at %s\n", srv.Addr)
+
+				// service connections
+				if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					log.Fatalf("listen: %s\n", err)
+				}
+			}()
 
 			return nil
 		},
-		OnStop: func(context.Context) error {
-			// close database connection
-			dbSQL, err := db.DB()
-			if err != nil {
-				panic(err)
-			}
-			dbSQL.Close()
+		OnStop: func(ctx context.Context) error {
+			log.Println("Shutting down HTTP server...")
 
+			// Create a timeout context for shutdown
+			ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			defer cancel()
+
+			// Shutdown the server
+			if err := srv.Shutdown(ctx); err != nil {
+				log.Printf("Server forced to shutdown: %v", err)
+				return err
+			}
+
+			log.Println("Server shutdown completed")
 			return nil
 		},
 	})
 
-	if err := server.Run(fmt.Sprintf(":%s", config.PORT)); err != nil {
-		log.Fatalf("error running server: %v", err)
-	}
+	// Database lifecycle hooks
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			log.Println("Ensuring database connection...")
+			db, _ := db.DB()
+			return db.PingContext(ctx)
+		},
+		OnStop: func(ctx context.Context) error {
+			log.Println("Closing database connection...")
+			db, _ := db.DB()
+			return db.Close()
+		},
+	})
+
 }
 
 func setUpServer() *gin.Engine {
@@ -158,4 +189,15 @@ func setupDatabase() *gorm.DB {
 		panic(err)
 	}
 	return db
+}
+
+func registerValidators(validators map[string]validator.Func) {
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		// Register each validator
+		for name, fn := range validators {
+			if err := v.RegisterValidation(name, fn); err != nil {
+				log.Printf("error when applying %s validator: %v", name, err)
+			}
+		}
+	}
 }

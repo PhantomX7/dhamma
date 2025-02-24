@@ -3,7 +3,6 @@ module github.com/PhantomX7/dhamma
 go 1.22.2
 
 require (
-	github.com/PhantomX7/go-core v1.1.2
 	github.com/appleboy/gin-jwt/v2 v2.9.2
 	github.com/casbin/casbin/v2 v2.98.0
 	github.com/casbin/gorm-adapter/v3 v3.26.0
