@@ -1,4 +1,4 @@
-package http
+package controller
 
 import (
 	"net/http"
@@ -17,5 +17,5 @@ func (c *controller) GetMe(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, utility.BuildResponseSuccess("ok", res))
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
@@ -22,6 +23,7 @@ import (
 	"go.uber.org/fx"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // func args(db *gorm.DB) bool {
@@ -138,6 +140,12 @@ func setupDatabase() *gorm.DB {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction:                   true,
 		DisableForeignKeyConstraintWhenMigrating: true,
+		Logger: logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				IgnoreRecordNotFoundError: true,
+			},
+		),
 	})
 	if err != nil {
 		log.Println(err)

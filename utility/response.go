@@ -15,11 +15,11 @@ type PaginationMeta struct {
 }
 
 type Response struct {
-	Status  bool           `json:"status"`
-	Message string         `json:"message"`
-	Error   any            `json:"error,omitempty"`
-	Data    any            `json:"data,omitempty"`
-	Meta    PaginationMeta `json:"meta,omitempty"`
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+	Error   any    `json:"error,omitempty"`
+	Data    any    `json:"data,omitempty"`
+	Meta    any    `json:"meta,omitempty"`
 }
 
 func BuildPaginationResponseSuccess(message string, data any, meta PaginationMeta) Response {
@@ -28,6 +28,7 @@ func BuildPaginationResponseSuccess(message string, data any, meta PaginationMet
 		Message: message,
 		Error:   nil,
 		Data:    data,
+		Meta:    meta,
 	}
 	return res
 }

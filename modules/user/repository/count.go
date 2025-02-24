@@ -8,10 +8,10 @@ import (
 	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
-func (r *repository) Count(pg pagination.Pagination, ctx context.Context) (int64, error) {
+func (r *repository) Count(pg *pagination.Pagination, ctx context.Context) (int64, error) {
 	var count int64
 
-	filterScopes, _ := pagination.NewScopeBuilder(&pg).Build()
+	filterScopes, _ := pagination.NewScopeBuilder(pg).Build()
 
 	err := r.db.
 		Model(&entity.User{}).

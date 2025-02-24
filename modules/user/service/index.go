@@ -9,7 +9,7 @@ import (
 )
 
 // Index implements user.Service.
-func (s *service) Index(pg pagination.Pagination, ctx context.Context) (
+func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 	users []entity.User, meta utility.PaginationMeta, err error,
 ) {
 	users, err = s.userRepo.FindAll(pg, ctx)

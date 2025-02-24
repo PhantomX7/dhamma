@@ -1,18 +1,22 @@
-// request_util/types.go
 package pagination
 
-import "github.com/PhantomX7/dhamma/utility/scope"
+import (
+	"strconv"
+
+	"github.com/PhantomX7/dhamma/utility/scope"
+)
 
 type FilterType string
 
+// FilterType is a type of filter for query
 const (
-	FilterTypeID       FilterType = "ID"
-	FilterTypeNumber   FilterType = "NUMBER"
-	FilterTypeString   FilterType = "STRING"
-	FilterTypeBool     FilterType = "BOOL"
-	FilterTypeDate     FilterType = "DATE"
-	FilterTypeDateTime FilterType = "DATETIME"
-	FilterTypeEnum     FilterType = "ENUM"
+	FilterTypeID       FilterType = "ID"       // allowed operator: eq, neq, in, not_in, between, gt, gte, lt, lte
+	FilterTypeNumber   FilterType = "NUMBER"   // allowed operator: eq, neq, in, not_in, between, gt, gte, lt, lte
+	FilterTypeString   FilterType = "STRING"   // allowed operator: eq, neq, in, not_in, like
+	FilterTypeBool     FilterType = "BOOL"     // allowed operator: eq
+	FilterTypeDate     FilterType = "DATE"     // allowed operator: eq, between
+	FilterTypeDateTime FilterType = "DATETIME" // allowed operator: eq, between
+	FilterTypeEnum     FilterType = "ENUM"     // allowed operator: eq, in
 )
 
 type FilterOperator string
@@ -30,7 +34,6 @@ const (
 	OperatorLte       FilterOperator = "lte"
 )
 
-// request_util/filter.go
 type FilterConfig struct {
 	Field      string
 	Type       FilterType
@@ -82,9 +85,30 @@ func NewPagination(conditions map[string][]string, filterDef *FilterDefinition, 
 		options.DefaultOrder = "id desc"
 	}
 
+	limit := 0
+	offset := 0
+	if len(conditions["limit"]) > 0 {
+		var err error
+		if limit, err = strconv.Atoi(conditions["limit"][0]); err != nil {
+			limit = 0
+		}
+	}
+	if len(conditions["offset"]) > 0 {
+		var err error
+		if offset, err = strconv.Atoi(conditions["offset"][0]); err != nil {
+			offset = 0
+		}
+	}
+
 	return &Pagination{
 		Conditions: conditions,
 		FilterDef:  filterDef,
 		Options:    options,
+		Limit:      limit,
+		Offset:     offset,
 	}
+}
+
+func (p *Pagination) AddCustomScope(scopes ...scope.Scope) {
+	p.customScopes = append(p.customScopes, scopes...)
 }

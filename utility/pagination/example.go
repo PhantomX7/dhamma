@@ -4,6 +4,18 @@ import "gorm.io/gorm"
 
 // Example usage:
 func ExampleUsage() {
+	// # String filter with like operator
+	// GET /users?name=like:john
+
+	// # Number filter with between operator
+	// GET /users?age=between:20,30
+
+	// # Enum filter with in operator
+	// GET /users?status=in:active,inactive
+
+	// # Combined filters
+	// GET /users?name=like:john&age=gt:25&status=eq:active
+
 	// Define filterable fields
 	filterDef := NewFilterDefinition().
 		AddFilter("name", FilterConfig{

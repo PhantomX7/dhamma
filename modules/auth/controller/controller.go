@@ -1,4 +1,4 @@
-package http
+package controller
 
 import (
 	"github.com/PhantomX7/dhamma/modules/auth"

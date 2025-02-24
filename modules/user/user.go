@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -13,13 +14,18 @@ import (
 type Repository interface {
 	Create(user *entity.User, tx *gorm.DB, ctx context.Context) error
 	Update(user *entity.User, tx *gorm.DB, ctx context.Context) error
-	FindAll(pg pagination.Pagination, ctx context.Context) ([]entity.User, error)
+	FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.User, error)
 	FindByID(userID uint64, ctx context.Context) (entity.User, error)
 	FindByUsername(username string, ctx context.Context) (entity.User, error)
-	Count(pg pagination.Pagination, ctx context.Context) (int64, error)
+	Count(pg *pagination.Pagination, ctx context.Context) (int64, error)
 }
 
 type Service interface {
-	Index(pg pagination.Pagination, ctx context.Context) ([]entity.User, utility.PaginationMeta, error)
+	Index(pg *pagination.Pagination, ctx context.Context) ([]entity.User, utility.PaginationMeta, error)
 	Show(userID uint64, ctx context.Context) (entity.User, error)
+}
+
+type Controller interface {
+	Index(ctx *gin.Context)
+	Show(ctx *gin.Context)
 }

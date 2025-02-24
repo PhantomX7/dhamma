@@ -1,4 +1,4 @@
-package http
+package controller
 
 import (
 	"net/http"
@@ -27,5 +27,5 @@ func (c *controller) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, utility.BuildResponseSuccess("ok", res))
 }
