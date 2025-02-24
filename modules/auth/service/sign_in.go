@@ -30,13 +30,19 @@ func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (re
 		return
 	}
 
-	tokenString, err := middleware.GenerateToken(userM.ID, "admin")
+	accessToken, err := middleware.GenerateAccessToken(userM.ID, "admin")
+	if err != nil {
+		return
+	}
+
+	refreshTokenM, err := middleware.GenerateRefreshToken(userM.ID, nil, u.refreshTokenRepo)
 	if err != nil {
 		return
 	}
 
 	res = response.AuthResponse{
-		Token: tokenString,
+		AccessToken:  accessToken,
+		RefreshToken: refreshTokenM.ID.String(),
 	}
 	return
 }

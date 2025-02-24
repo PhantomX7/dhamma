@@ -10,6 +10,7 @@ import (
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/libs"
 	"github.com/PhantomX7/dhamma/middleware"
 	"github.com/PhantomX7/dhamma/migration"
 	"github.com/PhantomX7/dhamma/modules"
@@ -48,7 +49,7 @@ func main() {
 	// 	return
 	// }
 	app := fx.New(
-		fx.NopLogger, // disable logger for fx
+		// fx.NopLogger, // disable logger for fx
 		fx.Provide(
 			setupDatabase,
 			setUpServer,
@@ -59,6 +60,7 @@ func main() {
 		modules.RepositoryModule,
 		modules.ServiceModule,
 		modules.ControllerModule,
+		libs.Module,
 		routes.Module,
 		fx.Invoke(
 			//startCron,

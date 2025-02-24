@@ -10,10 +10,11 @@ import (
 )
 
 func (u *service) UpdatePassword(
+	userID uint64,
 	request request.UpdatePasswordRequest,
 	ctx context.Context,
 ) (err error) {
-	userM, err := u.userRepo.FindByID(1, ctx)
+	userM, err := u.userRepo.FindByID(userID, ctx)
 	if err != nil {
 		return
 	}

@@ -14,3 +14,7 @@ type UpdatePasswordRequest struct {
 	CurrentPassword string `json:"current_password" form:"current_password" binding:"required"`
 	Password        string `json:"password" form:"password" binding:"required"`
 }
+
+type RefreshRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strings"
@@ -8,9 +9,24 @@ import (
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/modules/refresh_token"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
+
+const (
+	ACCESS_TOKEN_EXPIRY  = 15 * time.Minute
+	REFRESH_TOKEN_EXPIRY = 7 * 24 * time.Hour
+)
+
+type TokenPair struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
 
 type Claims struct {
 	UserID uint64 `json:"user_id"`
@@ -18,13 +34,13 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateToken(userID uint64, role string) (string, error) {
+func GenerateAccessToken(userID uint64, role string) (string, error) {
 	// Create claims with user data
 	claims := Claims{
 		UserID: userID,
 		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // Token expires in 24 hours
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ACCESS_TOKEN_EXPIRY)), // Token expires in 24 hours
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
@@ -40,6 +56,23 @@ func GenerateToken(userID uint64, role string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func GenerateRefreshToken(userID uint64, tx *gorm.DB, repo refresh_token.Repository) (*entity.RefreshToken, error) {
+	refreshToken := &entity.RefreshToken{
+		ID:        uuid.New(),
+		UserID:    userID,
+		ExpiresAt: time.Now().Add(REFRESH_TOKEN_EXPIRY),
+		IsValid:   true,
+	}
+
+	// Save to database
+	err := repo.Create(refreshToken, nil, context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return refreshToken, nil
 }
 
 func (m *Middleware) AuthHandle() gin.HandlerFunc {
@@ -71,7 +104,6 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 			}
 			return []byte(config.JWT_SECRET), nil
 		})
-
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			c.Abort()
@@ -79,6 +111,14 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 		}
 
 		if !token.Valid {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
+		}
+
+		var count int64
+		count, _ = m.refreshTokenRepo.GetValidCountByUserID(claims.UserID, context.Background())
+		if count == 0 {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return

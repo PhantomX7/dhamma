@@ -1,35 +1,14 @@
 package middleware
 
-import (
-	"log"
-	"time"
-
-	"github.com/PhantomX7/dhamma/config"
-	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/gin-gonic/gin"
-)
+import "github.com/PhantomX7/dhamma/modules/refresh_token"
 
 type Middleware struct {
-	authMiddleware *jwt.GinJWTMiddleware
+	refreshTokenRepo refresh_token.Repository
 	// enforcer       *casbin.Enforcer
 }
 
-func New() *Middleware {
-	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Key:        []byte(config.JWT_SECRET),
-		Timeout:    24 * time.Hour,
-		MaxRefresh: 6 * time.Hour,
-		TimeFunc:   time.Now,
-	})
-	if err != nil {
-		log.Fatal("jwt-error:" + err.Error())
-	}
-
+func New(refreshTokenRepo refresh_token.Repository) *Middleware {
 	return &Middleware{
-		authMiddleware: authMiddleware,
+		refreshTokenRepo: refreshTokenRepo,
 	}
-}
-
-func (m *Middleware) RefreshHandle() gin.HandlerFunc {
-	return m.authMiddleware.RefreshHandler
 }

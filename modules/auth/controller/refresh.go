@@ -3,14 +3,14 @@ package controller
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
+
+	"github.com/gin-gonic/gin"
 )
 
-func (c *controller) UpdatePassword(ctx *gin.Context) {
-	var req request.UpdatePasswordRequest
+func (c *controller) Refresh(ctx *gin.Context) {
+	var req request.RefreshRequest
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -18,14 +18,14 @@ func (c *controller) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 
-	err := c.authService.UpdatePassword(utility.GetIDFromContext(ctx), req, ctx.Request.Context())
+	res, err := c.authService.Refresh(req, ctx.Request.Context())
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to update password", err.Error()),
+			utility.BuildResponseFailed("failed to refresh token", err.Error()),
 		)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utility.BuildResponseSuccess("ok", nil))
+	ctx.JSON(http.StatusOK, utility.BuildResponseSuccess("ok", res))
 }
