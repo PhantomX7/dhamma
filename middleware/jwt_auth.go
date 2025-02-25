@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	ACCESS_TOKEN_EXPIRY  = 15 * time.Minute
+	ACCESS_TOKEN_EXPIRY  = 1 * time.Minute
 	REFRESH_TOKEN_EXPIRY = 7 * 24 * time.Hour
 )
 

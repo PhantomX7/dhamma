@@ -2,8 +2,15 @@ package pagination
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/PhantomX7/dhamma/utility/scope"
+)
+
+const (
+	QueryKeyLimit  = "limit"
+	QueryKeyOffset = "offset"
+	QueryKeySort   = "sort"
 )
 
 type FilterType string
@@ -42,18 +49,31 @@ type FilterConfig struct {
 	EnumValues []string // For enum type validation
 }
 
+type SortConfig struct {
+	Field     string
+	TableName string
+	Allowed   bool
+}
+
 type FilterDefinition struct {
 	configs map[string]FilterConfig
+	sorts   map[string]SortConfig
 }
 
 func NewFilterDefinition() *FilterDefinition {
 	return &FilterDefinition{
 		configs: make(map[string]FilterConfig),
+		sorts:   make(map[string]SortConfig),
 	}
 }
 
 func (fd *FilterDefinition) AddFilter(field string, config FilterConfig) *FilterDefinition {
 	fd.configs[field] = config
+	return fd
+}
+
+func (fd *FilterDefinition) AddSort(field string, config SortConfig) *FilterDefinition {
+	fd.sorts[field] = config
 	return fd
 }
 
@@ -85,30 +105,65 @@ func NewPagination(conditions map[string][]string, filterDef *FilterDefinition, 
 		options.DefaultOrder = "id desc"
 	}
 
-	limit := 0
-	offset := 0
-	if len(conditions["limit"]) > 0 {
-		var err error
-		if limit, err = strconv.Atoi(conditions["limit"][0]); err != nil {
-			limit = 0
-		}
-	}
-	if len(conditions["offset"]) > 0 {
-		var err error
-		if offset, err = strconv.Atoi(conditions["offset"][0]); err != nil {
-			offset = 0
-		}
-	}
-
 	return &Pagination{
 		Conditions: conditions,
 		FilterDef:  filterDef,
 		Options:    options,
-		Limit:      limit,
-		Offset:     offset,
+		Limit:      parseLimit(conditions, options.DefaultLimit, options.MaxLimit),
+		Offset:     parseOffset(conditions),
+		Order:      parseOrder(conditions, options.DefaultOrder, filterDef),
 	}
 }
 
 func (p *Pagination) AddCustomScope(scopes ...scope.Scope) {
 	p.customScopes = append(p.customScopes, scopes...)
+}
+
+func parseLimit(conditions map[string][]string, defaultLimit, maxLimit int) int {
+	if limitStr, exists := conditions[QueryKeyLimit]; exists && len(limitStr) > 0 {
+		if parsedLimit, err := strconv.Atoi(limitStr[0]); err == nil {
+			if parsedLimit > 0 && parsedLimit <= maxLimit {
+				return parsedLimit
+			}
+		}
+	}
+	return defaultLimit
+}
+
+func parseOffset(conditions map[string][]string) int {
+	if offsetStr, exists := conditions[QueryKeyOffset]; exists && len(offsetStr) > 0 {
+		if parsedOffset, err := strconv.Atoi(offsetStr[0]); err == nil && parsedOffset > 0 {
+			return parsedOffset
+		}
+	}
+	return 0
+}
+
+func validateOrder(order string, filterDef *FilterDefinition) bool {
+	if order == "" {
+		return true
+	}
+
+	for _, part := range strings.Split(order, ",") {
+		fieldParts := strings.Fields(strings.TrimSpace(part))
+		if len(fieldParts) == 0 {
+			return false
+		}
+
+		field := fieldParts[0]
+		if sortConfig, exists := filterDef.sorts[field]; !exists || !sortConfig.Allowed {
+			return false
+		}
+	}
+	return true
+}
+
+func parseOrder(conditions map[string][]string, defaultOrder string, filterDef *FilterDefinition) string {
+	if orderStr, exists := conditions[QueryKeySort]; exists && len(orderStr) > 0 {
+		order := orderStr[0]
+		if validateOrder(order, filterDef) {
+			return order
+		}
+	}
+	return defaultOrder
 }
