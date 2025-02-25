@@ -3,16 +3,16 @@ module github.com/PhantomX7/dhamma
 go 1.22.2
 
 require (
-	github.com/appleboy/gin-jwt/v2 v2.9.2
 	github.com/casbin/casbin/v2 v2.98.0
 	github.com/casbin/gorm-adapter/v3 v3.26.0
 	github.com/cloudinary/cloudinary-go v1.7.0
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-co-op/gocron/v2 v2.16.0
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -50,6 +50,7 @@ require (
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -60,6 +61,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230126093431-47fa9a501578 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/dig v1.17.1 // indirect

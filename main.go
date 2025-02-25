@@ -20,7 +20,7 @@ import (
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-
+	"github.com/go-co-op/gocron/v2"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/fx"
@@ -63,8 +63,7 @@ func main() {
 		libs.Module,
 		routes.Module,
 		fx.Invoke(
-			//startCron,
-			//startQueue,
+			startCron,
 			startServer,
 		),
 	)
@@ -78,7 +77,12 @@ func main() {
 
 }
 
-func startServer(lc fx.Lifecycle, server *gin.Engine, db *gorm.DB, cv customValidator.CustomValidator) {
+func startServer(
+	lc fx.Lifecycle,
+	server *gin.Engine,
+	db *gorm.DB,
+	cv customValidator.CustomValidator,
+) {
 	myFigure := figure.NewColorFigure("Phantom", "", "green", true)
 	myFigure.Print()
 
@@ -131,20 +135,6 @@ func startServer(lc fx.Lifecycle, server *gin.Engine, db *gorm.DB, cv customVali
 		},
 	})
 
-	// Database lifecycle hooks
-	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			log.Println("Ensuring database connection...")
-			db, _ := db.DB()
-			return db.PingContext(ctx)
-		},
-		OnStop: func(ctx context.Context) error {
-			log.Println("Closing database connection...")
-			db, _ := db.DB()
-			return db.Close()
-		},
-	})
-
 }
 
 func setUpServer() *gin.Engine {
@@ -160,7 +150,7 @@ func setUpServer() *gin.Engine {
 	return server
 }
 
-func setupDatabase() *gorm.DB {
+func setupDatabase(lc fx.Lifecycle) *gorm.DB {
 	dsn := fmt.Sprintf(
 		"%s:%s@(%s:%s)/%s?charset=utf8mb4&parseTime=true",
 		config.DATABASE_USERNAME,
@@ -190,6 +180,21 @@ func setupDatabase() *gorm.DB {
 		log.Println(err)
 		panic(err)
 	}
+
+	// Database lifecycle hooks
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			log.Println("Ensuring database connection...")
+			db, _ := db.DB()
+			return db.PingContext(ctx)
+		},
+		OnStop: func(ctx context.Context) error {
+			log.Println("Closing database connection...")
+			db, _ := db.DB()
+			return db.Close()
+		},
+	})
+
 	return db
 }
 
@@ -202,4 +207,20 @@ func registerValidators(validators map[string]validator.Func) {
 			}
 		}
 	}
+}
+
+func startCron(lc fx.Lifecycle, cron gocron.Scheduler) {
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			log.Println("Starting Cron")
+
+			cron.Start()
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			log.Println("Stopping cron")
+
+			return cron.Shutdown()
+		},
+	})
 }

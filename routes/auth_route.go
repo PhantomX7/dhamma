@@ -11,7 +11,7 @@ func Auth(route *gin.Engine, middleware *middleware.Middleware, authController a
 	{
 		routes.POST("/signin", authController.SignIn)
 		routes.POST("/signup", authController.SignUp)
-		routes.GET("/refresh", authController.Refresh)
+		routes.POST("/refresh", authController.Refresh)
 		routes.GET("/me", middleware.AuthHandle(), authController.GetMe)
 		routes.PATCH("/password", middleware.AuthHandle(), authController.UpdatePassword)
 

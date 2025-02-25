@@ -16,5 +16,5 @@ type UpdatePasswordRequest struct {
 }
 
 type RefreshRequest struct {
-	RefreshToken string `json:"refresh_token" binding:"required"`
+	RefreshToken string `form:"refresh_token" json:"refresh_token" binding:"required"`
 }

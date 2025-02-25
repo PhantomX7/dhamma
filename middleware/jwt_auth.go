@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -118,8 +119,9 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 
 		var count int64
 		count, _ = m.refreshTokenRepo.GetValidCountByUserID(claims.UserID, context.Background())
+		log.Print(count)
 		if count == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 			c.Abort()
 			return
 		}
