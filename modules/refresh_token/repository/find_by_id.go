@@ -10,6 +10,7 @@ import (
 
 func (r *repository) FindByID(refreshTokenID string, ctx context.Context) (refreshToken entity.RefreshToken, err error) {
 	err = r.db.
+		WithContext(ctx).
 		Where("id = ? AND is_valid = ? AND expires_at > ?",
 			refreshTokenID, true, time.Now(),
 		).

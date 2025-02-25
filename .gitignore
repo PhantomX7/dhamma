@@ -10,7 +10,5 @@ package-lock.json
 yarn.lock
 error-log.log
 firebase.json
-firebase.json
 
 .env.*
-.env

@@ -8,13 +8,13 @@ import (
 // GetRoleFromContext this is not a heavyweight operation
 // it accesses payload from map in gin context
 func GetRoleFromContext(c *gin.Context) string {
-	role, _ := c.Get(constants.ENUM_JWT_KEY_ROLE)
+	role, _ := c.Get(constants.EnumJwtKeyRole)
 	return role.(string)
 }
 
 // GetIDFromContext this is not a heavyweight operation
 // it accesses payload from map in gin context
 func GetIDFromContext(c *gin.Context) uint64 {
-	id, _ := c.Get(constants.ENUM_JWT_KEY_USER_ID)
+	id, _ := c.Get(constants.EnumJwtKeyUserId)
 	return id.(uint64)
 }

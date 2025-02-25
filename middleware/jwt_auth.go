@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -20,8 +19,8 @@ import (
 )
 
 const (
-	ACCESS_TOKEN_EXPIRY  = 1 * time.Minute
-	REFRESH_TOKEN_EXPIRY = 7 * 24 * time.Hour
+	AccessTokenExpiry  = 30 * time.Minute
+	RefreshTokenExpiry = 3 * 24 * time.Hour
 )
 
 type TokenPair struct {
@@ -29,19 +28,26 @@ type TokenPair struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type Claims struct {
+type AccessClaims struct {
 	UserID uint64 `json:"user_id"`
 	Role   string `json:"role"`
+
+	jwt.RegisteredClaims
+}
+
+type RefreshClaims struct {
+	RefreshToken string `json:"refresh_token"`
+
 	jwt.RegisteredClaims
 }
 
 func GenerateAccessToken(userID uint64, role string) (string, error) {
 	// Create claims with user data
-	claims := Claims{
+	claims := AccessClaims{
 		UserID: userID,
 		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ACCESS_TOKEN_EXPIRY)), // Token expires in 24 hours
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(AccessTokenExpiry)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
@@ -59,21 +65,37 @@ func GenerateAccessToken(userID uint64, role string) (string, error) {
 	return tokenString, nil
 }
 
-func GenerateRefreshToken(userID uint64, tx *gorm.DB, repo refresh_token.Repository) (*entity.RefreshToken, error) {
+func GenerateRefreshToken(userID uint64, tx *gorm.DB, repo refresh_token.Repository) (string, error) {
 	refreshToken := &entity.RefreshToken{
 		ID:        uuid.New(),
 		UserID:    userID,
-		ExpiresAt: time.Now().Add(REFRESH_TOKEN_EXPIRY),
+		ExpiresAt: time.Now().Add(RefreshTokenExpiry),
 		IsValid:   true,
 	}
 
 	// Save to database
-	err := repo.Create(refreshToken, nil, context.Background())
+	err := repo.Create(refreshToken, tx, context.Background())
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return refreshToken, nil
+	claims := RefreshClaims{
+		RefreshToken: refreshToken.ID.String(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(RefreshTokenExpiry)),
+		},
+	}
+
+	// Create token with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Generate encoded token
+	tokenString, err := token.SignedString([]byte(config.JWT_SECRET))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
 
 func (m *Middleware) AuthHandle() gin.HandlerFunc {
@@ -97,7 +119,7 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 		tokenString := parts[1]
 
 		// Parse and validate the token
-		claims := &Claims{}
+		claims := &AccessClaims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			// Validate signing method
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -119,7 +141,6 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 
 		var count int64
 		count, _ = m.refreshTokenRepo.GetValidCountByUserID(claims.UserID, context.Background())
-		log.Print(count)
 		if count == 0 {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 			c.Abort()
@@ -127,8 +148,8 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 		}
 
 		// Set user details in context
-		c.Set(constants.ENUM_JWT_KEY_USER_ID, claims.UserID)
-		c.Set(constants.ENUM_JWT_KEY_ROLE, claims.Role)
+		c.Set(constants.EnumJwtKeyUserId, claims.UserID)
+		c.Set(constants.EnumJwtKeyRole, claims.Role)
 
 		c.Next()
 	}

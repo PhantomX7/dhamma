@@ -15,7 +15,7 @@ func (r *repository) Update(refreshToken *entity.RefreshToken, tx *gorm.DB, ctx 
 		tx = r.db
 	}
 
-	err := tx.Save(refreshToken).Error
+	err := tx.WithContext(ctx).Save(refreshToken).Error
 	if err != nil {
 		return errors.New("error create refresh token")
 	}

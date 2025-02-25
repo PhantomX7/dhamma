@@ -138,7 +138,7 @@ func startServer(
 }
 
 func setUpServer() *gin.Engine {
-	if config.APP_ENV == constants.ENUM_RUN_PRODUCTION {
+	if config.APP_ENV == constants.EnumRunProduction {
 		gin.SetMode(gin.ReleaseMode)
 	}
 

@@ -8,8 +8,8 @@ import (
 	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
-func (r *repository) FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.User, error) {
-	results := make([]entity.User, 0)
+func (r *repository) FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.Role, error) {
+	results := make([]entity.Role, 0)
 
 	filterScopes, metaScopes := pagination.NewScopeBuilder(pg).Build()
 
@@ -19,7 +19,7 @@ func (r *repository) FindAll(pg *pagination.Pagination, ctx context.Context) ([]
 		Scopes(metaScopes...).
 		Find(&results).Error
 	if err != nil {
-		err = errors.New("error find users")
+		err = errors.New("error find roles")
 		return results, err
 	}
 

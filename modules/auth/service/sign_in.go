@@ -42,7 +42,7 @@ func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (re
 
 	res = response.AuthResponse{
 		AccessToken:  accessToken,
-		RefreshToken: refreshTokenM.ID.String(),
+		RefreshToken: refreshTokenM,
 	}
 	return
 }

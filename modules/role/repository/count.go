@@ -15,11 +15,11 @@ func (r *repository) Count(pg *pagination.Pagination, ctx context.Context) (int6
 
 	err := r.db.
 		WithContext(ctx).
-		Model(&entity.User{}).
+		Model(&entity.Role{}).
 		Scopes(filterScopes...).
 		Count(&count).Error
 	if err != nil {
-		err = errors.New("error count users")
+		err = errors.New("error count roles")
 		return 0, err
 	}
 

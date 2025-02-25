@@ -15,7 +15,7 @@ func (r *repository) Delete(refreshToken *entity.RefreshToken, tx *gorm.DB, ctx 
 		tx = r.db
 	}
 
-	err := tx.Delete(refreshToken).Error
+	err := tx.WithContext(ctx).Delete(refreshToken).Error
 	if err != nil {
 		return errors.New("error delete refresh token")
 	}

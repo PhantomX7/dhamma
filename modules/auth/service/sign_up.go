@@ -33,19 +33,19 @@ func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (re
 		return
 	}
 
-	tokenString, err := middleware.GenerateAccessToken(userM.ID, "admin")
+	accessToken, err := middleware.GenerateAccessToken(userM.ID, "admin")
 	if err != nil {
 		return
 	}
 
-	refreshTokenM, err := middleware.GenerateRefreshToken(userM.ID, nil, u.refreshTokenRepo)
+	refreshToken, err := middleware.GenerateRefreshToken(userM.ID, nil, u.refreshTokenRepo)
 	if err != nil {
 		return
 	}
 
 	res = response.AuthResponse{
-		AccessToken:  tokenString,
-		RefreshToken: refreshTokenM.ID.String(),
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}
 
 	return

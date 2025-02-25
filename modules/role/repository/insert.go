@@ -9,15 +9,15 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) Create(user *entity.User, tx *gorm.DB, ctx context.Context) error {
+func (r *repository) Create(role *entity.Role, tx *gorm.DB, ctx context.Context) error {
 	// if tx is nil, use default db
 	if tx == nil {
 		tx = r.db
 	}
 
-	err := tx.WithContext(ctx).Create(user).Error
+	err := tx.WithContext(ctx).Create(role).Error
 	if err != nil {
-		return errors.New("error create user")
+		return errors.New("error create role")
 	}
 	return nil
 }

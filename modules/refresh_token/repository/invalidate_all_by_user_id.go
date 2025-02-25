@@ -9,6 +9,7 @@ import (
 
 func (r *repository) InvalidateAllByUserID(userID uint64, ctx context.Context) (err error) {
 	err = r.db.
+		WithContext(ctx).
 		Model(&entity.RefreshToken{}).
 		Where("user_id = ?", userID).
 		Update("is_valid", false).Error
