@@ -1,0 +1,23 @@
+package repository
+
+import (
+	"context"
+	"errors"
+
+	"github.com/PhantomX7/dhamma/entity"
+)
+
+func (r *repository) FindByName(name string, ctx context.Context) (domainM entity.Domain, err error) {
+
+	err = r.db.
+		WithContext(ctx).
+		Where("name = ?", name).
+		First(&domainM).
+		Error
+	if err != nil {
+		err = errors.New("error find domain by name")
+		return
+	}
+
+	return
+}

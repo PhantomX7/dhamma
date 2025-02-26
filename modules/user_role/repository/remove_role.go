@@ -1,0 +1,27 @@
+package repository
+
+import (
+	"context"
+	"errors"
+	"github.com/PhantomX7/dhamma/entity"
+
+	"gorm.io/gorm"
+)
+
+func (r *repository) RemoveRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) (err error) {
+	// if tx is nil, use default db
+	if tx == nil {
+		tx = r.db
+	}
+
+	err = tx.WithContext(ctx).
+		Where(
+			"user_id = ? AND domain_id = ? AND role_id = ?",
+			userID, domainID, roleID,
+		).Delete(&entity.UserRole{}).Error
+	if err != nil {
+		return errors.New("error assign role")
+	}
+
+	return
+}
