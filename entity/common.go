@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"github.com/golang-jwt/jwt/v4"
 	"time"
 
 	"gorm.io/gorm"
@@ -16,4 +17,17 @@ type Model struct {
 	ID uint64 `json:"id" gorm:"primary_key;not null"`
 
 	Timestamp
+}
+
+type AccessClaims struct {
+	UserID uint64 `json:"user_id"`
+	Role   string `json:"role"`
+
+	jwt.RegisteredClaims
+}
+
+type RefreshClaims struct {
+	RefreshToken string `json:"refresh_token"`
+
+	jwt.RegisteredClaims
 }

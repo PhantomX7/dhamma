@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/PhantomX7/dhamma/config"
-	"github.com/PhantomX7/dhamma/middleware"
+	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 	"github.com/golang-jwt/jwt/v4"
@@ -12,7 +12,7 @@ import (
 
 func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (res response.AuthResponse, err error) {
 	// Parse refresh token and validate
-	claims := &middleware.RefreshClaims{}
+	claims := &entity.RefreshClaims{}
 	token, err := jwt.ParseWithClaims(request.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
 		// Validate signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -37,11 +37,12 @@ func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (
 		return
 	}
 
-	accessToken, err := middleware.GenerateAccessToken(refreshTokenM.UserID, "admin")
+	accessToken, err := u.GenerateAccessToken(refreshTokenM.UserID, "admin")
 	if err != nil {
 		return
 	}
 
+	//invalidate current refresh token
 	refreshTokenM.IsValid = false
 
 	tx := u.transactionManager.NewTransaction()
@@ -52,7 +53,7 @@ func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (
 		return
 	}
 
-	refreshToken, err := middleware.GenerateRefreshToken(refreshTokenM.UserID, tx, u.refreshTokenRepo)
+	refreshToken, err := u.GenerateRefreshToken(refreshTokenM.UserID, tx)
 	if err != nil {
 		tx.Rollback()
 		return

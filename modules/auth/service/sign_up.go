@@ -9,7 +9,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/middleware"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 )
@@ -28,20 +27,27 @@ func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (re
 	}
 	userM.Password = string(password)
 
-	err = u.userRepo.Create(&userM, nil, ctx)
+	tx := u.transactionManager.NewTransaction()
+
+	err = u.userRepo.Create(&userM, tx, ctx)
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
-	accessToken, err := middleware.GenerateAccessToken(userM.ID, "admin")
+	accessToken, err := u.GenerateAccessToken(userM.ID, "admin")
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
-	refreshToken, err := middleware.GenerateRefreshToken(userM.ID, nil, u.refreshTokenRepo)
+	refreshToken, err := u.GenerateRefreshToken(userM.ID, nil)
 	if err != nil {
+		tx.Rollback()
 		return
 	}
+
+	tx.Commit()
 
 	res = response.AuthResponse{
 		AccessToken:  accessToken,

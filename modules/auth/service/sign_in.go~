@@ -34,7 +34,7 @@ func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (re
 		return
 	}
 
-	refreshTokenM, err := u.GenerateRefreshToken(userM.ID, nil)
+	refreshTokenM, err := u.GenerateRefreshToken(userM.ID, nil,)
 	if err != nil {
 		return
 	}
