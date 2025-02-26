@@ -9,7 +9,11 @@ import (
 func RunMigration(db *gorm.DB) error {
 	return db.AutoMigrate(
 		// list all migration here
-		entity.User{},
+		entity.Domain{},
 		entity.RefreshToken{},
+		entity.Role{},
+		entity.User{},
+		entity.UserDomain{},
+		entity.UserRole{},
 	)
 }

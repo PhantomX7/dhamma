@@ -17,6 +17,8 @@ type Repository interface {
 	FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.User, error)
 	FindByID(userID uint64, ctx context.Context) (entity.User, error)
 	FindByUsername(username string, ctx context.Context) (entity.User, error)
+	FindByIDWithRelation(userID uint64, ctx context.Context) (entity.User, error)
+	GetUserDomains(userID uint64, ctx context.Context) (entity.User, error)
 	Count(pg *pagination.Pagination, ctx context.Context) (int64, error)
 }
 

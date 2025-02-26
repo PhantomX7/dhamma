@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -55,7 +56,6 @@ func main() {
 			setUpServer,
 			customValidator.New, // initiate custom validator
 			middleware.New,      // initiate middleware
-			// initLibs,
 		),
 		modules.RepositoryModule,
 		modules.ServiceModule,
@@ -68,13 +68,6 @@ func main() {
 		),
 	)
 	app.Run()
-
-	// server := gin.Default()
-	// server.Use(middleware.CORSMiddleware())
-
-	// routes
-	// routes.User(server, userController, jwtService)
-
 }
 
 func startServer(
@@ -110,7 +103,7 @@ func startServer(
 				log.Printf("api is available at %s\n", srv.Addr)
 
 				// service connections
-				if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 					log.Fatalf("listen: %s\n", err)
 				}
 			}()
@@ -152,7 +145,7 @@ func setUpServer() *gin.Engine {
 
 func setupDatabase(lc fx.Lifecycle) *gorm.DB {
 	dsn := fmt.Sprintf(
-		"%s:%s@(%s:%s)/%s?charset=utf8mb4&parseTime=true",
+		"%s:%s@(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=Asia%%2FJakarta",
 		config.DATABASE_USERNAME,
 		config.DATABASE_PASSWORD,
 		config.DATABASE_HOST,
@@ -161,8 +154,8 @@ func setupDatabase(lc fx.Lifecycle) *gorm.DB {
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction:                   true,
-		DisableForeignKeyConstraintWhenMigrating: true,
+		SkipDefaultTransaction: true,
+		//DisableForeignKeyConstraintWhenMigrating: true,
 		Logger: logger.New(
 			log.New(os.Stdout, "\r\n", log.LstdFlags),
 			logger.Config{
