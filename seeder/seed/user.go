@@ -2,25 +2,38 @@ package seed
 
 import (
 	"errors"
+	"gorm.io/gorm"
+	"log"
 	"os"
+	"strings"
 
 	"github.com/PhantomX7/dhamma/entity"
+
+	"github.com/go-faker/faker/v4"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
-func RootUser(db *gorm.DB) error {
-	users := []entity.User{
-		{
-			Username:     os.Getenv("ADMIN_USERNAME"),
-			Password:     os.Getenv("ADMIN_PASSWORD"),
-			IsSuperAdmin: true,
-			IsActive:     true,
-		},
-	}
+var rootUser = []entity.User{
+	{
+		Username:     os.Getenv("ADMIN_USERNAME"),
+		Password:     os.Getenv("ADMIN_PASSWORD"),
+		IsSuperAdmin: true,
+		IsActive:     true,
+	},
+}
 
-	for _, user := range users {
-		if !errors.Is(db.First(&entity.User{}, entity.User{
+type UserSeeder struct {
+	db *gorm.DB
+}
+
+func NewUserSeeder(db *gorm.DB) *UserSeeder {
+	return &UserSeeder{db: db}
+}
+
+func (s *UserSeeder) GenerateRootUser() (err error) {
+	log.Print("seeding root user")
+	for _, user := range rootUser {
+		if !errors.Is(s.db.First(&entity.User{}, entity.User{
 			Username: user.Username,
 		}).Error, gorm.ErrRecordNotFound) {
 			continue
@@ -32,11 +45,76 @@ func RootUser(db *gorm.DB) error {
 		}
 		user.Password = string(password)
 
-		err = db.Create(&user).Error
+		err = s.db.Create(&user).Error
 		if err != nil {
 			return err
 		}
 	}
 
-	return nil
+	return err
+}
+
+func (s *UserSeeder) GenerateUsers(count int, opts ...UserOption) error {
+
+	log.Printf("seeding %d users", count)
+	// Default options
+	options := &UserOptions{
+		password:     "password123", // default password
+		isActive:     true,          // default active status
+		isSuperAdmin: false,         // default not super admin
+	}
+
+	// Apply provided options
+	for _, opt := range opts {
+		opt(options)
+	}
+
+	users := make([]entity.User, count)
+
+	for i := 0; i < count; i++ {
+		// Generate fake data
+		username := strings.ToLower(faker.FirstName())
+
+		// Hash password
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(options.password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		users[i] = entity.User{
+			Username:     username, // using email as username
+			Password:     string(hashedPassword),
+			IsActive:     options.isActive,
+			IsSuperAdmin: options.isSuperAdmin,
+		}
+	}
+
+	// Batch insert users
+	return s.db.CreateInBatches(users, 100).Error
+}
+
+type UserOptions struct {
+	password     string
+	isActive     bool
+	isSuperAdmin bool
+}
+
+type UserOption func(*UserOptions)
+
+func WithPassword(password string) UserOption {
+	return func(o *UserOptions) {
+		o.password = password
+	}
+}
+
+func WithActiveStatus(isActive bool) UserOption {
+	return func(o *UserOptions) {
+		o.isActive = isActive
+	}
+}
+
+func WithSuperAdmin(isSuperAdmin bool) UserOption {
+	return func(o *UserOptions) {
+		o.isSuperAdmin = isSuperAdmin
+	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/PhantomX7/dhamma/seeder/seed"
 	"log"
 	"os"
 
@@ -11,7 +12,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/migration"
-	"github.com/PhantomX7/dhamma/seeder/seed"
 )
 
 func main() {
@@ -42,19 +42,28 @@ func main() {
 		panic(err)
 	}
 
-	if err = seed.RootUser(db); err != nil {
+	userSeeder := seed.NewUserSeeder(db)
+
+	err = userSeeder.GenerateRootUser()
+	if err != nil {
 		panic(err)
 	}
-	log.Print("finish seeding user")
-
-	//if err = seed.SeedConfig(db); err != nil {
-	//	panic(err)
-	//}
-	//log.Print("finish seeding config")
 
 	// development seed only, will not run on production
 	if os.Getenv("APP_ENV") == "development" {
+		// Generate 10 basic users
+		err = userSeeder.GenerateUsers(20)
+		if err != nil {
+			panic(err)
+		}
 
+		// Generate 5 users with custom options
+		err = userSeeder.GenerateUsers(5,
+			seed.WithActiveStatus(false),
+		)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	log.Println("finish seeding")
