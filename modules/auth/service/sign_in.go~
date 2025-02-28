@@ -29,12 +29,16 @@ func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (re
 		return
 	}
 
+	role := "admin"
+	if userM.IsSuperAdmin {
+		role = "root"
+	}
 	accessToken, err := u.GenerateAccessToken(userM.ID, "admin")
 	if err != nil {
 		return
 	}
 
-	refreshTokenM, err := u.GenerateRefreshToken(userM.ID, nil,)
+	refreshTokenM, err := u.GenerateRefreshToken(userM.ID, nil)
 	if err != nil {
 		return
 	}

@@ -1,6 +1,7 @@
 package seed
 
 import (
+	"errors"
 	"os"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -8,22 +9,24 @@ import (
 	"gorm.io/gorm"
 )
 
-func SeedRootUser(db *gorm.DB) error {
+func RootUser(db *gorm.DB) error {
 	users := []entity.User{
 		{
-			Username: os.Getenv("ADMIN_USERNAME"),
-			IsActive: true,
+			Username:     os.Getenv("ADMIN_USERNAME"),
+			Password:     os.Getenv("ADMIN_PASSWORD"),
+			IsSuperAdmin: true,
+			IsActive:     true,
 		},
 	}
 
 	for _, user := range users {
-		if db.First(&entity.User{}, entity.User{
+		if !errors.Is(db.First(&entity.User{}, entity.User{
 			Username: user.Username,
-		}).Error != gorm.ErrRecordNotFound {
+		}).Error, gorm.ErrRecordNotFound) {
 			continue
 		}
 
-		password, err := bcrypt.GenerateFromPassword([]byte(os.Getenv("ADMIN_PASSWORD")), bcrypt.DefaultCost)
+		password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return err
 		}

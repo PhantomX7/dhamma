@@ -47,10 +47,10 @@ func main() {
 	}
 	log.Print("finish seeding user")
 
-	//if err = seed.SeedConfig(db); err != nil {
-	//	panic(err)
-	//}
-	//log.Print("finish seeding config")
+	if err = seed.SeedConfig(db); err != nil {
+		panic(err)
+	}
+	log.Print("finish seeding config")
 
 	// development seed only, will not run on production
 	if os.Getenv("APP_ENV") == "development" {

@@ -8,7 +8,7 @@ type UserRole struct {
 	DomainID uint64 `gorm:"index:idx_user_domain_role" json:"domain_id"`
 	RoleID   uint64 `gorm:"index:idx_user_domain_role" json:"role_id"`
 
-	User   User   `gorm:"foreignKey:UserID" json:"user"`
-	Domain Domain `gorm:"foreignKey:DomainID" json:"domain"`
-	Role   Role   `gorm:"foreignKey:RoleID" json:"role"`
+	User   User   `gorm:"foreignKey:UserID"`
+	Domain Domain `gorm:"foreignKey:DomainID"`
+	Role   Role   `gorm:"foreignKey:RoleID"`
 }

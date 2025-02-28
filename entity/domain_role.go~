@@ -1,0 +1,13 @@
+package entity
+
+import "gorm.io/gorm"
+
+type DomainRole struct {
+	Model
+	UserID   uint `gorm:"uniqueIndex:idx_user_domain"`
+	DomainID uint `gorm:"uniqueIndex:idx_user_domain"`
+	RoleID   uint
+	User     User   `gorm:"foreignKey:UserID"`
+	Domain   Domain `gorm:"foreignKey:DomainID"`
+	Role     Role   `gorm:"foreignKey:RoleID"`
+}

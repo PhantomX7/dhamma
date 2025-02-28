@@ -37,17 +37,12 @@ func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (
 		return
 	}
 
-	userM, err := u.userRepo.FindByID(refreshTokenM.UserID, ctx)
-	if err != nil {
-		return
-	}
-
 	role := "admin"
 	if userM.IsSuperAdmin {
 		role = "root"
 	}
 
-	accessToken, err := u.GenerateAccessToken(refreshTokenM.UserID, role)
+	accessToken, err := u.GenerateAccessToken(refreshTokenM.UserID, "admin")
 	if err != nil {
 		return
 	}

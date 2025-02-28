@@ -1,0 +1,28 @@
+package repository
+
+import (
+	"context"
+	"errors"
+
+	"github.com/PhantomX7/dhamma/entity"
+	"gorm.io/gorm"
+)
+
+func (r *repository) GetUserRoleDetailByUserID(userID uint64, ctx context.Context) (userRoles []entity.UserRole, err error) {
+	userRole := entity.UserRole{
+		UserID:   userID,
+		DomainID: domainID,
+		RoleID:   roleID,
+	}
+
+	err = r.db.WithContext(ctx).
+		Preload("Domain").
+		Preload("Role").
+		Where("user_id = ?", userID).
+		Find(&userRoles).Error
+	if err != nil {
+		return errors.New("error assign role")
+	}
+
+	return
+}

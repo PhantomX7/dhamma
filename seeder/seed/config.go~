@@ -2,10 +2,9 @@ package seed
 
 import (
 	"errors"
+	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
-
-	"gorm.io/gorm"
 )
 
 func SeedConfig(db *gorm.DB) error {

@@ -73,6 +73,7 @@ func main() {
 func startServer(
 	lc fx.Lifecycle,
 	server *gin.Engine,
+	db *gorm.DB,
 	cv customValidator.CustomValidator,
 ) {
 	myFigure := figure.NewColorFigure("Phantom", "", "green", true)

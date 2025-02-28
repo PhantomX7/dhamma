@@ -29,7 +29,11 @@ func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (re
 		return
 	}
 
-	accessToken, err := u.GenerateAccessToken(userM.ID, "admin")
+	role := "admin"
+	if userM.IsSuperAdmin {
+		role = "root"
+	}
+	accessToken, err := u.GenerateAccessToken(userM.ID, role)
 	if err != nil {
 		return
 	}

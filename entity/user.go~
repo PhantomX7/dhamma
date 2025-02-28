@@ -11,7 +11,7 @@ type User struct {
 	Username     string    `json:"username" gorm:"uniqueIndex;not null;size:255"`
 	Password     string    `json:"-" gorm:"not null;size:255"`
 	IsActive     bool      `json:"is_active" gorm:"not null"`
-	IsSuperAdmin bool      `json:"is_super_admin" gorm:"not null"`
+	IsSuperAdmin bool      `json:"is_active" gorm:"not null"`
 
 	// Many-to-Many with Domain through UserDomain
 	Domains []Domain `gorm:"many2many:user_domains;"`
