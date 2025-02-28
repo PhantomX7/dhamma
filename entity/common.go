@@ -13,12 +13,6 @@ type Timestamp struct {
 	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
-type Model struct {
-	ID uint64 `json:"id" gorm:"primary_key;not null"`
-
-	Timestamp
-}
-
 type AccessClaims struct {
 	UserID uint64 `json:"user_id"`
 	Role   string `json:"role"`

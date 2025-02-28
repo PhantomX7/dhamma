@@ -1,8 +1,8 @@
 package constants
 
 const (
-	ENUM_ROLE_ADMIN = "admin"
-	ENUM_ROLE_USER  = "user"
+	EnumRoleRoot  = "root"
+	EnumRoleAdmin = "admin"
 
 	EnumRunProduction = "production"
 	ENUM_RUN_TESTING  = "testing"

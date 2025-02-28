@@ -6,6 +6,7 @@ import (
 
 var Module = fx.Invoke(
 	Auth,
+	Domain,
 	Universal,
 	User,
 )

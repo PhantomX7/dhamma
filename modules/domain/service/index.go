@@ -8,16 +8,16 @@ import (
 	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
-// Index implements user.Service.
+// Index implements domain.Service.
 func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
-	users []entity.User, meta utility.PaginationMeta, err error,
+	domains []entity.Domain, meta utility.PaginationMeta, err error,
 ) {
-	users, err = s.userRepo.FindAll(pg, ctx)
+	domains, err = s.domainRepo.FindAll(pg, ctx)
 	if err != nil {
 		return
 	}
 
-	count, err := s.userRepo.Count(pg, ctx)
+	count, err := s.domainRepo.Count(pg, ctx)
 	if err != nil {
 		return
 	}

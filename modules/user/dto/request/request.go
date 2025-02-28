@@ -2,11 +2,6 @@ package request
 
 import "github.com/PhantomX7/dhamma/utility/pagination"
 
-type SignInRequest struct {
-	Username string `form:"username" json:"username" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-}
-
 func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
 		AddFilter("id", pagination.FilterConfig{

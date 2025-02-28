@@ -7,12 +7,9 @@ import (
 )
 
 func User(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
-	routes := route.Group("api/user")
+	routes := route.Group("api/user", middleware.AuthHandle())
 	{
 		routes.GET("", userController.Index)
 		routes.GET("/:id", userController.Show)
-		// routes.PATCH("/password", m.AuthHandle(), authController.UpdatePassword)
-		// routes.GET("/me", m.AuthHandle(), authController.GetMe)
-
 	}
 }

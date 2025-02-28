@@ -16,9 +16,4 @@ func Auth(route *gin.Engine, middleware *middleware.Middleware, authController a
 		routes.PATCH("/password", middleware.AuthHandle(), authController.UpdatePassword)
 
 	}
-	// 	//publicGroup := r.Group("public/auth")
-	// 	//{
-	// 	//	publicGroup.POST("/otp", h.Otp)
-	// 	//	publicGroup.POST("/verify", h.Verify)
-	// 	//}
 }

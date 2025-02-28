@@ -1,21 +1,21 @@
 package service
 
 import (
+	"github.com/PhantomX7/dhamma/modules/domain"
 	"github.com/PhantomX7/dhamma/modules/refresh_token"
-	"github.com/PhantomX7/dhamma/modules/user"
 )
 
 type service struct {
-	userRepo         user.Repository
+	domainRepo       domain.Repository
 	refreshTokenRepo refresh_token.Repository
 }
 
 func New(
-	userRepo user.Repository,
+	domainRepo domain.Repository,
 	refreshTokenRepo refresh_token.Repository,
-) user.Service {
+) domain.Service {
 	return &service{
-		userRepo:         userRepo,
+		domainRepo:       domainRepo,
 		refreshTokenRepo: refreshTokenRepo,
 	}
 }

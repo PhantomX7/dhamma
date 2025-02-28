@@ -3,8 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/PhantomX7/dhamma/utility"
 	"github.com/gin-gonic/gin"
+
+	"github.com/PhantomX7/dhamma/utility"
 )
 
 func (c *controller) GetMe(ctx *gin.Context) {

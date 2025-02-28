@@ -6,9 +6,9 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-// Show implements user.Service.
-func (s *service) Show(userID uint64, ctx context.Context) (user entity.User, err error) {
-	user, err = s.userRepo.FindByID(userID, ctx)
+// Show implements domain.Service
+func (s *service) Show(domainID uint64, ctx context.Context) (domain entity.Domain, err error) {
+	domain, err = s.domainRepo.FindByID(domainID, ctx)
 	if err != nil {
 		return
 	}

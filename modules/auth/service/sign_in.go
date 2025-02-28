@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/PhantomX7/dhamma/constants"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -13,32 +14,33 @@ import (
 )
 
 func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (res response.AuthResponse, err error) {
-	userM := entity.User{}
+	user := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
 
-	userM, err = u.userRepo.FindByUsername(request.Username, ctx)
+	user, err = u.userRepo.FindByUsername(request.Username, ctx)
 	if err != nil {
 		err = errors.New("invalid username or password")
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(userM.Password), []byte(request.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
 		err = errors.New("invalid username or password")
 		return
 	}
 
-	role := "admin"
-	if userM.IsSuperAdmin {
-		role = "root"
+	role := constants.EnumRoleAdmin
+	if user.IsSuperAdmin {
+		role = constants.EnumRoleRoot
 	}
-	accessToken, err := u.GenerateAccessToken(userM.ID, role)
+
+	accessToken, err := u.GenerateAccessToken(user.ID, role)
 	if err != nil {
 		return
 	}
 
-	refreshTokenM, err := u.GenerateRefreshToken(userM.ID, nil)
+	refreshTokenM, err := u.GenerateRefreshToken(user.ID, nil)
 	if err != nil {
 		return
 	}

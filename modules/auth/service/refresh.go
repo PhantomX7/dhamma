@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/PhantomX7/dhamma/config"
+	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
@@ -37,14 +38,14 @@ func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (
 		return
 	}
 
-	userM, err := u.userRepo.FindByID(refreshTokenM.UserID, ctx)
+	user, err := u.userRepo.FindByID(refreshTokenM.UserID, ctx)
 	if err != nil {
 		return
 	}
 
-	role := "admin"
-	if userM.IsSuperAdmin {
-		role = "root"
+	role := constants.EnumRoleAdmin
+	if user.IsSuperAdmin {
+		role = constants.EnumRoleRoot
 	}
 
 	accessToken, err := u.GenerateAccessToken(refreshTokenM.UserID, role)
