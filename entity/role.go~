@@ -8,5 +8,5 @@ type Role struct {
 	DomainID    uint64 `json:"domain_id" gorm:"index:idx_domain_role_name,unique,priority:1"`
 	Timestamp
 
-	Domain Domain `json:"domain" gorm:"foreignKey:DomainID"`
+	Domain Domain `gorm:"foreignKey:DomainID"`
 }

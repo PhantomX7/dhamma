@@ -9,7 +9,7 @@ type Domain struct {
 	Timestamp
 
 	// Has-Many relationship with Role
-	Roles []Role `json:"roles" gorm:"foreignKey:DomainID"`
+	Roles []Role `gorm:"foreignKey:DomainID"`
 	// Many-to-Many with User through UserDomain
-	Users []User `json:"users" gorm:"many2many:user_domains;"`
+	Users []User `gorm:"many2many:user_domains;"`
 }

@@ -9,7 +9,7 @@ type UserRole struct {
 	RoleID   uint64 `json:"role_id" gorm:"index:idx_user_domain_role"`
 	Timestamp
 
-	User   User   `json:"user" gorm:"foreignKey:UserID"`
-	Domain Domain `json:"domain" gorm:"foreignKey:DomainID"`
-	Role   Role   `json:"role" gorm:"foreignKey:RoleID"`
+	User   User   `gorm:"foreignKey:UserID" json:"user"`
+	Domain Domain `gorm:"foreignKey:DomainID" json:"domain"`
+	Role   Role   `gorm:"foreignKey:RoleID" json:"role"`
 }

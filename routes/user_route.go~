@@ -11,8 +11,6 @@ func User(route *gin.Engine, middleware *middleware.Middleware, userController u
 	{
 		routes.GET("", userController.Index)
 		routes.GET("/:id", userController.Show)
-
-		// root only routes
 		routes.POST("/:id/assign-domain", middleware.IsRoot(), userController.AssignDomain)
 	}
 }

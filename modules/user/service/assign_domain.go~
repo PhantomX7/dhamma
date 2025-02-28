@@ -1,0 +1,20 @@
+package service
+
+import (
+	"context"
+	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/modules/user/dto/request"
+)
+
+func (s *service) AssignDomain(userID uint64, request request.AssignDomainRequest, ctx context.Context) (err error) {
+	hasDomain, err := s.userDomainRepo.HasDomain(userID, request.DomainID, ctx)
+	if err != nil {
+		return entity.User{}, err
+	}
+	user, err = s.userRepo.FindByID(userID, ctx)
+	if err != nil {
+		return
+	}
+
+	return
+}

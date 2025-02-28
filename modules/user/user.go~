@@ -32,5 +32,4 @@ type Service interface {
 type Controller interface {
 	Index(ctx *gin.Context)
 	Show(ctx *gin.Context)
-	AssignDomain(ctx *gin.Context)
 }
