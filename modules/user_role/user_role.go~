@@ -1,5 +1,0 @@
-package user_role
-
-type Repository interface {
-	AssignRole(userID, domainID, roleID uint64) error
-}

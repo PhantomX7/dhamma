@@ -7,6 +7,7 @@ import (
 	refreshTokenRepo "github.com/PhantomX7/dhamma/modules/refresh_token/repository"
 	roleRepo "github.com/PhantomX7/dhamma/modules/role/repository"
 	userRepo "github.com/PhantomX7/dhamma/modules/user/repository"
+	userDomainRepo "github.com/PhantomX7/dhamma/modules/user_domain/repository"
 	userRoleRepo "github.com/PhantomX7/dhamma/modules/user_role/repository"
 )
 
@@ -16,6 +17,7 @@ var RepositoryModule = fx.Options(
 		refreshTokenRepo.New,
 		roleRepo.New,
 		userRepo.New,
+		userDomainRepo.New,
 		userRoleRepo.New,
 	),
 )

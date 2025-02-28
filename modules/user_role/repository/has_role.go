@@ -13,7 +13,7 @@ func (r *repository) HasRole(userID, domainID, roleID uint64, ctx context.Contex
 		Where("user_id = ? AND domain_id = ? AND role_id = ?", userID, domainID, roleID).
 		Count(&count).Error
 	if err != nil {
-		return false, errors.New("error remove role")
+		return false, errors.New("error check has role")
 	}
 
 	return count > 0, nil

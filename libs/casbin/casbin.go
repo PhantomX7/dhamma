@@ -44,7 +44,11 @@ func New(db *gorm.DB) Client {
 	}
 
 	// Load the policy from DB
-	enforcer.LoadPolicy()
+	err = enforcer.LoadPolicy()
+	if err != nil {
+		panic(fmt.Sprintf("failed to load policy from DB: %v", err))
+		return nil
+	}
 
 	return &client{
 		enforcer: enforcer,

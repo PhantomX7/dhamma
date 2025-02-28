@@ -2,9 +2,17 @@ package user_role
 
 import (
 	"context"
+	"github.com/PhantomX7/dhamma/entity"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	AssignRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) error
+	AssignMultipleRole(userID uint64, roleAssignments []struct {
+		DomainID uint64
+		RoleID   uint64
+	}, tx *gorm.DB, ctx context.Context) error
+	GetUserRoleDetailByUserID(userID uint64, ctx context.Context) ([]entity.UserRole, error)
+	HasRole(userID, domainID, roleID uint64, ctx context.Context) (bool, error)
+	RemoveRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) error
 }
