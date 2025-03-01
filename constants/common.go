@@ -7,7 +7,8 @@ const (
 	EnumRunProduction = "production"
 	ENUM_RUN_TESTING  = "testing"
 
-	EnumJwtKeyUserId     = "user_id"
-	EnumJwtKeyRole       = "role"
-	EnumJwtKeyDomainCode = "domain_code"
+	EnumJwtKeyUserId = "user_id"
+	EnumJwtKeyRole   = "role"
+
+	EnumContextKeyDomainID = "domain_id"
 )

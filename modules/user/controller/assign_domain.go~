@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/PhantomX7/dhamma/modules/user/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
@@ -18,11 +19,20 @@ func (c *controller) AssignDomain(ctx *gin.Context) {
 		return
 	}
 
-	err := c.userService.AssignDomain(utility.GetIDFromContext(ctx), req, ctx.Request.Context())
+	userID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			utility.BuildResponseFailed("failed to get user", err.Error()),
+		)
+		return
+	}
+
+	err := c.userService.AssignDomain(userID, req, ctx.Request.Context())
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to get all user", err.Error()),
+			utility.BuildResponseFailed("failed to assign domain to user", err.Error()),
 		)
 		return
 	}

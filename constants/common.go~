@@ -9,5 +9,6 @@ const (
 
 	EnumJwtKeyUserId     = "user_id"
 	EnumJwtKeyRole       = "role"
-	EnumJwtKeyDomainCode = "role"
+
+	EnumContextKeyDomainID = "domain_id"
 )

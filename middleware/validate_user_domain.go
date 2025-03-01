@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -46,6 +47,9 @@ func (m *Middleware) ValidateUserDomain() gin.HandlerFunc {
 			})
 			return
 		}
+
+		// Set user domain in context
+		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), constants.EnumContextKeyDomainID, domain.ID))
 
 		c.Next()
 	}

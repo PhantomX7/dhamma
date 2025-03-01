@@ -19,7 +19,7 @@ func GetDomainIDFromContext(context context.Context) (haveDomain bool, domainID 
 	if domainID == 0 {
 		return
 	}
-	
+
 	haveDomain = true
 	return
 }

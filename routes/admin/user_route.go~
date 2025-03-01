@@ -1,4 +1,4 @@
-package routes
+package admin
 
 import (
 	"github.com/PhantomX7/dhamma/middleware"
@@ -7,12 +7,10 @@ import (
 )
 
 func User(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
-	routes := route.Group("api/user", middleware.AuthHandle())
+	routes := route.Group("api/user", middleware.AuthHandle(), middleware.IsRoot())
 	{
 		routes.GET("", userController.Index)
 		routes.GET("/:id", userController.Show)
-
-		// root only routes
-		routes.POST("/:id/assign-domain", middleware.IsRoot(), userController.AssignDomain)
+		routes.POST("/:id/assign-domain", userController.AssignDomain)
 	}
 }

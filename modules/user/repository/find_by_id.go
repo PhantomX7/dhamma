@@ -10,7 +10,7 @@ import (
 
 func (r *repository) FindByID(userID uint64, preloadRelations bool, ctx context.Context) (userM entity.User, err error) {
 
-	var preloadScope func(*gorm.DB) *gorm.DB
+	var preloadScope = func(db *gorm.DB) *gorm.DB { return db }
 	if preloadRelations {
 		preloadScope = func(db *gorm.DB) *gorm.DB {
 			return db.

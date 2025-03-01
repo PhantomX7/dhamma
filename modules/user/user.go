@@ -26,11 +26,13 @@ type Repository interface {
 type Service interface {
 	Index(pg *pagination.Pagination, ctx context.Context) ([]entity.User, utility.PaginationMeta, error)
 	Show(userID uint64, ctx context.Context) (entity.User, error)
+	Create(request request.UserCreateRequest, ctx context.Context) (entity.User, error)
 	AssignDomain(userID uint64, request request.AssignDomainRequest, ctx context.Context) error
 }
 
 type Controller interface {
 	Index(ctx *gin.Context)
 	Show(ctx *gin.Context)
+	Create(ctx *gin.Context)
 	AssignDomain(ctx *gin.Context)
 }

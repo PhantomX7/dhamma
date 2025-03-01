@@ -12,7 +12,12 @@ func (r *repository) FindByID(userID uint64, preloadRelations bool, ctx context.
 
 	var preloadScope func(*gorm.DB) *gorm.DB
 	if preloadRelations {
-
+		preloadScope = func(db *gorm.DB) *gorm.DB {
+			return db.
+				Preload("Domains").
+				Preload("UserRoles.Role").
+				Preload("UserRoles.Domain")
+		}
 	}
 	err = r.db.WithContext(ctx).
 		Scopes(preloadScope).

@@ -1,16 +1,17 @@
 package middleware
 
 import (
+	"context"
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
-	"strconv"
 )
 
 func (m *Middleware) ValidateUserDomain() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get role from context
-		userID, exists := c.Get(constants.EnumJwtKeyUserId)
+		id, exists := c.Get(constants.EnumJwtKeyUserId)
 		if !exists {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "you are not allowed to access this resource",
@@ -19,7 +20,7 @@ func (m *Middleware) ValidateUserDomain() gin.HandlerFunc {
 		}
 
 		// Type assertion
-		roleStr, ok := userID.(uint64)
+		userID, ok := id.(uint64)
 		if !ok {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "role is not in correct format",
@@ -36,13 +37,20 @@ func (m *Middleware) ValidateUserDomain() gin.HandlerFunc {
 			return
 		}
 
-		// Check if role matches
-		if roleStr != constants.EnumRoleRoot {
+		hasDomain, err := m.userDomainRepo.HasDomain(userID, domain.ID, c)
+		if err != nil {
+			return
+		}
+
+		if !hasDomain {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"error": "insufficient permissions",
 			})
 			return
 		}
+
+		// Set user domain in context
+		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), constants.EnumContextKeyDomainID, domain.ID))
 
 		c.Next()
 	}

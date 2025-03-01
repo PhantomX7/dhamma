@@ -7,10 +7,11 @@ import (
 )
 
 func User(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
-	routes := route.Group(":domain_code/user", middleware.AuthHandle(), middleware.IsRoot())
+	routes := route.Group(":domain_code/user", middleware.AuthHandle(), middleware.ValidateUserDomain())
 	{
 		routes.GET("", userController.Index)
 		routes.GET("/:id", userController.Show)
-		routes.POST("/:id/assign-domain", userController.AssignDomain)
+		routes.POST("", userController.Create)
+
 	}
 }

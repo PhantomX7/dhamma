@@ -2,6 +2,10 @@ package request
 
 import "github.com/PhantomX7/dhamma/utility/pagination"
 
+type UserCreateRequest struct {
+	Username string `form:"username" json:"username" binding:"required,unique=users.username"`
+	Password string `form:"password" json:"password" binding:"required"`
+}
 type AssignDomainRequest struct {
 	DomainID uint64 `json:"domain_id" form:"domain_id" binding:"required,exist=domains.id"`
 }
@@ -13,6 +17,13 @@ func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 			Type:  pagination.FilterTypeID,
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorIn, pagination.OperatorEquals,
+			},
+		}).
+		AddFilter("username", pagination.FilterConfig{
+			Field: "username",
+			Type:  pagination.FilterTypeString,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
 			},
 		}).
 		AddFilter("created_at", pagination.FilterConfig{

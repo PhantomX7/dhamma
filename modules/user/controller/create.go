@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	
-	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
+
+	"github.com/PhantomX7/dhamma/modules/user/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
 )
 
 func (c *controller) Create(ctx *gin.Context) {
-	var req request.DomainCreateRequest
+	var req request.UserCreateRequest
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -18,11 +18,11 @@ func (c *controller) Create(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.domainService.Create(req, ctx.Request.Context())
+	res, err := c.userService.Create(req, ctx.Request.Context())
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to create domain", err.Error()),
+			utility.BuildResponseFailed("failed to create user", err.Error()),
 		)
 		return
 	}

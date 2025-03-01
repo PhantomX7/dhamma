@@ -11,6 +11,7 @@ func User(route *gin.Engine, middleware *middleware.Middleware, userController u
 	{
 		routes.GET("", userController.Index)
 		routes.GET("/:id", userController.Show)
+		routes.POST("", userController.Create)
 		routes.POST("/:id/assign-domain", userController.AssignDomain)
 	}
 }
