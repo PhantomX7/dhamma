@@ -38,7 +38,7 @@ func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (
 		return
 	}
 
-	user, err := u.userRepo.FindByID(refreshTokenM.UserID, ctx)
+	user, err := u.userRepo.FindByID(refreshTokenM.UserID, false, ctx)
 	if err != nil {
 		return
 	}

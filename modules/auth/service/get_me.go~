@@ -6,7 +6,7 @@ import (
 )
 
 func (u *service) GetMe(userID uint64, ctx context.Context) (res response.MeResponse, err error) {
-	userM, err := u.userRepo.FindByID(userID, true, ctx)
+	userM, err := u.userRepo.FindByID(userID,true, ctx)
 	if err != nil {
 		return
 	}

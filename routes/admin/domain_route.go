@@ -1,4 +1,4 @@
-package routes
+package admin
 
 import (
 	"github.com/PhantomX7/dhamma/middleware"

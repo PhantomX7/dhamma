@@ -15,7 +15,7 @@ type Repository interface {
 	Update(domain *entity.Domain, tx *gorm.DB, ctx context.Context) error
 	FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.Domain, error)
 	FindByID(domainID uint64, ctx context.Context) (entity.Domain, error)
-	FindByCode(code string, ctx context.Context) (entity.Domain, error)
+	FindByCode(Code string, ctx context.Context) (entity.Domain, error)
 	GetDomainRoles(domainID uint64, ctx context.Context) (entity.Domain, error)
 	Count(pg *pagination.Pagination, ctx context.Context) (int64, error)
 }

@@ -8,7 +8,7 @@ import (
 
 // Show implements user.Service.
 func (s *service) Show(userID uint64, ctx context.Context) (user entity.User, err error) {
-	user, err = s.userRepo.FindByID(userID, ctx)
+	user, err = s.userRepo.FindByID(userID, true, ctx)
 	if err != nil {
 		return
 	}

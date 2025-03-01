@@ -14,7 +14,7 @@ func (u *service) UpdatePassword(
 	request request.UpdatePasswordRequest,
 	ctx context.Context,
 ) (err error) {
-	userM, err := u.userRepo.FindByID(userID, ctx)
+	userM, err := u.userRepo.FindByID(userID, false, ctx)
 	if err != nil {
 		return
 	}

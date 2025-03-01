@@ -16,7 +16,7 @@ type Repository interface {
 	Create(user *entity.User, tx *gorm.DB, ctx context.Context) error
 	Update(user *entity.User, tx *gorm.DB, ctx context.Context) error
 	FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.User, error)
-	FindByID(userID uint64, ctx context.Context) (entity.User, error)
+	FindByID(userID uint64, preloadRelations bool, ctx context.Context) (entity.User, error)
 	FindByUsername(username string, ctx context.Context) (entity.User, error)
 	FindByIDWithRelation(userID uint64, ctx context.Context) (entity.User, error)
 	GetUserDomains(userID uint64, ctx context.Context) (entity.User, error)
