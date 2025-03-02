@@ -4,13 +4,13 @@ import "github.com/PhantomX7/dhamma/utility/pagination"
 
 type RoleCreateRequest struct {
 	DomainID    uint64 `json:"domain_id" form:"domain_id" binding:"required,exist=domains.id"`
-	Name        string `json:"name" form:"name" binding:"required,unique=roles.name"`
+	Name        string `json:"name" form:"name" binding:"required"`
 	Description string `json:"description" form:"description"`
 	IsActive    *bool  `json:"is_active" form:"is_active" binding:"required"`
 }
 
 type RoleUpdateRequest struct {
-	Name        *string `json:"name" form:"name" binding:"unique=roles.name"`
+	Name        *string `json:"name" form:"name"`
 	Description *string `json:"description" form:"description"`
 	IsActive    *bool   `json:"is_active" form:"is_active"`
 }

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
 )
@@ -16,7 +16,7 @@ func (r *repository) FindByNameAndDomainID(
 		Where("name = ? AND domain_id = ?", name, domainID).
 		Take(&roleM).Error
 	if err != nil {
-		err = errors.New("error find role by name and domain id")
+		err = utility.LogError("error find role by name and domain id", err)
 		return
 	}
 

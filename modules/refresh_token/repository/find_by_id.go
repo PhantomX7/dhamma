@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 	"time"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -16,7 +16,7 @@ func (r *repository) FindByID(refreshTokenID string, ctx context.Context) (refre
 		).
 		Take(&refreshToken).Error
 	if err != nil {
-		err = errors.New("error find refresh token by id")
+		err = utility.LogError("error find refresh token by id", err)
 		return
 	}
 

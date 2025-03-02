@@ -2,12 +2,13 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
 )
+
 
 func (r *repository) Update(refreshToken *entity.RefreshToken, tx *gorm.DB, ctx context.Context) error {
 	// if tx is nil, use default db
@@ -17,7 +18,7 @@ func (r *repository) Update(refreshToken *entity.RefreshToken, tx *gorm.DB, ctx 
 
 	err := tx.WithContext(ctx).Save(refreshToken).Error
 	if err != nil {
-		return errors.New("error create refresh token")
+		return utility.LogError("error create refresh token", err)
 	}
 	return nil
 }

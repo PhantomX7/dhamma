@@ -17,7 +17,7 @@ type User struct {
 	// Many-to-Many with Domain through UserDomain
 	Domains []Domain `json:"domains" gorm:"many2many:user_domains;"`
 	// Has-Many with UserRole to handle multiple roles per domain
-	UserRoles []UserRole `json:"user_roles" gorm:"foreignKey:UserID"`
+	//UserRoles []UserRole `json:"user_roles" gorm:"foreignKey:UserID"`
 }
 
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {

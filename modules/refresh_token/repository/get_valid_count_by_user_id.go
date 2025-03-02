@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 	"time"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -15,7 +15,7 @@ func (r *repository) GetValidCountByUserID(userID uint64, ctx context.Context) (
 		Where("user_id = ? AND is_valid = ? AND expires_at > ?", userID, true, time.Now()).
 		Count(&count).Error
 	if err != nil {
-		err = errors.New("error count valid refresh token")
+		err = utility.LogError("error count valid refresh token", err)
 		return
 	}
 

@@ -12,7 +12,8 @@ type Repository interface {
 		DomainID uint64
 		RoleID   uint64
 	}, tx *gorm.DB, ctx context.Context) error
-	GetUserRoleDetailByUserID(userID uint64, ctx context.Context) ([]entity.UserRole, error)
+	FindByUserID(userID uint64, preloadRelations bool, ctx context.Context) ([]entity.UserRole, error)
+	FindByUserIDAndDomainID(userID uint64, domainID uint64, preloadRelations bool, ctx context.Context) ([]entity.UserRole, error)
 	HasRole(userID, domainID, roleID uint64, ctx context.Context) (bool, error)
 	RemoveRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) error
 }

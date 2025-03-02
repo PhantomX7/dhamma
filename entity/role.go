@@ -8,5 +8,5 @@ type Role struct {
 	IsActive    bool   `json:"is_active" gorm:"default:true"`
 	Timestamp
 
-	Domain Domain `json:"domain" gorm:"foreignKey:DomainID"`
+	Domain *Domain `json:"domain,omitempty" gorm:"foreignKey:DomainID"`
 }

@@ -22,7 +22,7 @@ func (r *repository) FindByIDWithRelation(userID uint64, ctx context.Context) (u
 		Preload("UserRoles.Domain").
 		Where("id = ?", userID).Take(&userM).Error
 	if err != nil {
-		err = errors.New("error find user by id")
+		err = errors.New("error find user by id with relation")
 		return
 	}
 

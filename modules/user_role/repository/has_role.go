@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
 func (r *repository) HasRole(userID, domainID, roleID uint64, ctx context.Context) (bool bool, err error) {
@@ -13,7 +13,7 @@ func (r *repository) HasRole(userID, domainID, roleID uint64, ctx context.Contex
 		Where("user_id = ? AND domain_id = ? AND role_id = ?", userID, domainID, roleID).
 		Count(&count).Error
 	if err != nil {
-		return false, errors.New("error check has role")
+		return false, utility.LogError("error check has role", err)
 	}
 
 	return count > 0, nil

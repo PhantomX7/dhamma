@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
 )
@@ -14,7 +14,7 @@ func (r *repository) HasDomain(userID, domainID uint64, ctx context.Context) (bo
 		Where("user_id = ? AND domain_id = ?", userID, domainID).
 		Count(&count).Error
 	if err != nil {
-		return false, errors.New("error check has domain")
+		return false, utility.LogError("error check has domain", err)
 	}
 
 	return count > 0, nil

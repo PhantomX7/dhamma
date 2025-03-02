@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"gorm.io/gorm"
 
@@ -17,7 +17,7 @@ func (r *repository) Delete(refreshToken *entity.RefreshToken, tx *gorm.DB, ctx 
 
 	err := tx.WithContext(ctx).Delete(refreshToken).Error
 	if err != nil {
-		return errors.New("error delete refresh token")
+		return utility.LogError("error delete refresh token", err)
 	}
 	return nil
 }

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -22,7 +22,7 @@ func (r *repository) AssignDomain(userID, domainID uint64, tx *gorm.DB, ctx cont
 	err = tx.WithContext(ctx).
 		Create(&userDomain).Error
 	if err != nil {
-		return errors.New("error assign domain")
+		return utility.LogError("error assign domain", err)
 	}
 
 	return

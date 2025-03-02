@@ -14,7 +14,7 @@ func (r *repository) GetDomainRoles(domainID uint64, ctx context.Context) (domai
 		Where("id = ?", domainID).
 		Take(&domainM).Error
 	if err != nil {
-		err = errors.New("error find domain by id")
+		err = errors.New("error get domain roles")
 		return
 	}
 

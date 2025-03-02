@@ -20,7 +20,7 @@ func (r *repository) RemoveRole(userID, domainID, roleID uint64, tx *gorm.DB, ct
 			userID, domainID, roleID,
 		).Delete(&entity.UserRole{}).Error
 	if err != nil {
-		return errors.New("error assign role")
+		return errors.New("error remove role")
 	}
 
 	return

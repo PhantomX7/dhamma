@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 	"time"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -14,7 +14,7 @@ func (r *repository) DeleteInvalidToken(ctx context.Context) (err error) {
 		Where("expires_at < ? OR is_valid = ?", time.Now(), false).
 		Delete(&entity.RefreshToken{}).Error
 	if err != nil {
-		err = errors.New("error count valid refresh token")
+		err = utility.LogError("error count valid refresh token", err)
 		return
 	}
 

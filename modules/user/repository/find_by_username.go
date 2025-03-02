@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
 )
@@ -18,7 +18,7 @@ func (r *repository) FindByUsername(username string, ctx context.Context) (userM
 		Where("username = ?", username).
 		First(&userM).Error
 	if err != nil {
-		err = errors.New("error find user by username")
+		err = utility.LogError("error find user by username", err)
 		return
 	}
 

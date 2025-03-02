@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"gorm.io/gorm"
 
@@ -17,7 +17,7 @@ func (r *repository) Create(user *entity.User, tx *gorm.DB, ctx context.Context)
 
 	err := tx.WithContext(ctx).Create(user).Error
 	if err != nil {
-		return errors.New("error create user")
+		return utility.LogError("error create user", err)
 	}
 	return nil
 }
