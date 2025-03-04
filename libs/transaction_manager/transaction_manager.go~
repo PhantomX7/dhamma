@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type Client interface {
 	NewTransaction() *gorm.DB
-	ExecuteInTransaction(fn TransactionFunc) error
 }
 
 type client struct {

@@ -13,7 +13,11 @@ import (
 func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	users []entity.User, meta utility.PaginationMeta, err error,
 ) {
-	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
+	if err != nil {
+		return
+	}
 
 	pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
 		return db.Joins("JOIN user_domains ud ON ud.user_id = users.id").
@@ -21,9 +25,9 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	})
 
 	// only query specific domain
-	if haveDomain {
+	if contextValues.DomainID != nil {
 		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-			return db.Where("ud.domain_id = ?", domainID)
+			return db.Where("ud.domain_id = ?", *contextValues.DomainID)
 		})
 	}
 
@@ -33,14 +37,14 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	}
 
 	// only show specific domain if user have domain context
-	if haveDomain {
-		for i := range users {
-			var domain entity.Domain
-			domain, err = s.domainRepo.FindByID(ctx, domainID)
-			if err != nil {
-				return
-			}
+	if contextValues.DomainID != nil {
+		var domain entity.Domain
+		domain, err = s.domainRepo.FindByID(ctx, *contextValues.DomainID)
+		if err != nil {
+			return
+		}
 
+		for i := range users {
 			users[i].Domains = []entity.Domain{domain}
 		}
 	}

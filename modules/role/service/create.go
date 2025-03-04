@@ -12,11 +12,15 @@ import (
 )
 
 func (s *service) Create(ctx context.Context, request request.RoleCreateRequest) (role entity.Role, err error) {
-	hasDomain, domainID := utility.GetDomainIDFromContext(ctx)
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
+	if err != nil {
+		return
+	}
 
-	if hasDomain {
-		if request.DomainID != domainID {
-			return entity.Role{}, utility.LogError("you are not allowed to create role for another domain", nil)
+	if contextValues.DomainID != nil {
+		if request.DomainID != *contextValues.DomainID {
+			return entity.Role{}, errors.New("you are not allowed to create role for another domain")
 		}
 	}
 

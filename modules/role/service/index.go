@@ -13,12 +13,16 @@ import (
 func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	roles []entity.Role, meta utility.PaginationMeta, err error,
 ) {
-	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
+	if err != nil {
+		return
+	}
 
 	// only query specific domain
-	if haveDomain {
+	if contextValues.DomainID != nil {
 		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-			return db.Where("domain_id = ?", domainID)
+			return db.Where("domain_id = ?", *contextValues.DomainID)
 		})
 	}
 

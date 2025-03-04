@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/PhantomX7/dhamma/utility"
 	"github.com/jinzhu/copier"
 
@@ -10,16 +11,20 @@ import (
 )
 
 func (s *service) Update(ctx context.Context, roleID uint64, request request.RoleUpdateRequest) (role entity.Role, err error) {
-	hasDomain, domainID := utility.GetDomainIDFromContext(ctx)
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
+	if err != nil {
+		return
+	}
 
 	role, err = s.roleRepo.FindByID(ctx, roleID)
 	if err != nil {
 		return
 	}
 
-	if hasDomain {
-		if role.DomainID != domainID {
-			return entity.Role{}, utility.LogError("you are not allowed to create role for another domain", nil)
+	if contextValues.DomainID != nil {
+		if role.DomainID != *contextValues.DomainID {
+			return entity.Role{}, errors.New("you are not allowed to create role for another domain")
 		}
 	}
 

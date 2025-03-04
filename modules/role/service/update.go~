@@ -10,15 +10,19 @@ import (
 )
 
 func (s *service) Update(ctx context.Context, roleID uint64, request request.RoleUpdateRequest) (role entity.Role, err error) {
-	hasDomain, domainID := utility.GetDomainIDFromContext(ctx)
-
-	role, err = s.roleRepo.FindByID(roleID, ctx)
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
 	if err != nil {
 		return
 	}
 
-	if hasDomain {
-		if role.DomainID != domainID {
+	role, err = s.roleRepo.FindByID(ctx, roleID)
+	if err != nil {
+		return
+	}
+
+	if contextValues.DomainID != nil {
+		if role.DomainID != *contextValues.DomainID {
 			return entity.Role{}, utility.LogError("you are not allowed to create role for another domain", nil)
 		}
 	}
@@ -28,7 +32,7 @@ func (s *service) Update(ctx context.Context, roleID uint64, request request.Rol
 		return
 	}
 
-	err = s.roleRepo.Update(&role, nil, ctx)
+	err = s.roleRepo.Update(ctx, &role, nil)
 	if err != nil {
 		return
 	}

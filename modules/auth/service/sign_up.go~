@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/PhantomX7/dhamma/constants"
+	"gorm.io/gorm"
 	"strings"
 
 	"github.com/jinzhu/copier"
@@ -28,32 +29,33 @@ func (u *service) SignUp(ctx context.Context, request request.SignUpRequest) (re
 	}
 	user.Password = string(password)
 
-	tx := u.transactionManager.NewTransaction()
+	var accessToken, refreshToken string
+	err = u.transactionManager.ExecuteInTransaction(func(tx *gorm.DB) error {
+		err = u.userRepo.Create(ctx, &user, tx)
+		if err != nil {
+			return err
+		}
 
-	err = u.userRepo.Create(&user, tx, ctx)
+		role := constants.EnumRoleAdmin
+		if user.IsSuperAdmin {
+			role = constants.EnumRoleRoot
+		}
+
+		accessToken, err = u.GenerateAccessToken(user.ID, role)
+		if err != nil {
+			return err
+		}
+
+		refreshToken, err = u.GenerateRefreshToken(user.ID, nil)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
-		tx.Rollback()
 		return
 	}
-
-	role := constants.EnumRoleAdmin
-	if user.IsSuperAdmin {
-		role = constants.EnumRoleRoot
-	}
-
-	accessToken, err := u.GenerateAccessToken(user.ID, role)
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
-	refreshToken, err := u.GenerateRefreshToken(user.ID, nil)
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
-	tx.Commit()
 
 	res = response.AuthResponse{
 		AccessToken:  accessToken,

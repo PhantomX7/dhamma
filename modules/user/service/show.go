@@ -3,23 +3,27 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
 // Show implements user.Service.
 func (s *service) Show(ctx context.Context, userID uint64) (user entity.User, err error) {
-	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
+	if err != nil {
+		return
+	}
 
 	user, err = s.userRepo.FindByID(ctx, userID, true)
 	if err != nil {
 		return
 	}
 
-	if haveDomain {
+	if contextValues.DomainID != nil {
 		var validDomain bool
-		validDomain, err = s.userDomainRepo.HasDomain(ctx, userID, domainID)
+		validDomain, err = s.userDomainRepo.HasDomain(ctx, userID, *contextValues.DomainID)
 		if err != nil {
 			return
 		}
@@ -30,14 +34,14 @@ func (s *service) Show(ctx context.Context, userID uint64) (user entity.User, er
 		}
 
 		var userRoles []entity.UserRole
-		userRoles, err = s.userRoleRepo.FindByUserIDAndDomainID(ctx, userID, domainID, true)
+		userRoles, err = s.userRoleRepo.FindByUserIDAndDomainID(ctx, userID, *contextValues.DomainID, true)
 		if err != nil {
 			return
 		}
 		user.UserRoles = userRoles
 
 		var domain entity.Domain
-		domain, err = s.domainRepo.FindByID(ctx, domainID)
+		domain, err = s.domainRepo.FindByID(ctx, *contextValues.DomainID)
 		if err != nil {
 			return
 		}

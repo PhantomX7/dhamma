@@ -8,15 +8,19 @@ import (
 )
 
 // Show implements role.Service
-func (s *service) Show(roleID uint64, ctx context.Context) (role entity.Role, err error) {
-	hasDomain, domainID := utility.GetDomainIDFromContext(ctx)
-
-	role, err = s.roleRepo.FindByID(roleID, ctx)
+func (s *service) Show(ctx context.Context, roleID uint64) (role entity.Role, err error) {
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
 	if err != nil {
 		return
 	}
 
-	if hasDomain {
+	role, err = s.roleRepo.FindByID(ctx, roleID)
+	if err != nil {
+		return
+	}
+
+	if contextValues.DomainID != nil {
 		if role.DomainID != domainID {
 			return entity.Role{}, utility.LogError("you are not allowed to create role for another domain", nil)
 		}

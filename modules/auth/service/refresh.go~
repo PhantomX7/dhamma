@@ -9,6 +9,7 @@ import (
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 	"github.com/golang-jwt/jwt/v4"
+	"gorm.io/gorm"
 )
 
 func (u *service) Refresh(ctx context.Context, request request.RefreshRequest) (res response.AuthResponse, err error) {
@@ -56,21 +57,23 @@ func (u *service) Refresh(ctx context.Context, request request.RefreshRequest) (
 	//invalidate current refresh token
 	refreshTokenM.IsValid = false
 
-	tx := u.transactionManager.NewTransaction()
+	var refreshToken string
+	tx := u.transactionManager.ExecuteInTransaction(func(tx *gorm.DB) error {
 
-	err = u.refreshTokenRepo.Update(&refreshTokenM, tx, ctx)
-	if err != nil {
-		tx.Rollback()
-		return
-	}
+		err = u.refreshTokenRepo.Update(ctx, &refreshTokenM, tx)
+		if err != nil {
+			return err
+		}
 
-	refreshToken, err := u.GenerateRefreshToken(refreshTokenM.UserID, tx)
-	if err != nil {
-		tx.Rollback()
-		return
-	}
+		refreshToken, err = u.GenerateRefreshToken(refreshTokenM.UserID, tx)
+		if err != nil {
+			return err
+		}
 
-	tx.Commit()
+		res.RefreshToken = refreshToken
+
+		return nil
+	})
 
 	res = response.AuthResponse{
 		AccessToken:  accessToken,
