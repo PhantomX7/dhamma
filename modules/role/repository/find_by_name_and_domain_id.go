@@ -8,7 +8,7 @@ import (
 )
 
 func (r *repository) FindByNameAndDomainID(
-	name string, domainID uint64, ctx context.Context,
+	ctx context.Context, name string, domainID uint64,
 ) (roleM entity.Role, err error) {
 
 	err = r.db.WithContext(ctx).

@@ -7,7 +7,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) HasDomain(userID, domainID uint64, ctx context.Context) (bool bool, err error) {
+func (r *repository) HasDomain(ctx context.Context, userID, domainID uint64) (bool bool, err error) {
 	var count int64
 	err = r.db.WithContext(ctx).
 		Model(&entity.UserDomain{}).

@@ -7,13 +7,13 @@ import (
 )
 
 type Repository interface {
-	AssignRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) error
-	AssignMultipleRole(userID uint64, roleAssignments []struct {
+	AssignRole(ctx context.Context, userID, domainID, roleID uint64, tx *gorm.DB) error
+	AssignMultipleRole(ctx context.Context, userID uint64, roleAssignments []struct {
 		DomainID uint64
 		RoleID   uint64
-	}, tx *gorm.DB, ctx context.Context) error
-	FindByUserID(userID uint64, preloadRelations bool, ctx context.Context) ([]entity.UserRole, error)
-	FindByUserIDAndDomainID(userID uint64, domainID uint64, preloadRelations bool, ctx context.Context) ([]entity.UserRole, error)
-	HasRole(userID, domainID, roleID uint64, ctx context.Context) (bool, error)
-	RemoveRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) error
+	}, tx *gorm.DB) error
+	FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) ([]entity.UserRole, error)
+	FindByUserIDAndDomainID(ctx context.Context, userID uint64, domainID uint64, preloadRelations bool) ([]entity.UserRole, error)
+	HasRole(ctx context.Context, userID, domainID, roleID uint64) (bool, error)
+	RemoveRole(ctx context.Context, userID, domainID, roleID uint64, tx *gorm.DB) error
 }

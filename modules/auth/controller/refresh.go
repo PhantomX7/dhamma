@@ -18,7 +18,7 @@ func (c *controller) Refresh(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.authService.Refresh(req, ctx.Request.Context())
+	res, err := c.authService.Refresh(ctx.Request.Context(), req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

@@ -3,12 +3,12 @@ package repository
 import (
 	"context"
 	"gorm.io/gorm"
-
+	
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utility"
 )
 
-func (r *repository) FindByUserID(userID uint64, preloadRelations bool, ctx context.Context) (userDomains []entity.UserDomain, err error) {
+func (r *repository) FindByUserID(ctx context.Context,userID uint64, preloadRelations bool) (userDomains []entity.UserDomain, err error) {
 	var preloadScope = func(db *gorm.DB) *gorm.DB { return db }
 	if preloadRelations {
 		preloadScope = func(db *gorm.DB) *gorm.DB {

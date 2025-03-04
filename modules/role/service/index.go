@@ -10,7 +10,7 @@ import (
 )
 
 // Index implements role.Service.
-func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
+func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	roles []entity.Role, meta utility.PaginationMeta, err error,
 ) {
 	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
@@ -22,12 +22,12 @@ func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 		})
 	}
 
-	roles, err = s.roleRepo.FindAll(pg, ctx)
+	roles, err = s.roleRepo.FindAll(ctx, pg)
 	if err != nil {
 		return
 	}
 
-	count, err := s.roleRepo.Count(pg, ctx)
+	count, err := s.roleRepo.Count(ctx, pg)
 	if err != nil {
 		return
 	}

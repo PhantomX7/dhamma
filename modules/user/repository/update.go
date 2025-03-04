@@ -9,7 +9,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) Update(user *entity.User, tx *gorm.DB, ctx context.Context) error {
+func (r *repository) Update(ctx context.Context, user *entity.User, tx *gorm.DB) error {
 	// if tx is nil, use default db
 	if tx == nil {
 		tx = r.db

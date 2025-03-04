@@ -6,7 +6,7 @@ import (
 	"github.com/PhantomX7/dhamma/utility"
 )
 
-func (r *repository) HasRole(userID, domainID, roleID uint64, ctx context.Context) (bool bool, err error) {
+func (r *repository) HasRole(ctx context.Context, userID, domainID, roleID uint64) (bool bool, err error) {
 	var count int64
 	err = r.db.WithContext(ctx).
 		Model(&entity.UserRole{}).

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"gorm.io/gorm"
 
@@ -17,7 +17,7 @@ func (r *repository) Update(role *entity.Role, tx *gorm.DB, ctx context.Context)
 
 	err := tx.WithContext(ctx).Save(role).Error
 	if err != nil {
-		return errors.New("error update role")
+		return utility.LogError("error update role", err)
 	}
 	return nil
 }

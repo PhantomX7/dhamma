@@ -8,8 +8,8 @@ import (
 	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
 )
 
-func (s *service) Update(domainID uint64, request request.DomainUpdateRequest, ctx context.Context) (domain entity.Domain, err error) {
-	domain, err = s.domainRepo.FindByID(domainID, ctx)
+func (s *service) Update(ctx context.Context, domainID uint64, request request.DomainUpdateRequest) (domain entity.Domain, err error) {
+	domain, err = s.domainRepo.FindByID(ctx, domainID)
 	if err != nil {
 		return
 	}
@@ -19,7 +19,7 @@ func (s *service) Update(domainID uint64, request request.DomainUpdateRequest, c
 		return
 	}
 
-	err = s.domainRepo.Update(&domain, nil, ctx)
+	err = s.domainRepo.Update(ctx, &domain, nil)
 	if err != nil {
 		return
 	}

@@ -13,7 +13,7 @@ import (
 	"github.com/PhantomX7/dhamma/modules/user/dto/request"
 )
 
-func (u *service) Create(request request.UserCreateRequest, ctx context.Context) (user entity.User, err error) {
+func (u *service) Create(ctx context.Context, request request.UserCreateRequest) (user entity.User, err error) {
 	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
 
 	user = entity.User{
@@ -33,14 +33,14 @@ func (u *service) Create(request request.UserCreateRequest, ctx context.Context)
 
 	tx := u.transactionManager.NewTransaction()
 
-	err = u.userRepo.Create(&user, tx, ctx)
+	err = u.userRepo.Create(ctx, &user, tx)
 	if err != nil {
 		tx.Rollback()
 		return
 	}
 
 	if haveDomain {
-		err = u.userDomainRepo.AssignDomain(user.ID, domainID, tx, ctx)
+		err = u.userDomainRepo.AssignDomain(ctx, user.ID, domainID, tx)
 		if err != nil {
 			tx.Rollback()
 			return

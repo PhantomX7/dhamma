@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ func (r *repository) AssignRole(userID, domainID, roleID uint64, tx *gorm.DB, ct
 	err = tx.WithContext(ctx).
 		Create(&userRole).Error
 	if err != nil {
-		return errors.New("error assign role")
+		return utility.LogError("error assign role", err)
 	}
 
 	return

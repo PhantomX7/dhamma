@@ -7,7 +7,7 @@ import (
 )
 
 type Repository interface {
-	HasDomain(userID, domainID uint64, ctx context.Context) (bool, error)
-	AssignDomain(userID, domainID uint64, tx *gorm.DB, ctx context.Context) error
-	FindByUserID(userID uint64, preloadRelations bool, ctx context.Context) ([]entity.UserDomain, error)
+	HasDomain(ctx context.Context, userID, domainID uint64) (bool, error)
+	AssignDomain(ctx context.Context, userID, domainID uint64, tx *gorm.DB) error
+	FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) ([]entity.UserDomain, error)
 }

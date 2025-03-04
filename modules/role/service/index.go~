@@ -18,18 +18,16 @@ func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 	// only query specific domain
 	if haveDomain {
 		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-			return db.Preload("Domains", func(db *gorm.DB) *gorm.DB {
-				return db.Where("domains.id = ?", domainID)
-			})
+			return db.Where("domain_id = ?", domainID)
 		})
 	}
-	
-	roles, err = s.roleRepo.FindAll(pg, ctx)
+
+	roles, err = s.roleRepo.FindAll(ctx, pg)
 	if err != nil {
 		return
 	}
 
-	count, err := s.roleRepo.Count(pg, ctx)
+	count, err := s.roleRepo.Count(ctx, pg)
 	if err != nil {
 		return
 	}

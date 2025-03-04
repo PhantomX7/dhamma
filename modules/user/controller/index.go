@@ -10,7 +10,7 @@ import (
 )
 
 func (c *controller) Index(ctx *gin.Context) {
-	res, meta, err := c.userService.Index(request.NewUserPagination(ctx.Request.URL.Query()), ctx.Request.Context())
+	res, meta, err := c.userService.Index(ctx.Request.Context(), request.NewUserPagination(ctx.Request.URL.Query()))
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

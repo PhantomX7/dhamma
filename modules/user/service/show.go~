@@ -9,10 +9,10 @@ import (
 )
 
 // Show implements user.Service.
-func (s *service) Show(userID uint64, ctx context.Context) (user entity.User, err error) {
+func (s *service) Show(ctx context.Context, userID uint64) (user entity.User, err error) {
 	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
 
-	user, err = s.userRepo.FindByID(userID, true, ctx)
+	user, err = s.userRepo.FindByID(ctx, userID, true)
 	if err != nil {
 		return
 	}
@@ -36,7 +36,8 @@ func (s *service) Show(userID uint64, ctx context.Context) (user entity.User, er
 		}
 		user.UserRoles = userRoles
 
-		domain, err := s.domainRepo.FindByID(domainID, ctx)
+		var domain entity.Domain
+		domain, err = s.domainRepo.FindByID(ctx, domainID)
 		if err != nil {
 			return
 		}

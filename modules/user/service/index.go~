@@ -10,7 +10,7 @@ import (
 )
 
 // Index implements user.Service.
-func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
+func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	users []entity.User, meta utility.PaginationMeta, err error,
 ) {
 	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
@@ -32,6 +32,7 @@ func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 		return
 	}
 
+	// only show specific domain if user have domain context
 	if haveDomain {
 		for i := range users {
 			var domain entity.Domain

@@ -18,7 +18,7 @@ func (c *controller) Show(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.userService.Show(userID, ctx.Request.Context())
+	res, err := c.userService.Show(ctx.Request.Context(), userID)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

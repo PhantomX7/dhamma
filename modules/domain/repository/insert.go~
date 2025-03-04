@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"gorm.io/gorm"
 
@@ -17,7 +17,7 @@ func (r *repository) Create(domain *entity.Domain, tx *gorm.DB, ctx context.Cont
 
 	err := tx.WithContext(ctx).Create(domain).Error
 	if err != nil {
-		return errors.New("error create domain")
+		return utility.LogError("error create domain", err)
 	}
 	return nil
 }

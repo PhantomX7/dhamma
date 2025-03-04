@@ -14,7 +14,7 @@ import (
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 )
 
-func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (res response.AuthResponse, err error) {
+func (u *service) SignUp(ctx context.Context, request request.SignUpRequest) (res response.AuthResponse, err error) {
 	user := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
@@ -30,7 +30,7 @@ func (u *service) SignUp(request request.SignUpRequest, ctx context.Context) (re
 
 	tx := u.transactionManager.NewTransaction()
 
-	err = u.userRepo.Create(&user, tx, ctx)
+	err = u.userRepo.Create(ctx, &user, tx)
 	if err != nil {
 		tx.Rollback()
 		return

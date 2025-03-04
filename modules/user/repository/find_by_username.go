@@ -12,7 +12,7 @@ import (
 // It takes a username as a string and a context for database operations.
 // It returns a User and an error. If the error is not nil, it indicates that
 // the query failed. If the error is nil, the user is successfully retrieved.
-func (r *repository) FindByUsername(username string, ctx context.Context) (userM entity.User, err error) {
+func (r *repository) FindByUsername(ctx context.Context, username string) (userM entity.User, err error) {
 
 	err = r.db.WithContext(ctx).
 		Where("username = ?", username).

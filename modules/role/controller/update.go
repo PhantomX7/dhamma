@@ -28,7 +28,7 @@ func (c *controller) Update(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.roleService.Update(roleID, req, ctx.Request.Context())
+	res, err := c.roleService.Update(ctx.Request.Context(), roleID, req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

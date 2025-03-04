@@ -13,21 +13,21 @@ import (
 )
 
 type Repository interface {
-	Create(user *entity.User, tx *gorm.DB, ctx context.Context) error
-	Update(user *entity.User, tx *gorm.DB, ctx context.Context) error
-	FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.User, error)
-	FindByID(userID uint64, preloadRelations bool, ctx context.Context) (entity.User, error)
-	FindByUsername(username string, ctx context.Context) (entity.User, error)
-	FindByIDWithRelation(userID uint64, ctx context.Context) (entity.User, error)
-	GetUserDomains(userID uint64, ctx context.Context) (entity.User, error)
-	Count(pg *pagination.Pagination, ctx context.Context) (int64, error)
+	Create(ctx context.Context, user *entity.User, tx *gorm.DB) error
+	Update(ctx context.Context, user *entity.User, tx *gorm.DB) error
+	FindAll(ctx context.Context, pg *pagination.Pagination) ([]entity.User, error)
+	FindByID(ctx context.Context, userID uint64, preloadRelations bool) (entity.User, error)
+	FindByUsername(ctx context.Context, username string) (entity.User, error)
+	FindByIDWithRelation(ctx context.Context, userID uint64) (entity.User, error)
+	GetUserDomains(ctx context.Context, userID uint64) (entity.User, error)
+	Count(ctx context.Context, pg *pagination.Pagination) (int64, error)
 }
 
 type Service interface {
-	Index(pg *pagination.Pagination, ctx context.Context) ([]entity.User, utility.PaginationMeta, error)
-	Show(userID uint64, ctx context.Context) (entity.User, error)
-	Create(request request.UserCreateRequest, ctx context.Context) (entity.User, error)
-	AssignDomain(userID uint64, request request.AssignDomainRequest, ctx context.Context) error
+	Index(ctx context.Context, pg *pagination.Pagination) ([]entity.User, utility.PaginationMeta, error)
+	Show(ctx context.Context, userID uint64) (entity.User, error)
+	Create(ctx context.Context, request request.UserCreateRequest) (entity.User, error)
+	AssignDomain(ctx context.Context, userID uint64, request request.AssignDomainRequest) error
 }
 
 type Controller interface {

@@ -14,7 +14,7 @@ import (
 //
 // It returns a User and an error. If the error is not nil, it means that the
 // query failed. If the error is nil, then the user is returned.
-func (r *repository) FindByIDWithRelation(userID uint64, ctx context.Context) (userM entity.User, err error) {
+func (r *repository) FindByIDWithRelation(ctx context.Context, userID uint64) (userM entity.User, err error) {
 
 	err = r.db.WithContext(ctx).
 		Preload("Domains").

@@ -8,7 +8,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) FindByID(refreshTokenID string, ctx context.Context) (refreshToken entity.RefreshToken, err error) {
+func (r *repository) FindByID(ctx context.Context, refreshTokenID string) (refreshToken entity.RefreshToken, err error) {
 	err = r.db.
 		WithContext(ctx).
 		Where("id = ? AND is_valid = ? AND expires_at > ?",

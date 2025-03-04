@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
 )
@@ -14,7 +14,7 @@ func (r *repository) InvalidateAllByUserID(userID uint64, ctx context.Context) (
 		Where("user_id = ?", userID).
 		Update("is_valid", false).Error
 	if err != nil {
-		err = errors.New("error invalidate all refresh token by user id")
+		err = utility.LogError("error invalidate all refresh token by user id", err)
 		return
 	}
 

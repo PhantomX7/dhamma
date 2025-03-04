@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
 )
@@ -14,7 +14,7 @@ func (r *repository) FindByCode(code string, ctx context.Context) (domainM entit
 		First(&domainM).
 		Error
 	if err != nil {
-		err = errors.New("error find domain by code")
+		err = utility.LogError("error find domain by code", err)
 		return
 	}
 

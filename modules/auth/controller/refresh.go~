@@ -3,14 +3,14 @@ package controller
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	
-	"github.com/PhantomX7/dhamma/modules/role/dto/request"
+	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
+
+	"github.com/gin-gonic/gin"
 )
 
-func (c *controller) Create(ctx *gin.Context) {
-	var req request.RoleCreateRequest
+func (c *controller) Refresh(ctx *gin.Context) {
+	var req request.RefreshRequest
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -18,11 +18,11 @@ func (c *controller) Create(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.roleService.Create(req, ctx.Request.Context())
+	res, err := c.authService.Refresh(ctx.Request.Context(),req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to create role", err.Error()),
+			utility.BuildResponseFailed("failed to refresh token", err.Error()),
 		)
 		return
 	}

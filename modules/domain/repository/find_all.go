@@ -8,7 +8,7 @@ import (
 	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
-func (r *repository) FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.Domain, error) {
+func (r *repository) FindAll(ctx context.Context, pg *pagination.Pagination) ([]entity.Domain, error) {
 	results := make([]entity.Domain, 0)
 
 	filterScopes, metaScopes := pagination.NewScopeBuilder(pg).Build()

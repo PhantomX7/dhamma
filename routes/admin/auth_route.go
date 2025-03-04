@@ -12,7 +12,10 @@ func Auth(route *gin.Engine, middleware *middleware.Middleware, authController a
 		routes.POST("/signin", authController.SignIn)
 		//routes.POST("/signup", authController.SignUp)
 		routes.POST("/refresh", authController.Refresh)
-		routes.GET("/me", middleware.AuthHandle(), middleware.IsRoot(), authController.GetMe)
-		routes.PATCH("/password", middleware.AuthHandle(), middleware.IsRoot(), authController.UpdatePassword)
+		authenticated := routes.Use(middleware.AuthHandle(), middleware.IsRoot())
+		{
+			authenticated.GET("/me", authController.GetMe)
+			authenticated.PATCH("/password", authController.UpdatePassword)
+		}
 	}
 }

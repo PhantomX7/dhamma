@@ -7,7 +7,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) FindByID(roleID uint64, ctx context.Context) (roleM entity.Role, err error) {
+func (r *repository) FindByID(ctx context.Context, roleID uint64) (roleM entity.Role, err error) {
 
 	err = r.db.WithContext(ctx).
 		Preload("Domain").

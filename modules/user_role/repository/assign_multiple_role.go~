@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +23,7 @@ func (r *repository) AssignMultipleRole(userID uint64, roleAssignments []struct 
 			RoleID:   ra.RoleID,
 		}
 		if err = tx.WithContext(ctx).Create(&userRole).Error; err != nil {
-			err = errors.New("error assign multiple role")
+			err = utility.LogError("error assign multiple role", err)
 			return
 		}
 	}

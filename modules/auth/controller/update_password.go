@@ -18,7 +18,7 @@ func (c *controller) UpdatePassword(ctx *gin.Context) {
 		return
 	}
 
-	err := c.authService.UpdatePassword(utility.GetIDFromContext(ctx), req, ctx.Request.Context())
+	err := c.authService.UpdatePassword(ctx.Request.Context(), req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

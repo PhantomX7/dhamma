@@ -7,7 +7,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) FindByCode(code string, ctx context.Context) (domainM entity.Domain, err error) {
+func (r *repository) FindByCode(ctx context.Context, code string) (domainM entity.Domain, err error) {
 	err = r.db.
 		WithContext(ctx).
 		Where("code = ?", code).

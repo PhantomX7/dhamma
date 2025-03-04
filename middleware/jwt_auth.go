@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"context"
 	"errors"
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 	"net/http"
 	"strings"
 
@@ -55,8 +55,9 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 			return
 		}
 
+		// Check if refresh token is valid
 		var count int64
-		count, _ = m.refreshTokenRepo.GetValidCountByUserID(claims.UserID, context.Background())
+		count, _ = m.refreshTokenRepo.GetValidCountByUserID(c.Request.Context(), claims.UserID)
 		if count == 0 {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 			c.Abort()
@@ -64,8 +65,14 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 		}
 
 		// Set user details in context
-		c.Set(constants.EnumJwtKeyUserId, claims.UserID)
-		c.Set(constants.EnumJwtKeyRole, claims.Role)
+
+		c.Request = c.Request.WithContext(utility.NewContextWithValues(
+			c.Request.Context(),
+			utility.ContextValues{
+				UserID: claims.UserID,
+				IsRoot: claims.Role == constants.EnumRoleRoot,
+			},
+		))
 
 		c.Next()
 	}

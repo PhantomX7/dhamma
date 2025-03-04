@@ -18,7 +18,7 @@ func (c *controller) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.authService.SignUp(req, ctx.Request.Context())
+	res, err := c.authService.SignUp(ctx.Request.Context(), req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

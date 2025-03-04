@@ -11,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (res response.AuthResponse, err error) {
+func (u *service) Refresh(ctx context.Context, request request.RefreshRequest) (res response.AuthResponse, err error) {
 	// Parse refresh token and validate
 	claims := &entity.RefreshClaims{}
 	token, err := jwt.ParseWithClaims(request.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -32,13 +32,13 @@ func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (
 	}
 
 	// Check if refresh token is valid
-	refreshTokenM, err := u.refreshTokenRepo.FindByID(claims.RefreshToken, ctx)
+	refreshTokenM, err := u.refreshTokenRepo.FindByID(ctx, claims.RefreshToken)
 	if err != nil {
 		err = errors.New("invalid refresh token")
 		return
 	}
 
-	user, err := u.userRepo.FindByID(refreshTokenM.UserID, false, ctx)
+	user, err := u.userRepo.FindByID(ctx, refreshTokenM.UserID, false)
 	if err != nil {
 		return
 	}
@@ -58,7 +58,7 @@ func (u *service) Refresh(request request.RefreshRequest, ctx context.Context) (
 
 	tx := u.transactionManager.NewTransaction()
 
-	err = u.refreshTokenRepo.Update(&refreshTokenM, tx, ctx)
+	err = u.refreshTokenRepo.Update(ctx, &refreshTokenM, tx)
 	if err != nil {
 		tx.Rollback()
 		return

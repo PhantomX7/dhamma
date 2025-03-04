@@ -9,15 +9,15 @@ import (
 )
 
 // Index implements domain.Service.
-func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
+func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	domains []entity.Domain, meta utility.PaginationMeta, err error,
 ) {
-	domains, err = s.domainRepo.FindAll(pg, ctx)
+	domains, err = s.domainRepo.FindAll(ctx, pg)
 	if err != nil {
 		return
 	}
 
-	count, err := s.domainRepo.Count(pg, ctx)
+	count, err := s.domainRepo.Count(ctx, pg)
 	if err != nil {
 		return
 	}

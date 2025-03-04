@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
+	
 	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
 )
@@ -18,7 +18,7 @@ func (c *controller) Create(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.domainService.Create(req, ctx.Request.Context())
+	res, err := c.domainService.Create(ctx.Request.Context(),req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

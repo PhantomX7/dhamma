@@ -7,7 +7,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) InvalidateAllByUserID(userID uint64, ctx context.Context) (err error) {
+func (r *repository) InvalidateAllByUserID(ctx context.Context, userID uint64) (err error) {
 	err = r.db.
 		WithContext(ctx).
 		Model(&entity.RefreshToken{}).

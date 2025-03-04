@@ -8,7 +8,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) AssignDomain(userID, domainID uint64, tx *gorm.DB, ctx context.Context) (err error) {
+func (r *repository) AssignDomain(ctx context.Context, userID, domainID uint64, tx *gorm.DB) (err error) {
 	// if tx is nil, use default db
 	if tx == nil {
 		tx = r.db

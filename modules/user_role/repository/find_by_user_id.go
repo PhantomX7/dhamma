@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *repository) FindByUserID(userID uint64, preloadRelations bool, ctx context.Context) (userRoles []entity.UserRole, err error) {
+func (r *repository) FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) (userRoles []entity.UserRole, err error) {
 	var preloadScope = func(db *gorm.DB) *gorm.DB { return db }
 	if preloadRelations {
 		preloadScope = func(db *gorm.DB) *gorm.DB {

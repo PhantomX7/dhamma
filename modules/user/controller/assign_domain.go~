@@ -28,7 +28,7 @@ func (c *controller) AssignDomain(ctx *gin.Context) {
 		return
 	}
 
-	err := c.userService.AssignDomain(userID, req, ctx.Request.Context())
+	err = c.userService.AssignDomain(ctx.Request.Context(),userID, req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

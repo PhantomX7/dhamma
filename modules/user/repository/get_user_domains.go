@@ -6,7 +6,7 @@ import (
 	"github.com/PhantomX7/dhamma/utility"
 )
 
-func (r *repository) GetUserDomains(userID uint64, ctx context.Context) (userM entity.User, err error) {
+func (r *repository) GetUserDomains(ctx context.Context, userID uint64) (userM entity.User, err error) {
 
 	err = r.db.WithContext(ctx).
 		Preload("Domains").

@@ -23,7 +23,7 @@ func (u *service) GenerateRefreshToken(userID uint64, tx *gorm.DB) (string, erro
 	}
 
 	// Save to database
-	err := u.refreshTokenRepo.Create(refreshToken, tx, context.Background())
+	err := u.refreshTokenRepo.Create(context.Background(), refreshToken, tx)
 	if err != nil {
 		return "", err
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/PhantomX7/dhamma/modules/role/dto/request"
 )
 
-func (s *service) Create(request request.RoleCreateRequest, ctx context.Context) (role entity.Role, err error) {
+func (s *service) Create(ctx context.Context, request request.RoleCreateRequest) (role entity.Role, err error) {
 	hasDomain, domainID := utility.GetDomainIDFromContext(ctx)
 
 	if hasDomain {
@@ -24,7 +24,7 @@ func (s *service) Create(request request.RoleCreateRequest, ctx context.Context)
 		IsActive: true,
 	}
 
-	existingRole, err := s.roleRepo.FindByNameAndDomainID(request.Name, request.DomainID, ctx)
+	existingRole, err := s.roleRepo.FindByNameAndDomainID(ctx, request.Name, request.DomainID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
@@ -39,7 +39,7 @@ func (s *service) Create(request request.RoleCreateRequest, ctx context.Context)
 		return
 	}
 
-	err = s.roleRepo.Create(&role, nil, ctx)
+	err = s.roleRepo.Create(ctx, &role, nil)
 	if err != nil {
 		return
 	}

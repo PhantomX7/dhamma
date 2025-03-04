@@ -7,8 +7,8 @@ import (
 )
 
 // Show implements domain.Service
-func (s *service) Show(domainID uint64, ctx context.Context) (domain entity.Domain, err error) {
-	domain, err = s.domainRepo.FindByID(domainID, ctx)
+func (s *service) Show(ctx context.Context, domainID uint64) (domain entity.Domain, err error) {
+	domain, err = s.domainRepo.FindByID(ctx, domainID)
 	if err != nil {
 		return
 	}

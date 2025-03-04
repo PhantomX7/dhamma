@@ -8,7 +8,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) FindByID(userID uint64, preloadRelations bool, ctx context.Context) (userM entity.User, err error) {
+func (r *repository) FindByID(ctx context.Context, userID uint64, preloadRelations bool) (userM entity.User, err error) {
 
 	var preloadScope = func(db *gorm.DB) *gorm.DB { return db }
 	if preloadRelations {

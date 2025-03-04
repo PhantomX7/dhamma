@@ -7,10 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *repository) AssignMultipleRole(userID uint64, roleAssignments []struct {
+func (r *repository) AssignMultipleRole(ctx context.Context, userID uint64, roleAssignments []struct {
 	DomainID uint64
 	RoleID   uint64
-}, tx *gorm.DB, ctx context.Context) (err error) {
+}, tx *gorm.DB) (err error) {
 	// if tx is nil, use default db
 	if tx == nil {
 		tx = r.db

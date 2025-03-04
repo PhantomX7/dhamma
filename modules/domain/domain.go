@@ -13,21 +13,21 @@ import (
 )
 
 type Repository interface {
-	Create(domain *entity.Domain, tx *gorm.DB, ctx context.Context) error
-	Update(domain *entity.Domain, tx *gorm.DB, ctx context.Context) error
-	FindAll(pg *pagination.Pagination, ctx context.Context) ([]entity.Domain, error)
-	FindByID(domainID uint64, ctx context.Context) (entity.Domain, error)
-	FindByCode(code string, ctx context.Context) (entity.Domain, error)
-	GetDomainRoles(domainID uint64, ctx context.Context) (entity.Domain, error)
-	Count(pg *pagination.Pagination, ctx context.Context) (int64, error)
+	Create(ctx context.Context, domain *entity.Domain, tx *gorm.DB) error
+	Update(ctx context.Context, domain *entity.Domain, tx *gorm.DB) error
+	FindAll(ctx context.Context, pg *pagination.Pagination) ([]entity.Domain, error)
+	FindByID(ctx context.Context, domainID uint64) (entity.Domain, error)
+	FindByCode(ctx context.Context, code string) (entity.Domain, error)
+	GetDomainRoles(ctx context.Context, domainID uint64) (entity.Domain, error)
+	Count(ctx context.Context, pg *pagination.Pagination) (int64, error)
 }
 
 type Service interface {
-	Index(pg *pagination.Pagination, ctx context.Context) ([]entity.Domain, utility.PaginationMeta, error)
-	Show(domainID uint64, ctx context.Context) (entity.Domain, error)
-	Update(domainID uint64, request request.DomainUpdateRequest, ctx context.Context) (entity.Domain, error)
-	Create(request request.DomainCreateRequest, ctx context.Context) (entity.Domain, error)
-	ShowWithRoles(domainID uint64, ctx context.Context) (entity.Domain, error)
+	Index(ctx context.Context, pg *pagination.Pagination) ([]entity.Domain, utility.PaginationMeta, error)
+	Show(ctx context.Context, domainID uint64) (entity.Domain, error)
+	Update(ctx context.Context, domainID uint64, request request.DomainUpdateRequest) (entity.Domain, error)
+	Create(ctx context.Context, request request.DomainCreateRequest) (entity.Domain, error)
+	ShowWithRoles(ctx context.Context, domainID uint64) (entity.Domain, error)
 }
 
 type Controller interface {

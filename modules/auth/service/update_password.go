@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -10,11 +11,16 @@ import (
 )
 
 func (u *service) UpdatePassword(
-	userID uint64,
-	request request.UpdatePasswordRequest,
 	ctx context.Context,
+	request request.UpdatePasswordRequest,
 ) (err error) {
-	userM, err := u.userRepo.FindByID(userID, false, ctx)
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
+	if err != nil {
+		return
+	}
+
+	userM, err := u.userRepo.FindByID(ctx, contextValues.UserID, false)
 	if err != nil {
 		return
 	}
@@ -32,7 +38,7 @@ func (u *service) UpdatePassword(
 	}
 	userM.Password = string(password)
 
-	err = u.userRepo.Update(&userM, nil, ctx)
+	err = u.userRepo.Update(ctx, &userM, nil)
 	if err != nil {
 		return
 	}

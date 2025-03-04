@@ -2,13 +2,13 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"gorm.io/gorm"
 )
 
-func (r *repository) RemoveRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) (err error) {
+func (r *repository) RemoveRole(ctx context.Context,userID, domainID, roleID uint64, tx *gorm.DB) (err error) {
 	// if tx is nil, use default db
 	if tx == nil {
 		tx = r.db
@@ -20,7 +20,7 @@ func (r *repository) RemoveRole(userID, domainID, roleID uint64, tx *gorm.DB, ct
 			userID, domainID, roleID,
 		).Delete(&entity.UserRole{}).Error
 	if err != nil {
-		return errors.New("error remove role")
+		return utility.LogError("error remove role", err)
 	}
 
 	return

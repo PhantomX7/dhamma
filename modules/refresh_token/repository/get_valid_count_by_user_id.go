@@ -8,7 +8,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) GetValidCountByUserID(userID uint64, ctx context.Context) (count int64, err error) {
+func (r *repository) GetValidCountByUserID(ctx context.Context, userID uint64) (count int64, err error) {
 	err = r.db.
 		WithContext(ctx).
 		Model(&entity.RefreshToken{}).

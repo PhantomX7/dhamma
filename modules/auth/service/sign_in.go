@@ -13,12 +13,12 @@ import (
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 )
 
-func (u *service) SignIn(request request.SignInRequest, ctx context.Context) (res response.AuthResponse, err error) {
+func (u *service) SignIn(ctx context.Context, request request.SignInRequest) (res response.AuthResponse, err error) {
 	user := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
 
-	user, err = u.userRepo.FindByUsername(request.Username, ctx)
+	user, err = u.userRepo.FindByUsername(ctx, request.Username)
 	if err != nil {
 		err = errors.New("invalid username or password")
 		return

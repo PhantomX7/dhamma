@@ -6,16 +6,21 @@ import (
 	"github.com/PhantomX7/dhamma/utility"
 )
 
-func (u *service) GetMe(userID uint64, ctx context.Context) (res response.MeResponse, err error) {
-	hasDomain, domainID := utility.GetDomainIDFromContext(ctx)
-
-	user, err := u.userRepo.FindByID(userID, true, ctx)
+func (u *service) GetMe(ctx context.Context) (res response.MeResponse, err error) {
+	// Get value from context
+	contextValues, err := utility.ValuesFromContext(ctx)
 	if err != nil {
 		return
 	}
 
-	if hasDomain {
-		userRoles, err := u.userRoleRepo.FindByUserIDAndDomainID(userID, domainID, true, ctx)
+	user, err := u.userRepo.FindByID(ctx, contextValues.UserID, true)
+	if err != nil {
+		return
+	}
+
+	// override user roles with specific domain roles
+	if contextValues.DomainID != nil {
+		userRoles, err := u.userRoleRepo.FindByUserIDAndDomainID(ctx, contextValues.UserID, *contextValues.DomainID, true)
 		if err != nil {
 			return response.MeResponse{}, err
 		}

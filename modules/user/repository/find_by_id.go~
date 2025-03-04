@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"github.com/PhantomX7/dhamma/utility"
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -24,7 +24,7 @@ func (r *repository) FindByID(userID uint64, preloadRelations bool, ctx context.
 		Where("id = ?", userID).
 		Take(&userM).Error
 	if err != nil {
-		err = errors.New("error find user by id")
+		err = utility.LogError("error find user by id", err)
 		return
 	}
 

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *repository) AssignRole(userID, domainID, roleID uint64, tx *gorm.DB, ctx context.Context) (err error) {
+func (r *repository) AssignRole(ctx context.Context, userID, domainID, roleID uint64, tx *gorm.DB) (err error) {
 	// if tx is nil, use default db
 	if tx == nil {
 		tx = r.db

@@ -7,6 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ContextValues struct {
+	DomainID *uint64
+	UserID   uint64
+	IsRoot   bool
+}
+
 // GetIDFromContext this is not a heavyweight operation
 // it accesses payload from map in gin context
 func GetIDFromContext(c *gin.Context) uint64 {
@@ -25,15 +31,14 @@ func GetDomainIDFromContext(context context.Context) (haveDomain bool, domainID 
 	return
 }
 
-// ValidateDomainRequest validates if the requested domain matches the context domain
-func ValidateDomainRequest(ctx context.Context, requestDomainID uint64) error {
-	hasDomain, contextDomainID := GetDomainIDFromContext(ctx)
+func NewContextWithValues(ctx context.Context, values ContextValues) context.Context {
+	return context.WithValue(ctx, "values", values)
+}
 
-	if hasDomain {
-		if requestDomainID != contextDomainID {
-			return errors.New("forbidden")
-		}
+func ValuesFromContext(ctx context.Context) (ContextValues, error) {
+	values, ok := ctx.Value("values").(ContextValues)
+	if !ok {
+		return ContextValues{}, errors.New("context values not found")
 	}
-
-	return nil
+	return values, nil
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/PhantomX7/dhamma/entity"
 )
 
-func (r *repository) FindByID(domainID uint64, ctx context.Context) (domainM entity.Domain, err error) {
+func (r *repository) FindByID(ctx context.Context, domainID uint64) (domainM entity.Domain, err error) {
 
 	err = r.db.
 		WithContext(ctx).

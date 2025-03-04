@@ -10,7 +10,7 @@ import (
 )
 
 // Index implements user.Service.
-func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
+func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	users []entity.User, meta utility.PaginationMeta, err error,
 ) {
 	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
@@ -27,7 +27,7 @@ func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 		})
 	}
 
-	users, err = s.userRepo.FindAll(pg, ctx)
+	users, err = s.userRepo.FindAll(ctx, pg)
 	if err != nil {
 		return
 	}
@@ -36,7 +36,7 @@ func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 	if haveDomain {
 		for i := range users {
 			var domain entity.Domain
-			domain, err = s.domainRepo.FindByID(domainID, ctx)
+			domain, err = s.domainRepo.FindByID(ctx, domainID)
 			if err != nil {
 				return
 			}
@@ -45,7 +45,7 @@ func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 		}
 	}
 
-	count, err := s.userRepo.Count(pg, ctx)
+	count, err := s.userRepo.Count(ctx, pg)
 	if err != nil {
 		return
 	}

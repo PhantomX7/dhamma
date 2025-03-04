@@ -18,7 +18,7 @@ func (c *controller) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.authService.SignIn(req, ctx.Request.Context())
+	res, err := c.authService.SignIn(ctx.Request.Context(), req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,

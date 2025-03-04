@@ -7,7 +7,7 @@ import (
 )
 
 func Role(route *gin.Engine, middleware *middleware.Middleware, roleController role.Controller) {
-	routes := route.Group(":domain_code/role", middleware.AuthHandle(), middleware.ValidateUserDomain())
+	routes := route.Group(":domain_code/role", middleware.AuthHandle(), middleware.ValidateDomain())
 	{
 		routes.GET("", roleController.Index)
 		routes.GET("/:id", roleController.Show)

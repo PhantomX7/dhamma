@@ -8,10 +8,10 @@ import (
 )
 
 // Show implements role.Service
-func (s *service) Show(roleID uint64, ctx context.Context) (role entity.Role, err error) {
+func (s *service) Show(ctx context.Context, roleID uint64) (role entity.Role, err error) {
 	hasDomain, domainID := utility.GetDomainIDFromContext(ctx)
 
-	role, err = s.roleRepo.FindByID(roleID, ctx)
+	role, err = s.roleRepo.FindByID(ctx, roleID)
 	if err != nil {
 		return
 	}

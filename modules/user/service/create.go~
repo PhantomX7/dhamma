@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/PhantomX7/dhamma/utility"
-	"log"
 	"strings"
 
 	"github.com/jinzhu/copier"
@@ -14,11 +13,9 @@ import (
 	"github.com/PhantomX7/dhamma/modules/user/dto/request"
 )
 
-func (u *service) Create(request request.UserCreateRequest, ctx context.Context) (user entity.User, err error) {
+func (u *service) Create(ctx context.Context, request request.UserCreateRequest) (user entity.User, err error) {
 	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
 
-	log.Print("haveDomain: ", haveDomain)
-	log.Print("domainID: ", domainID)
 	user = entity.User{
 		IsActive:     true,
 		IsSuperAdmin: false,

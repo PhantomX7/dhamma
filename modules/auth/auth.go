@@ -9,11 +9,11 @@ import (
 )
 
 type Service interface {
-	SignIn(request request.SignInRequest, ctx context.Context) (response.AuthResponse, error)
-	SignUp(request request.SignUpRequest, ctx context.Context) (response.AuthResponse, error)
-	Refresh(request request.RefreshRequest, ctx context.Context) (response.AuthResponse, error)
-	UpdatePassword(userID uint64, request request.UpdatePasswordRequest, ctx context.Context) error
-	GetMe(userID uint64, ctx context.Context) (response.MeResponse, error)
+	SignIn(ctx context.Context, request request.SignInRequest) (response.AuthResponse, error)
+	SignUp(ctx context.Context, request request.SignUpRequest) (response.AuthResponse, error)
+	Refresh(ctx context.Context, request request.RefreshRequest) (response.AuthResponse, error)
+	UpdatePassword(ctx context.Context, request request.UpdatePasswordRequest) error
+	GetMe(ctx context.Context) (response.MeResponse, error)
 }
 
 type Controller interface {

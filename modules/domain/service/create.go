@@ -8,7 +8,7 @@ import (
 	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
 )
 
-func (s *service) Create(request request.DomainCreateRequest, ctx context.Context) (domain entity.Domain, err error) {
+func (s *service) Create(ctx context.Context, request request.DomainCreateRequest) (domain entity.Domain, err error) {
 	domain = entity.Domain{
 		IsActive: true,
 	}
@@ -18,7 +18,7 @@ func (s *service) Create(request request.DomainCreateRequest, ctx context.Contex
 		return
 	}
 
-	err = s.domainRepo.Create(&domain, nil, ctx)
+	err = s.domainRepo.Create(ctx, &domain, nil)
 	if err != nil {
 		return
 	}
