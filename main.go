@@ -4,18 +4,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/PhantomX7/dhamma/constants"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/PhantomX7/dhamma/config"
-	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/libs"
 	"github.com/PhantomX7/dhamma/middleware"
 	"github.com/PhantomX7/dhamma/migration"
 	"github.com/PhantomX7/dhamma/modules"
 	"github.com/PhantomX7/dhamma/routes"
+	customLogger "github.com/PhantomX7/dhamma/utility/logger"
 	customValidator "github.com/PhantomX7/dhamma/utility/validator"
 
 	"github.com/common-nighthawk/go-figure"
@@ -52,10 +55,11 @@ func main() {
 	app := fx.New(
 		// fx.NopLogger, // disable logger for fx
 		fx.Provide(
+			initLogger,
 			setupDatabase,
-			setUpServer,
 			customValidator.New, // initiate custom validator
 			middleware.New,      // initiate middleware
+			setupServer,
 		),
 		modules.RepositoryModule,
 		modules.ServiceModule,
@@ -68,6 +72,24 @@ func main() {
 		),
 	)
 	app.Run()
+}
+
+func setupServer(m *middleware.Middleware) *gin.Engine {
+	// set gin mode
+	if config.APP_ENV == constants.EnumRunProduction {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	server := gin.Default()
+
+	// register m
+	server.Use(m.Logger())
+
+	// register static files
+	server.Static("/assets", "./assets")
+	server.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
+	return server
 }
 
 func startServer(
@@ -127,19 +149,6 @@ func startServer(
 		},
 	})
 
-}
-
-func setUpServer() *gin.Engine {
-	if config.APP_ENV == constants.EnumRunProduction {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	server := gin.Default()
-	// server.Use(middleware.CORSMiddleware())
-
-	server.Static("/assets", "./assets")
-
-	return server
 }
 
 func setupDatabase(lc fx.Lifecycle) *gorm.DB {
@@ -215,4 +224,20 @@ func startCron(lc fx.Lifecycle, cron gocron.Scheduler) {
 			return cron.Shutdown()
 		},
 	})
+}
+
+func initLogger(lc fx.Lifecycle) *zap.Logger {
+	l, err := customLogger.NewLogger()
+	if err != nil {
+		panic(err)
+	}
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			log.Println("Stopping log")
+
+			return l.Sync()
+		},
+	})
+
+	return l
 }
