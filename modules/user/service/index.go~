@@ -32,7 +32,6 @@ func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
 		return
 	}
 
-	// only show specific domain if user have domain context
 	if haveDomain {
 		for i := range users {
 			var domain entity.Domain

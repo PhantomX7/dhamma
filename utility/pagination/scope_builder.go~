@@ -246,12 +246,16 @@ func (sb *ScopeBuilder) buildDateScope(field string, op FilterOperation, filterT
 			return db.Where(fmt.Sprintf("%s = ?", field), t)
 		}
 	case OperatorBetween:
+		log.Print("hereee")
 		start, err := time.Parse("2006-01-02", op.Values[0])
 		if err != nil {
+			log.Print(err)
 			return nil
 		}
 		end, err := time.Parse("2006-01-02", op.Values[1])
 		if err != nil {
+			log.Print(err)
+
 			return nil
 		}
 		if filterType == FilterTypeDateTime {

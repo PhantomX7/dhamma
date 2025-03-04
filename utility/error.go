@@ -2,10 +2,13 @@ package utility
 
 import (
 	"errors"
+	"gorm.io/gorm"
 	"log"
 )
 
 func LogError(errString string, err error) error {
-	log.Print(errString, ": ", err)
-	return errors.New(errString)
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Print(errString, ": ", err)
+	}
+	return err
 }

@@ -7,11 +7,7 @@ import (
 
 func (s *service) AssignDomain(userID uint64, request request.AssignDomainRequest, ctx context.Context) (err error) {
 	hasDomain, err := s.userDomainRepo.HasDomain(userID, request.DomainID, ctx)
-	if err != nil {
-		return
-	}
-
-	if hasDomain {
+	if err != nil || hasDomain {
 		return
 	}
 

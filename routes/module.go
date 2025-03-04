@@ -16,6 +16,7 @@ var Module = fx.Invoke(
 	// domain specific route
 	domain.Auth,
 	domain.User,
+	domain.Role,
 
 	Universal,
 )

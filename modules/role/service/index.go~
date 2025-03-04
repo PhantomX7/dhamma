@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utility"
@@ -10,8 +11,19 @@ import (
 
 // Index implements role.Service.
 func (s *service) Index(pg *pagination.Pagination, ctx context.Context) (
-	roles []entity.role, meta utility.PaginationMeta, err error,
+	roles []entity.Role, meta utility.PaginationMeta, err error,
 ) {
+	haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
+
+	// only query specific domain
+	if haveDomain {
+		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Domains", func(db *gorm.DB) *gorm.DB {
+				return db.Where("domains.id = ?", domainID)
+			})
+		})
+	}
+	
 	roles, err = s.roleRepo.FindAll(pg, ctx)
 	if err != nil {
 		return

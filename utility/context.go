@@ -2,6 +2,7 @@ package utility
 
 import (
 	"context"
+	"errors"
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +20,20 @@ func GetDomainIDFromContext(context context.Context) (haveDomain bool, domainID 
 	if domainID == 0 {
 		return
 	}
-	
+
 	haveDomain = true
 	return
+}
+
+// ValidateDomainRequest validates if the requested domain matches the context domain
+func ValidateDomainRequest(ctx context.Context, requestDomainID uint64) error {
+	hasDomain, contextDomainID := GetDomainIDFromContext(ctx)
+
+	if hasDomain {
+		if requestDomainID != contextDomainID {
+			return errors.New("forbidden")
+		}
+	}
+
+	return nil
 }

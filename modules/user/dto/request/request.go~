@@ -21,9 +21,9 @@ func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 		}).
 		AddFilter("username", pagination.FilterConfig{
 			Field: "username",
-			Type:  pagination.FilterTypeID,
+			Type:  pagination.FilterTypeString,
 			Operators: []pagination.FilterOperator{
-				pagination.OperatorIn, pagination.OperatorEquals,
+				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
 			},
 		}).
 		AddFilter("created_at", pagination.FilterConfig{

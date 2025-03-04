@@ -36,8 +36,7 @@ func (s *service) Show(userID uint64, ctx context.Context) (user entity.User, er
 		}
 		user.UserRoles = userRoles
 
-		var domain entity.Domain
-		domain, err = s.domainRepo.FindByID(domainID, ctx)
+		domain, err := s.domainRepo.FindByID(domainID, ctx)
 		if err != nil {
 			return
 		}
