@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/PhantomX7/dhamma/constants"
 	"time"
 
 	"github.com/PhantomX7/dhamma/config"
@@ -12,13 +13,11 @@ import (
 	"gorm.io/gorm"
 )
 
-const RefreshTokenExpiry = 3 * 24 * time.Hour
-
 func (u *service) GenerateRefreshToken(userID uint64, tx *gorm.DB) (string, error) {
 	refreshToken := &entity.RefreshToken{
 		ID:        uuid.New(),
 		UserID:    userID,
-		ExpiresAt: time.Now().Add(RefreshTokenExpiry),
+		ExpiresAt: time.Now().Add(constants.RefreshTokenExpiry),
 		IsValid:   true,
 	}
 
@@ -31,7 +30,7 @@ func (u *service) GenerateRefreshToken(userID uint64, tx *gorm.DB) (string, erro
 	claims := entity.RefreshClaims{
 		RefreshToken: refreshToken.ID.String(),
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(RefreshTokenExpiry)),
+			ExpiresAt: jwt.NewNumericDate(refreshToken.ExpiresAt),
 		},
 	}
 

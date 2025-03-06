@@ -83,7 +83,7 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 	server := gin.Default()
 
 	// register m
-	server.Use(m.Logger())
+	//server.Use(m.Logger())
 
 	// register static files
 	server.Static("/assets", "./assets")

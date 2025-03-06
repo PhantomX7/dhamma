@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
@@ -14,6 +15,8 @@ type Service interface {
 	Refresh(ctx context.Context, request request.RefreshRequest) (response.AuthResponse, error)
 	UpdatePassword(ctx context.Context, request request.UpdatePasswordRequest) error
 	GetMe(ctx context.Context) (response.MeResponse, error)
+	GenerateAccessToken(userID uint64, role string) (string, error)
+	GenerateRefreshToken(userID uint64, tx *gorm.DB) (string, error)
 }
 
 type Controller interface {

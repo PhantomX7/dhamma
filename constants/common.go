@@ -1,5 +1,7 @@
 package constants
 
+import "time"
+
 const (
 	EnumRoleRoot  = "root"
 	EnumRoleAdmin = "admin"
@@ -9,3 +11,6 @@ const (
 
 	EnumRequestIDKey = "request_id"
 )
+
+const AccessTokenExpiry = 30 * time.Minute
+const RefreshTokenExpiry = 24 * time.Hour
