@@ -9,6 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type permission struct {
+	Key            string
+	GetMe          string
+	UpdatePassword string
+}
+
+var Permissions = permission{
+	Key:            "auth",
+	GetMe:          "me",
+	UpdatePassword: "update-password",
+}
+
 type Service interface {
 	SignIn(ctx context.Context, request request.SignInRequest) (response.AuthResponse, error)
 	SignUp(ctx context.Context, request request.SignUpRequest) (response.AuthResponse, error)

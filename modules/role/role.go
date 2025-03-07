@@ -10,6 +10,22 @@ import (
 	"gorm.io/gorm"
 )
 
+type permission struct {
+	Key    string
+	Index  string
+	Show   string
+	Create string
+	Update string
+}
+
+var Permissions = permission{
+	Key:    "role",
+	Index:  "index",
+	Show:   "show",
+	Create: "create",
+	Update: "update",
+}
+
 type Repository interface {
 	Create(ctx context.Context, role *entity.Role, tx *gorm.DB) error
 	Update(ctx context.Context, role *entity.Role, tx *gorm.DB) error

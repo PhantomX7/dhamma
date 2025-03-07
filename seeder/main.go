@@ -49,21 +49,28 @@ func main() {
 		panic(err)
 	}
 
+	permissionSeeder := seed.NewPermissionSeeder(db)
+
+	err = permissionSeeder.GenerateApiPermissions()
+	if err != nil {
+		panic(err)
+	}
+
 	// development seed only, will not run on production
 	if os.Getenv("APP_ENV") == "development" {
-		// Generate 10 basic users
-		err = userSeeder.GenerateUsers(20)
-		if err != nil {
-			panic(err)
-		}
-
-		// Generate 5 users with custom options
-		err = userSeeder.GenerateUsers(5,
-			seed.WithActiveStatus(false),
-		)
-		if err != nil {
-			panic(err)
-		}
+		//// Generate 10 basic users
+		//err = userSeeder.GenerateUsers(20)
+		//if err != nil {
+		//	panic(err)
+		//}
+		//
+		//// Generate 5 users with custom options
+		//err = userSeeder.GenerateUsers(5,
+		//	seed.WithActiveStatus(false),
+		//)
+		//if err != nil {
+		//	panic(err)
+		//}
 	}
 
 	log.Println("finish seeding")

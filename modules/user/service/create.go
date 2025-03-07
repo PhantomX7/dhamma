@@ -21,8 +21,6 @@ func (s *service) Create(ctx context.Context, request request.UserCreateRequest)
 		return
 	}
 
-	//haveDomain, domainID := utility.GetDomainIDFromContext(ctx)
-
 	user = entity.User{
 		IsActive:     true,
 		IsSuperAdmin: false,

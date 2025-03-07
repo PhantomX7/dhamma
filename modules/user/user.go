@@ -12,6 +12,20 @@ import (
 	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
+type permission struct {
+	Key    string
+	Index  string
+	Show   string
+	Create string
+}
+
+var Permissions = permission{
+	Key:    "user",
+	Index:  "index",
+	Show:   "show",
+	Create: "create",
+}
+
 type Repository interface {
 	Create(ctx context.Context, user *entity.User, tx *gorm.DB) error
 	Update(ctx context.Context, user *entity.User, tx *gorm.DB) error
