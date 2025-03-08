@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Domain(route *gin.Engine, middleware *middleware.Middleware, domainController domain.Controller) {
+func DomainRoute(route *gin.Engine, middleware *middleware.Middleware, domainController domain.Controller) {
 	routes := route.Group("api/domain", middleware.AuthHandle(), middleware.IsRoot())
 	{
 		routes.GET("", domainController.Index)

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Role(route *gin.Engine, middleware *middleware.Middleware, roleController role.Controller) {
+func RoleRoute(route *gin.Engine, middleware *middleware.Middleware, roleController role.Controller) {
 	routes := route.Group(":domain_code/role", middleware.AuthHandle(), middleware.ValidateDomain())
 	{
 		routes.GET("", roleController.Index)

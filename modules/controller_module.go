@@ -6,6 +6,7 @@ import (
 	authController "github.com/PhantomX7/dhamma/modules/auth/controller"
 	cronController "github.com/PhantomX7/dhamma/modules/cron/controller"
 	domainController "github.com/PhantomX7/dhamma/modules/domain/controller"
+	permissionController "github.com/PhantomX7/dhamma/modules/permission/controller"
 	roleController "github.com/PhantomX7/dhamma/modules/role/controller"
 	userController "github.com/PhantomX7/dhamma/modules/user/controller"
 )
@@ -15,6 +16,7 @@ var ControllerModule = fx.Options(
 		authController.New,
 		cronController.New,
 		domainController.New,
+		permissionController.New,
 		roleController.New,
 		userController.New,
 	),

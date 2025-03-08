@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func User(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
+func UserRoute(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
 	routes := route.Group("api/user", middleware.AuthHandle(), middleware.IsRoot())
 	{
 		routes.GET("", userController.Index)

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func User(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
+func UserRoute(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
 	routes := route.Group(":domain_code/user", middleware.AuthHandle(), middleware.ValidateDomain())
 	{
 		routes.GET("", userController.Index)

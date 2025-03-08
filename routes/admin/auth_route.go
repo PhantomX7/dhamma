@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Auth(route *gin.Engine, middleware *middleware.Middleware, authController auth.Controller) {
+func AuthRoute(route *gin.Engine, middleware *middleware.Middleware, authController auth.Controller) {
 	routes := route.Group("api/auth")
 	{
 		routes.POST("/signin", authController.SignIn)

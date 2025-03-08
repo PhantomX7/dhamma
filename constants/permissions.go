@@ -3,6 +3,7 @@ package constants
 import (
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/auth"
+	"github.com/PhantomX7/dhamma/modules/permission"
 	"github.com/PhantomX7/dhamma/modules/role"
 	"github.com/PhantomX7/dhamma/modules/user"
 )
@@ -72,6 +73,13 @@ var ApiPermissions = []entity.Permission{
 		Object:      user.Permissions.Key,
 		Action:      user.Permissions.Create,
 		Description: "user create route",
+		Type:        EnumPermissionTypeApi,
+	},
+	{
+		Name:        "permission - index",
+		Object:      permission.Permissions.Key,
+		Action:      permission.Permissions.Index,
+		Description: "permission index route",
 		Type:        EnumPermissionTypeApi,
 	},
 }
