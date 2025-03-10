@@ -12,15 +12,15 @@ const EnumPermissionTypeApi = "API"
 const EnumPermissionTypeWeb = "WEB"
 
 var ApiPermissions = []entity.Permission{
+	// {
+	// 	Name:        "get me",
+	// 	Object:      auth.Permissions.Key,
+	// 	Action:      auth.Permissions.GetMe,
+	// 	Description: "get me route",
+	// 	Type:        EnumPermissionTypeApi,
+	// },
 	{
-		Name:        "get me",
-		Object:      auth.Permissions.Key,
-		Action:      auth.Permissions.GetMe,
-		Description: "get me route",
-		Type:        EnumPermissionTypeApi,
-	},
-	{
-		Name:        "update password",
+		Name:        "auth - update password",
 		Object:      auth.Permissions.Key,
 		Action:      auth.Permissions.UpdatePassword,
 		Description: "update password route",
@@ -52,6 +52,13 @@ var ApiPermissions = []entity.Permission{
 		Object:      role.Permissions.Key,
 		Action:      role.Permissions.Update,
 		Description: "role update route",
+		Type:        EnumPermissionTypeApi,
+	},
+	{
+		Name:        "role - add permission",
+		Object:      role.Permissions.Key,
+		Action:      role.Permissions.AddPermissions,
+		Description: "role add permission route",
 		Type:        EnumPermissionTypeApi,
 	},
 	{

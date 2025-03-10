@@ -2,10 +2,11 @@ package repository
 
 import (
 	"context"
-	"github.com/PhantomX7/dhamma/utility"
+
+	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"gorm.io/gorm"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
 func (r *repository) AssignRole(ctx context.Context, userID, domainID, roleID uint64, tx *gorm.DB) (err error) {

@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+
 	"github.com/PhantomX7/dhamma/modules/user/dto/request"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,6 @@ type Repository interface {
 	FindAll(ctx context.Context, pg *pagination.Pagination) ([]entity.User, error)
 	FindByID(ctx context.Context, userID uint64, preloadRelations bool) (entity.User, error)
 	FindByUsername(ctx context.Context, username string) (entity.User, error)
-	FindByIDWithRelation(ctx context.Context, userID uint64) (entity.User, error)
 	GetUserDomains(ctx context.Context, userID uint64) (entity.User, error)
 	Count(ctx context.Context, pg *pagination.Pagination) (int64, error)
 }
@@ -42,6 +42,7 @@ type Service interface {
 	Show(ctx context.Context, userID uint64) (entity.User, error)
 	Create(ctx context.Context, request request.UserCreateRequest) (entity.User, error)
 	AssignDomain(ctx context.Context, userID uint64, request request.AssignDomainRequest) error
+	AssignRole(ctx context.Context, userID uint64, request request.AssignRoleRequest) error
 }
 
 type Controller interface {
@@ -49,4 +50,5 @@ type Controller interface {
 	Show(ctx *gin.Context)
 	Create(ctx *gin.Context)
 	AssignDomain(ctx *gin.Context)
+	AssignRole(ctx *gin.Context)
 }

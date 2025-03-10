@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"errors"
+	"strings"
+
 	"github.com/PhantomX7/dhamma/constants"
 	"gorm.io/gorm"
-	"strings"
 
 	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
@@ -15,7 +16,7 @@ import (
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 )
 
-func (u *service) SignUp(ctx context.Context, request request.SignUpRequest) (res response.AuthResponse, err error) {
+func (s *service) SignUp(ctx context.Context, request request.SignUpRequest) (res response.AuthResponse, err error) {
 	user := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
@@ -30,8 +31,8 @@ func (u *service) SignUp(ctx context.Context, request request.SignUpRequest) (re
 	user.Password = string(password)
 
 	var accessToken, refreshToken string
-	err = u.transactionManager.ExecuteInTransaction(func(tx *gorm.DB) error {
-		err = u.userRepo.Create(ctx, &user, tx)
+	err = s.transactionManager.ExecuteInTransaction(func(tx *gorm.DB) error {
+		err = s.userRepo.Create(ctx, &user, tx)
 		if err != nil {
 			return err
 		}
@@ -41,12 +42,12 @@ func (u *service) SignUp(ctx context.Context, request request.SignUpRequest) (re
 			role = constants.EnumRoleRoot
 		}
 
-		accessToken, err = u.GenerateAccessToken(user.ID, role)
+		accessToken, err = s.GenerateAccessToken(user.ID, role)
 		if err != nil {
 			return err
 		}
 
-		refreshToken, err = u.GenerateRefreshToken(user.ID, tx)
+		refreshToken, err = s.GenerateRefreshToken(user.ID, tx)
 		if err != nil {
 			return err
 		}

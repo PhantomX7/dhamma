@@ -15,6 +15,10 @@ type RoleUpdateRequest struct {
 	IsActive    *bool   `json:"is_active" form:"is_active"`
 }
 
+type RoleAddPermissionsRequest struct {
+	Permissions []string `json:"permissions" form:"permissions[]" binding:"required,dive,exist=permissions.code"`
+}
+
 func NewRolePagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
 		AddFilter("id", pagination.FilterConfig{

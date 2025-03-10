@@ -10,6 +10,10 @@ type AssignDomainRequest struct {
 	DomainID uint64 `json:"domain_id" form:"domain_id" binding:"required,exist=domains.id"`
 }
 
+type AssignRoleRequest struct {
+	RoleID uint64 `json:"role_id" form:"role_id" binding:"required,exist=roles.id"`
+}
+
 func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
 		AddFilter("id", pagination.FilterConfig{

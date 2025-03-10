@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+
 	"github.com/PhantomX7/dhamma/utility"
 	"gorm.io/gorm"
 
@@ -15,8 +16,7 @@ func (r *repository) FindByID(ctx context.Context, userID uint64, preloadRelatio
 		preloadScope = func(db *gorm.DB) *gorm.DB {
 			return db.
 				Preload("Domains").
-				Preload("UserRoles.Role").
-				Preload("UserRoles.Domain")
+				Preload("UserRoles.Role")
 		}
 	}
 	err = r.db.WithContext(ctx).

@@ -259,9 +259,9 @@ func (_c *Repository_FindByUserIDAndDomainID_Call) RunAndReturn(run func(context
 	return _c
 }
 
-// HasRole provides a mock function with given fields: ctx, userID, domainID, roleID
-func (_m *Repository) HasRole(ctx context.Context, userID uint64, domainID uint64, roleID uint64) (bool, error) {
-	ret := _m.Called(ctx, userID, domainID, roleID)
+// HasRole provides a mock function with given fields: ctx, userID, roleID
+func (_m *Repository) HasRole(ctx context.Context, userID uint64, roleID uint64) (bool, error) {
+	ret := _m.Called(ctx, userID, roleID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for HasRole")
@@ -269,17 +269,17 @@ func (_m *Repository) HasRole(ctx context.Context, userID uint64, domainID uint6
 
 	var r0 bool
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, uint64, uint64) (bool, error)); ok {
-		return rf(ctx, userID, domainID, roleID)
+	if rf, ok := ret.Get(0).(func(context.Context, uint64, uint64) (bool, error)); ok {
+		return rf(ctx, userID, roleID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, uint64, uint64) bool); ok {
-		r0 = rf(ctx, userID, domainID, roleID)
+	if rf, ok := ret.Get(0).(func(context.Context, uint64, uint64) bool); ok {
+		r0 = rf(ctx, userID, roleID)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uint64, uint64, uint64) error); ok {
-		r1 = rf(ctx, userID, domainID, roleID)
+	if rf, ok := ret.Get(1).(func(context.Context, uint64, uint64) error); ok {
+		r1 = rf(ctx, userID, roleID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -295,15 +295,14 @@ type Repository_HasRole_Call struct {
 // HasRole is a helper method to define mock.On call
 //   - ctx context.Context
 //   - userID uint64
-//   - domainID uint64
 //   - roleID uint64
-func (_e *Repository_Expecter) HasRole(ctx interface{}, userID interface{}, domainID interface{}, roleID interface{}) *Repository_HasRole_Call {
-	return &Repository_HasRole_Call{Call: _e.mock.On("HasRole", ctx, userID, domainID, roleID)}
+func (_e *Repository_Expecter) HasRole(ctx interface{}, userID interface{}, roleID interface{}) *Repository_HasRole_Call {
+	return &Repository_HasRole_Call{Call: _e.mock.On("HasRole", ctx, userID, roleID)}
 }
 
-func (_c *Repository_HasRole_Call) Run(run func(ctx context.Context, userID uint64, domainID uint64, roleID uint64)) *Repository_HasRole_Call {
+func (_c *Repository_HasRole_Call) Run(run func(ctx context.Context, userID uint64, roleID uint64)) *Repository_HasRole_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(uint64), args[2].(uint64), args[3].(uint64))
+		run(args[0].(context.Context), args[1].(uint64), args[2].(uint64))
 	})
 	return _c
 }
@@ -313,22 +312,22 @@ func (_c *Repository_HasRole_Call) Return(_a0 bool, _a1 error) *Repository_HasRo
 	return _c
 }
 
-func (_c *Repository_HasRole_Call) RunAndReturn(run func(context.Context, uint64, uint64, uint64) (bool, error)) *Repository_HasRole_Call {
+func (_c *Repository_HasRole_Call) RunAndReturn(run func(context.Context, uint64, uint64) (bool, error)) *Repository_HasRole_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// RemoveRole provides a mock function with given fields: ctx, userID, domainID, roleID, tx
-func (_m *Repository) RemoveRole(ctx context.Context, userID uint64, domainID uint64, roleID uint64, tx *gorm.DB) error {
-	ret := _m.Called(ctx, userID, domainID, roleID, tx)
+// RemoveRole provides a mock function with given fields: ctx, userID, roleID, tx
+func (_m *Repository) RemoveRole(ctx context.Context, userID uint64, roleID uint64, tx *gorm.DB) error {
+	ret := _m.Called(ctx, userID, roleID, tx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for RemoveRole")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, uint64, uint64, uint64, *gorm.DB) error); ok {
-		r0 = rf(ctx, userID, domainID, roleID, tx)
+	if rf, ok := ret.Get(0).(func(context.Context, uint64, uint64, *gorm.DB) error); ok {
+		r0 = rf(ctx, userID, roleID, tx)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -344,16 +343,15 @@ type Repository_RemoveRole_Call struct {
 // RemoveRole is a helper method to define mock.On call
 //   - ctx context.Context
 //   - userID uint64
-//   - domainID uint64
 //   - roleID uint64
 //   - tx *gorm.DB
-func (_e *Repository_Expecter) RemoveRole(ctx interface{}, userID interface{}, domainID interface{}, roleID interface{}, tx interface{}) *Repository_RemoveRole_Call {
-	return &Repository_RemoveRole_Call{Call: _e.mock.On("RemoveRole", ctx, userID, domainID, roleID, tx)}
+func (_e *Repository_Expecter) RemoveRole(ctx interface{}, userID interface{}, roleID interface{}, tx interface{}) *Repository_RemoveRole_Call {
+	return &Repository_RemoveRole_Call{Call: _e.mock.On("RemoveRole", ctx, userID, roleID, tx)}
 }
 
-func (_c *Repository_RemoveRole_Call) Run(run func(ctx context.Context, userID uint64, domainID uint64, roleID uint64, tx *gorm.DB)) *Repository_RemoveRole_Call {
+func (_c *Repository_RemoveRole_Call) Run(run func(ctx context.Context, userID uint64, roleID uint64, tx *gorm.DB)) *Repository_RemoveRole_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(uint64), args[2].(uint64), args[3].(uint64), args[4].(*gorm.DB))
+		run(args[0].(context.Context), args[1].(uint64), args[2].(uint64), args[3].(*gorm.DB))
 	})
 	return _c
 }
@@ -363,7 +361,7 @@ func (_c *Repository_RemoveRole_Call) Return(_a0 error) *Repository_RemoveRole_C
 	return _c
 }
 
-func (_c *Repository_RemoveRole_Call) RunAndReturn(run func(context.Context, uint64, uint64, uint64, *gorm.DB) error) *Repository_RemoveRole_Call {
+func (_c *Repository_RemoveRole_Call) RunAndReturn(run func(context.Context, uint64, uint64, *gorm.DB) error) *Repository_RemoveRole_Call {
 	_c.Call.Return(run)
 	return _c
 }

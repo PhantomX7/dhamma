@@ -8,5 +8,6 @@ type Role struct {
 	IsActive    bool   `json:"is_active" gorm:"default:true"`
 	Timestamp
 
-	Domain *Domain `json:"domain,omitempty" gorm:"foreignKey:DomainID"`
+	Domain      *Domain  `json:"domain,omitempty" gorm:"foreignKey:DomainID"`
+	Permissions []string `json:"permissions,omitempty" gorm:"-"`
 }

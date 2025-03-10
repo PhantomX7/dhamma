@@ -3,23 +3,17 @@ package service_test
 import (
 	"context"
 	"errors"
+	"testing"
+	"time"
+
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/golang-jwt/jwt/v4"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-// All methods that begin with "Test" are run as tests within a
-// suite.
-//
-//	func (suite *ExampleTestSuite) TestExample() {
-//		assert.Equal(suite.T(), 5, suite.VariableThatShouldStartAtFive)
-//		suite.Equal(5, suite.VariableThatShouldStartAtFive)
-//	}
 func (suite *AuthServiceSuite) TestGenerateAccessToken() {
 	// Test cases
 	tests := []struct {

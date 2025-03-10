@@ -18,6 +18,8 @@ type User struct {
 	Domains []Domain `json:"domains" gorm:"many2many:user_domains;"`
 	// Has-Many with UserRole to handle multiple roles per domain
 	UserRoles []UserRole `json:"user_roles" gorm:"foreignKey:UserID"`
+	// all permissions for user
+	Permissions []string `json:"permissions,omitempty" gorm:"-"`
 }
 
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {

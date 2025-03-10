@@ -11,6 +11,10 @@ import (
 
 type Client interface {
 	GetEnforcer() *casbin.Enforcer
+	AddPermissions(roleID uint64, domainID uint64, permissionsCodes []string)
+	GetRolePermissions(roleID uint64, domainID uint64) []string
+	AddUserRole(userID uint64, roleID uint64, domainID uint64) error
+	GetUserPermissions(userID uint64, domainID uint64) []string
 }
 
 type client struct {
@@ -47,7 +51,6 @@ func New(db *gorm.DB) Client {
 	err = enforcer.LoadPolicy()
 	if err != nil {
 		panic(fmt.Sprintf("failed to load policy from DB: %v", err))
-		return nil
 	}
 
 	return &client{

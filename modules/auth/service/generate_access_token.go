@@ -2,14 +2,15 @@ package service
 
 import (
 	"errors"
+	"time"
+
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/golang-jwt/jwt/v4"
-	"time"
 )
 
-func (u *service) GenerateAccessToken(userID uint64, role string) (string, error) {
+func (s *service) GenerateAccessToken(userID uint64, role string) (string, error) {
 	if role == "" {
 		return "", errors.New("empty role")
 	}

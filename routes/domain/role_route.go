@@ -13,5 +13,6 @@ func RoleRoute(route *gin.Engine, middleware *middleware.Middleware, roleControl
 		routes.GET("/:id", roleController.Show)
 		routes.POST("", roleController.Create)
 		routes.PATCH("/:id", roleController.Update)
+		routes.POST("/:id/add-permissions", roleController.AddPermissions)
 	}
 }

@@ -2,6 +2,9 @@ package service_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/entity"
@@ -9,19 +12,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-// All methods that begin with "Test" are run as tests within a
-// suite.
-//
-//	func (suite *ExampleTestSuite) TestExample() {
-//		assert.Equal(suite.T(), 5, suite.VariableThatShouldStartAtFive)
-//		suite.Equal(5, suite.VariableThatShouldStartAtFive)
-//	}
+// TestGenerateRefreshToken tests the GenerateRefreshToken method of the AuthService.
 func (suite *AuthServiceSuite) TestGenerateRefreshToken() {
 	// Test cases
 	tests := []struct {

@@ -38,6 +38,10 @@ func (s *service) Show(ctx context.Context, userID uint64) (user entity.User, er
 		if err != nil {
 			return
 		}
+
+		for _, userRole := range userRoles {
+			userRole.Role.Permissions = s.casbin.GetRolePermissions(userRole.Role.ID, userRole.Role.DomainID)
+		}
 		user.UserRoles = userRoles
 
 		var domain entity.Domain

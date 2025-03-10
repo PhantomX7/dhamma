@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/PhantomX7/dhamma/constants"
 	"time"
+
+	"github.com/PhantomX7/dhamma/constants"
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/entity"
@@ -13,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u *service) GenerateRefreshToken(userID uint64, tx *gorm.DB) (string, error) {
+func (s *service) GenerateRefreshToken(userID uint64, tx *gorm.DB) (string, error) {
 	refreshToken := &entity.RefreshToken{
 		ID:        uuid.New(),
 		UserID:    userID,
@@ -22,7 +23,7 @@ func (u *service) GenerateRefreshToken(userID uint64, tx *gorm.DB) (string, erro
 	}
 
 	// Save to database
-	err := u.refreshTokenRepo.Create(context.Background(), refreshToken, tx)
+	err := s.refreshTokenRepo.Create(context.Background(), refreshToken, tx)
 	if err != nil {
 		return "", err
 	}

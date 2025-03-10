@@ -13,13 +13,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// All methods that begin with "Test" are run as tests within a
-// suite.
-//
-//	func (suite *ExampleTestSuite) TestExample() {
-//		assert.Equal(suite.T(), 5, suite.VariableThatShouldStartAtFive)
-//		suite.Equal(5, suite.VariableThatShouldStartAtFive)
-//	}
 func (suite *AuthServiceSuite) TestGetMe() {
 	// Test cases
 	tests := []struct {

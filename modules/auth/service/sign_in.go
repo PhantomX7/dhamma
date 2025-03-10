@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/PhantomX7/dhamma/constants"
 	"strings"
+
+	"github.com/PhantomX7/dhamma/constants"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -13,12 +14,12 @@ import (
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 )
 
-func (u *service) SignIn(ctx context.Context, request request.SignInRequest) (res response.AuthResponse, err error) {
+func (s *service) SignIn(ctx context.Context, request request.SignInRequest) (res response.AuthResponse, err error) {
 	user := entity.User{}
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
 
-	user, err = u.userRepo.FindByUsername(ctx, request.Username)
+	user, err = s.userRepo.FindByUsername(ctx, request.Username)
 	if err != nil {
 		err = errors.New("invalid username or password")
 		return
@@ -35,12 +36,12 @@ func (u *service) SignIn(ctx context.Context, request request.SignInRequest) (re
 		role = constants.EnumRoleRoot
 	}
 
-	accessToken, err := u.GenerateAccessToken(user.ID, role)
+	accessToken, err := s.GenerateAccessToken(user.ID, role)
 	if err != nil {
 		return
 	}
 
-	refreshTokenM, err := u.GenerateRefreshToken(user.ID, nil)
+	refreshTokenM, err := s.GenerateRefreshToken(user.ID, nil)
 	if err != nil {
 		return
 	}

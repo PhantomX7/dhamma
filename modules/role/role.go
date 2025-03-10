@@ -2,6 +2,7 @@ package role
 
 import (
 	"context"
+
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/role/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
@@ -11,19 +12,21 @@ import (
 )
 
 type permission struct {
-	Key    string
-	Index  string
-	Show   string
-	Create string
-	Update string
+	Key            string
+	Index          string
+	Show           string
+	Create         string
+	Update         string
+	AddPermissions string
 }
 
 var Permissions = permission{
-	Key:    "role",
-	Index:  "index",
-	Show:   "show",
-	Create: "create",
-	Update: "update",
+	Key:            "role",
+	Index:          "index",
+	Show:           "show",
+	Create:         "create",
+	Update:         "update",
+	AddPermissions: "add-permissions",
 }
 
 type Repository interface {
@@ -40,6 +43,7 @@ type Service interface {
 	Show(ctx context.Context, roleID uint64) (entity.Role, error)
 	Update(ctx context.Context, roleID uint64, request request.RoleUpdateRequest) (entity.Role, error)
 	Create(ctx context.Context, request request.RoleCreateRequest) (entity.Role, error)
+	AddPermissions(ctx context.Context, roleID uint64, request request.RoleAddPermissionsRequest) (entity.Role, error)
 }
 
 type Controller interface {
@@ -47,4 +51,5 @@ type Controller interface {
 	Show(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Create(ctx *gin.Context)
+	AddPermissions(ctx *gin.Context)
 }

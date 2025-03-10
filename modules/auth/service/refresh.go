@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/entity"
@@ -12,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (u *service) Refresh(ctx context.Context, request request.RefreshRequest) (res response.AuthResponse, err error) {
+func (s *service) Refresh(ctx context.Context, request request.RefreshRequest) (res response.AuthResponse, err error) {
 	// Parse refresh token and validate
 	claims := &entity.RefreshClaims{}
 	token, err := jwt.ParseWithClaims(request.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -33,13 +34,13 @@ func (u *service) Refresh(ctx context.Context, request request.RefreshRequest) (
 	}
 
 	// Check if refresh token is valid
-	refreshTokenM, err := u.refreshTokenRepo.FindByID(ctx, claims.RefreshToken)
+	refreshTokenM, err := s.refreshTokenRepo.FindByID(ctx, claims.RefreshToken)
 	if err != nil {
 		err = errors.New("invalid refresh token")
 		return
 	}
 
-	user, err := u.userRepo.FindByID(ctx, refreshTokenM.UserID, false)
+	user, err := s.userRepo.FindByID(ctx, refreshTokenM.UserID, false)
 	if err != nil {
 		return
 	}
@@ -49,7 +50,7 @@ func (u *service) Refresh(ctx context.Context, request request.RefreshRequest) (
 		role = constants.EnumRoleRoot
 	}
 
-	accessToken, err := u.GenerateAccessToken(refreshTokenM.UserID, role)
+	accessToken, err := s.GenerateAccessToken(refreshTokenM.UserID, role)
 	if err != nil {
 		return
 	}
@@ -58,14 +59,14 @@ func (u *service) Refresh(ctx context.Context, request request.RefreshRequest) (
 	refreshTokenM.IsValid = false
 
 	var refreshToken string
-	err = u.transactionManager.ExecuteInTransaction(func(tx *gorm.DB) error {
+	err = s.transactionManager.ExecuteInTransaction(func(tx *gorm.DB) error {
 
-		err = u.refreshTokenRepo.Update(ctx, &refreshTokenM, tx)
+		err = s.refreshTokenRepo.Update(ctx, &refreshTokenM, tx)
 		if err != nil {
 			return err
 		}
 
-		refreshToken, err = u.GenerateRefreshToken(refreshTokenM.UserID, tx)
+		refreshToken, err = s.GenerateRefreshToken(refreshTokenM.UserID, tx)
 		if err != nil {
 			return err
 		}
