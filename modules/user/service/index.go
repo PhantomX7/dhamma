@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -20,7 +21,7 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	}
 
 	pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-		return db.Joins("JOIN user_domains ud ON ud.user_id = users.id").
+		return db.Joins("LEFT JOIN user_domains ud ON ud.user_id = users.id").
 			Preload("Domains")
 	})
 

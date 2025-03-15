@@ -28,3 +28,7 @@ build:
 
 swag:
 	swag init -d app
+
+
+test-integration:
+	go test -v ./test/integration/...
