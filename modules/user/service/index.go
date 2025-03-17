@@ -32,6 +32,13 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 		})
 	}
 
+	// only query non super admin user for non root user
+	if !contextValues.IsRoot {
+		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
+			return db.Where("users.is_super_admin = ?", false)
+		})
+	}
+
 	users, err = s.userRepo.FindAll(ctx, pg)
 	if err != nil {
 		return
