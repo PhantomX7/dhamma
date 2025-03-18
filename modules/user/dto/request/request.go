@@ -30,10 +30,19 @@ func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
 			},
 		}).
+		AddFilter("is_active", pagination.FilterConfig{
+			Field: "is_active",
+			Type:  pagination.FilterTypeBool,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorEquals,
+			},
+		}).
 		AddFilter("created_at", pagination.FilterConfig{
-			Field:     "created_at",
-			Type:      pagination.FilterTypeDate,
-			Operators: []pagination.FilterOperator{pagination.OperatorBetween},
+			Field: "created_at",
+			Type:  pagination.FilterTypeDate,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorBetween, pagination.OperatorEquals,
+			},
 		}).
 		AddSort("id", pagination.SortConfig{
 			Field:   "id",

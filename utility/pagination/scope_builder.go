@@ -3,7 +3,6 @@ package pagination
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -232,32 +231,33 @@ func (sb *ScopeBuilder) buildBoolScope(field string, op FilterOperation) func(*g
 }
 
 func (sb *ScopeBuilder) buildDateScope(field string, op FilterOperation, filterType FilterType) func(*gorm.DB) *gorm.DB {
+	location, err := time.LoadLocation("Asia/Jakarta") // GMT+7
+	if err != nil {
+		return nil
+	}
+
 	switch op.Operator {
 	case OperatorEquals:
-		t, err := time.Parse("2006-01-02", op.Values[0])
+		t, err := time.ParseInLocation("2006-01-02", op.Values[0], location)
 		if err != nil {
 			return nil
 		}
 		return func(db *gorm.DB) *gorm.DB {
-			if filterType == FilterTypeDateTime {
-				return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field),
-					t, t.Add(24*time.Hour).Add(-time.Second))
-			}
-			return db.Where(fmt.Sprintf("%s = ?", field), t)
+			return db.Where(
+				fmt.Sprintf("%s BETWEEN ? AND ?", field),
+				t,
+				t.Add(24*time.Hour).Add(-time.Second),
+			)
 		}
 	case OperatorBetween:
-		start, err := time.Parse("2006-01-02", op.Values[0])
+		start, err := time.ParseInLocation("2006-01-02", op.Values[0], location)
 		if err != nil {
 			return nil
 		}
-		end, err := time.Parse("2006-01-02", op.Values[1])
+		end, err := time.ParseInLocation("2006-01-02", op.Values[1], location)
 		if err != nil {
 			return nil
 		}
-		if filterType == FilterTypeDateTime {
-			end = end.Add(24 * time.Hour).Add(-time.Second)
-		}
-		log.Print("hereee 2")
 
 		return func(db *gorm.DB) *gorm.DB {
 			return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field), start, end)

@@ -20,24 +20,28 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 		return
 	}
 
-	pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-		return db.Joins("LEFT JOIN user_domains ud ON ud.user_id = users.id").
-			Preload("Domains")
-	})
-
-	// only query specific domain
-	if contextValues.DomainID != nil {
-		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-			return db.Where("ud.domain_id = ?", *contextValues.DomainID)
-		})
-	}
-
-	// only query non super admin user for non root user
-	if !contextValues.IsRoot {
-		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-			return db.Where("users.is_super_admin = ?", false)
-		})
-	}
+	// Combine all scopes into a single AddCustomScope call
+	pg.AddCustomScope(
+		// Base join and preload
+		func(db *gorm.DB) *gorm.DB {
+			return db.Joins("LEFT JOIN user_domains ud ON ud.user_id = users.id").
+				Preload("Domains")
+		},
+		// Domain filter scope
+		func(db *gorm.DB) *gorm.DB {
+			if contextValues.DomainID != nil {
+				return db.Where("ud.domain_id = ?", *contextValues.DomainID)
+			}
+			return db
+		},
+		// Super admin filter scope
+		func(db *gorm.DB) *gorm.DB {
+			if !contextValues.IsRoot {
+				return db.Where("users.is_super_admin = ?", false)
+			}
+			return db
+		},
+	)
 
 	users, err = s.userRepo.FindAll(ctx, pg)
 	if err != nil {
