@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"errors"
-	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
 	"net/http"
 	"strings"
+
+	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/constants"
@@ -51,6 +52,20 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 
 		if !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
+		}
+
+		// check if user is active
+		user, err := m.userRepo.FindByID(c.Request.Context(), claims.UserID, false)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user"})
+			c.Abort()
+			return
+		}
+
+		if !user.IsActive {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User is not active"})
 			c.Abort()
 			return
 		}
