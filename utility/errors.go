@@ -2,8 +2,9 @@ package utility
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"log"
+
+	"gorm.io/gorm"
 )
 
 func LogError(errString string, err error) error {

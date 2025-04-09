@@ -10,8 +10,8 @@ type DomainCreateRequest struct {
 }
 
 type DomainUpdateRequest struct {
-	Name        *string `json:"name" form:"name" binding:"unique=domains.name"`
-	Code        *string `json:"code" form:"code" binding:"unique=domains.code"`
+	Name        *string `json:"name" form:"name" binding:"omitempty,unique=domains.name"`
+	Code        *string `json:"code" form:"code" binding:"omitempty,unique=domains.code"`
 	Description *string `json:"description" form:"description"`
 	IsActive    *bool   `json:"is_active" form:"is_active"`
 }
@@ -43,6 +43,13 @@ func NewDomainPagination(conditions map[string][]string) *pagination.Pagination 
 			Field:     "created_at",
 			Type:      pagination.FilterTypeDateTime,
 			Operators: []pagination.FilterOperator{pagination.OperatorBetween},
+		}).
+		AddFilter("is_active", pagination.FilterConfig{
+			Field: "is_active",
+			Type:  pagination.FilterTypeBool,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorEquals,
+			},
 		}).
 		AddSort("id", pagination.SortConfig{
 			Field:   "id",
