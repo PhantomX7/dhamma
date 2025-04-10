@@ -14,7 +14,7 @@ func (s *service) GetMe(ctx context.Context) (res response.MeResponse, err error
 		return
 	}
 
-	user, err := s.userRepo.FindByID(ctx, contextValues.UserID, true)
+	user, err := s.userRepo.FindByID(ctx, contextValues.UserID, "Domains", "UserRoles.Role")
 	if err != nil {
 		return
 	}

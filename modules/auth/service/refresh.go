@@ -40,7 +40,7 @@ func (s *service) Refresh(ctx context.Context, request request.RefreshRequest) (
 		return
 	}
 
-	user, err := s.userRepo.FindByID(ctx, refreshTokenM.UserID, false)
+	user, err := s.userRepo.FindByID(ctx, refreshTokenM.UserID)
 	if err != nil {
 		return
 	}

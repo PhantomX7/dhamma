@@ -7,19 +7,15 @@ import (
 	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
 	"github.com/PhantomX7/dhamma/utility/pagination"
+	"github.com/PhantomX7/dhamma/utility/repository"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type Repository interface {
-	Create(ctx context.Context, domain *entity.Domain, tx *gorm.DB) error
-	Update(ctx context.Context, domain *entity.Domain, tx *gorm.DB) error
-	FindAll(ctx context.Context, pg *pagination.Pagination) ([]entity.Domain, error)
-	FindByID(ctx context.Context, domainID uint64) (entity.Domain, error)
+	repository.BaseRepositoryInterface[entity.Domain]
 	FindByCode(ctx context.Context, code string) (entity.Domain, error)
 	GetDomainRoles(ctx context.Context, domainID uint64) (entity.Domain, error)
-	Count(ctx context.Context, pg *pagination.Pagination) (int64, error)
 }
 
 type Service interface {

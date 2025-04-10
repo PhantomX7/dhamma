@@ -6,11 +6,11 @@ import (
 	"github.com/PhantomX7/dhamma/modules/user/dto/request"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utility"
 	"github.com/PhantomX7/dhamma/utility/pagination"
+	"github.com/PhantomX7/dhamma/utility/repository"
 )
 
 type permission struct {
@@ -28,13 +28,9 @@ var Permissions = permission{
 }
 
 type Repository interface {
-	Create(ctx context.Context, user *entity.User, tx *gorm.DB) error
-	Update(ctx context.Context, user *entity.User, tx *gorm.DB) error
-	FindAll(ctx context.Context, pg *pagination.Pagination) ([]entity.User, error)
-	FindByID(ctx context.Context, userID uint64, preloadRelations bool) (entity.User, error)
+	repository.BaseRepositoryInterface[entity.User]
 	FindByUsername(ctx context.Context, username string) (entity.User, error)
 	GetUserDomains(ctx context.Context, userID uint64) (entity.User, error)
-	Count(ctx context.Context, pg *pagination.Pagination) (int64, error)
 }
 
 type Service interface {

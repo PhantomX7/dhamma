@@ -16,7 +16,7 @@ func (s *service) AssignRole(ctx context.Context, userID uint64, request request
 	}
 
 	// Check if user exists
-	user, err := s.userRepo.FindByID(ctx, userID, true)
+	user, err := s.userRepo.FindByID(ctx, userID, "Domains", "UserRoles.Role")
 	if err != nil {
 		return
 	}

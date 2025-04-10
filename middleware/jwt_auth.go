@@ -57,7 +57,7 @@ func (m *Middleware) AuthHandle() gin.HandlerFunc {
 		}
 
 		// check if user is active
-		user, err := m.userRepo.FindByID(c.Request.Context(), claims.UserID, false)
+		user, err := m.userRepo.FindByID(c.Request.Context(), claims.UserID)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user"})
 			c.Abort()

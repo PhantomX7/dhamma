@@ -29,11 +29,7 @@ func (r *repository) FindAll(ctx context.Context, pg *pagination.Pagination) ([]
 }
 
 // FindByID finds a user by ID
-func (r *repository) FindByID(ctx context.Context, id uint64, withPreload bool) (entity.User, error) {
-	var preloads []string
-	if withPreload {
-		preloads = []string{"Domains", "UserRoles.Role"}
-	}
+func (r *repository) FindByID(ctx context.Context, id uint64, preloads ...string) (entity.User, error) {
 	return r.base.FindByID(ctx, id, preloads...)
 }
 

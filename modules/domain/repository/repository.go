@@ -27,8 +27,8 @@ func (r *repository) FindAll(ctx context.Context, pg *pagination.Pagination) ([]
 	return r.base.FindAll(ctx, pg)
 }
 
-func (r *repository) FindByID(ctx context.Context, domainID uint64) (entity.Domain, error) {
-	return r.base.FindByID(ctx, domainID)
+func (r *repository) FindByID(ctx context.Context, domainID uint64, preloads ...string) (entity.Domain, error) {
+	return r.base.FindByID(ctx, domainID, preloads...)
 }
 
 func (r *repository) Create(ctx context.Context, domain *entity.Domain, tx *gorm.DB) error {
@@ -37,6 +37,10 @@ func (r *repository) Create(ctx context.Context, domain *entity.Domain, tx *gorm
 
 func (r *repository) Update(ctx context.Context, domain *entity.Domain, tx *gorm.DB) error {
 	return r.base.Update(ctx, domain, tx)
+}
+
+func (r *repository) Delete(ctx context.Context, domain *entity.Domain, tx *gorm.DB) error {
+	return r.base.Delete(ctx, domain, tx)
 }
 
 func (r *repository) Count(ctx context.Context, pg *pagination.Pagination) (int64, error) {

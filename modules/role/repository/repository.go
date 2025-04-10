@@ -27,8 +27,8 @@ func (r *repository) FindAll(ctx context.Context, pg *pagination.Pagination) ([]
 	return r.base.FindAll(ctx, pg)
 }
 
-func (r *repository) FindByID(ctx context.Context, roleID uint64) (entity.Role, error) {
-	return r.base.FindByID(ctx, roleID)
+func (r *repository) FindByID(ctx context.Context, roleID uint64, preloads ...string) (entity.Role, error) {
+	return r.base.FindByID(ctx, roleID, preloads...)
 }
 
 func (r *repository) Create(ctx context.Context, role *entity.Role, tx *gorm.DB) error {
