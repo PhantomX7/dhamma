@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/PhantomX7/dhamma/utility"
 	"github.com/PhantomX7/dhamma/utility/pagination"
 	"gorm.io/gorm"
 )
@@ -45,7 +46,7 @@ func (r BaseRepository[T]) Count(ctx context.Context, pg *pagination.Pagination)
 		Model((*T)(nil)).
 		Count(&count).Error
 	if err != nil {
-		return 0, WrapError(ErrDatabase, "failed to count records")
+		return 0, utility.WrapError(utility.ErrDatabase, "failed to count records")
 	}
 	return count, nil
 }
@@ -54,8 +55,8 @@ func (r BaseRepository[T]) Count(ctx context.Context, pg *pagination.Pagination)
 // It accepts a context for cancellation and timeout control, an ID to search for,
 // and optional preload relationships.
 // Returns the found entity and nil error on success, or a zero value entity and an error if:
-// - The record is not found (ErrNotFound)
-// - A database error occurs (ErrDatabase)
+// - The record is not found (utility.ErrNotFound)
+// - A database error occurs (utility.ErrDatabase)
 func (r BaseRepository[T]) FindByID(ctx context.Context, id uint64, preloads ...string) (T, error) {
 	var entity T
 	db := r.prepareDB(ctx, nil)
@@ -63,10 +64,10 @@ func (r BaseRepository[T]) FindByID(ctx context.Context, id uint64, preloads ...
 
 	result := db.First(&entity, id)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return entity, WrapError(ErrNotFound, "entity with ID %d not found", id)
+		return entity, utility.WrapError(utility.ErrNotFound, "entity with ID %d not found", id)
 	}
 	if result.Error != nil {
-		return entity, WrapError(ErrDatabase, "failed to find entity with ID %d", id)
+		return entity, utility.WrapError(utility.ErrDatabase, "failed to find entity with ID %d", id)
 	}
 
 	return entity, nil
@@ -81,7 +82,7 @@ func (r BaseRepository[T]) Create(ctx context.Context, model *T, tx *gorm.DB) er
 
 	err := db.Create(model).Error
 	if err != nil {
-		return WrapError(ErrDatabase, "failed to create record")
+		return utility.WrapError(utility.ErrDatabase, "failed to create record")
 	}
 	return nil
 }
@@ -96,7 +97,7 @@ func (r BaseRepository[T]) Update(ctx context.Context, model *T, tx *gorm.DB) er
 
 	err := db.Save(model).Error
 	if err != nil {
-		return WrapError(ErrDatabase, "failed to update record")
+		return utility.WrapError(utility.ErrDatabase, "failed to update record")
 	}
 	return nil
 }
@@ -111,7 +112,7 @@ func (r BaseRepository[T]) Delete(ctx context.Context, model *T, tx *gorm.DB) er
 
 	err := db.Delete(model).Error
 	if err != nil {
-		return WrapError(ErrDatabase, "failed to delete record")
+		return utility.WrapError(utility.ErrDatabase, "failed to delete record")
 	}
 	return nil
 }
@@ -131,7 +132,7 @@ func (r BaseRepository[T]) FindAll(ctx context.Context, pg *pagination.Paginatio
 		Scopes(metaScopes...).
 		Find(&entities).Error
 	if err != nil {
-		return nil, WrapError(ErrDatabase, "failed to find records")
+		return nil, utility.WrapError(utility.ErrDatabase, "failed to find records")
 	}
 
 	return entities, nil
@@ -149,7 +150,7 @@ func (r BaseRepository[T]) FindByField(ctx context.Context, fieldName string, va
 
 	err := db.Where(fieldName+" = ?", value).Find(&entities).Error
 	if err != nil {
-		return nil, WrapError(ErrDatabase, "failed to find records with %s=%v", fieldName, value)
+		return nil, utility.WrapError(utility.ErrDatabase, "failed to find records with %s=%v", fieldName, value)
 	}
 	return entities, nil
 }
@@ -158,8 +159,8 @@ func (r BaseRepository[T]) FindByField(ctx context.Context, fieldName string, va
 // It accepts a context for cancellation and timeout control, the field name to filter on,
 // the value to match, and optional preload relationships.
 // Returns the found entity and nil error on success, or a zero value entity and an error if:
-// - The record is not found (ErrNotFound)
-// - A database error occurs (ErrDatabase)
+// - The record is not found (utility.ErrNotFound)
+// - A database error occurs (utility.ErrDatabase)
 func (r BaseRepository[T]) FindOneByField(ctx context.Context, fieldName string, value any, preloads ...string) (T, error) {
 	var entity T
 	db := r.prepareDB(ctx, nil)
@@ -167,10 +168,10 @@ func (r BaseRepository[T]) FindOneByField(ctx context.Context, fieldName string,
 
 	result := db.Where(fieldName+" = ?", value).First(&entity)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return entity, WrapError(ErrNotFound, "entity with %s=%v not found", fieldName, value)
+		return entity, utility.WrapError(utility.ErrNotFound, "entity with %s=%v not found", fieldName, value)
 	}
 	if result.Error != nil {
-		return entity, WrapError(ErrDatabase, "failed to find entity with %s=%v", fieldName, value)
+		return entity, utility.WrapError(utility.ErrDatabase, "failed to find entity with %s=%v", fieldName, value)
 	}
 
 	return entity, nil
@@ -188,7 +189,7 @@ func (r BaseRepository[T]) FindByFields(ctx context.Context, conditions map[stri
 
 	err := db.Where(conditions).Find(&entities).Error
 	if err != nil {
-		return nil, WrapError(ErrDatabase, "failed to find records with conditions")
+		return nil, utility.WrapError(utility.ErrDatabase, "failed to find records with conditions")
 	}
 	return entities, nil
 }
@@ -201,7 +202,7 @@ func (r BaseRepository[T]) Exists(ctx context.Context, conditions map[string]any
 	var count int64
 	err := r.DB.WithContext(ctx).Model((*T)(nil)).Where(conditions).Count(&count).Error
 	if err != nil {
-		return false, WrapError(ErrDatabase, "failed to check if record exists")
+		return false, utility.WrapError(utility.ErrDatabase, "failed to check if record exists")
 	}
 	return count > 0, nil
 }

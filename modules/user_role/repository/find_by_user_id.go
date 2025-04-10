@@ -2,29 +2,21 @@ package repository
 
 import (
 	"context"
+
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utility"
-	"gorm.io/gorm"
 )
 
-func (r *repository) FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) (userRoles []entity.UserRole, err error) {
-	var preloadScope = func(db *gorm.DB) *gorm.DB { return db }
+func (r *repository) FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) ([]entity.UserRole, error) {
+	var preloads []string
 	if preloadRelations {
-		preloadScope = func(db *gorm.DB) *gorm.DB {
-			return db.
-				Preload("Domain").
-				Preload("Role")
-		}
+		preloads = append(preloads, "Domain", "Role")
 	}
 
-	err = r.db.WithContext(ctx).
-		Scopes(preloadScope).
-		Where("user_id = ?", userID).
-		Find(&userRoles).Error
+	userRoles, err := r.base.FindByField(ctx, "user_id", userID, preloads...)
 	if err != nil {
-		err = utility.LogError("error get user role detail by user id", err)
-		return
+		return nil, utility.WrapError(utility.ErrDatabase, "error finding roles for user")
 	}
 
-	return
+	return userRoles, nil
 }

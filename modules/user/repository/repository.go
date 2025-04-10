@@ -47,6 +47,11 @@ func (r *repository) Update(ctx context.Context, user *entity.User, tx *gorm.DB)
 	return r.base.Update(ctx, user, tx)
 }
 
+// Delete deletes a user
+func (r *repository) Delete(ctx context.Context, user *entity.User, tx *gorm.DB) error {
+	return r.base.Delete(ctx, user, tx)
+}
+
 // Count counts users with pagination
 func (r *repository) Count(ctx context.Context, pg *pagination.Pagination) (int64, error) {
 	return r.base.Count(ctx, pg)

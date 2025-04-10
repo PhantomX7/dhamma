@@ -2,18 +2,20 @@ package repository
 
 import (
 	"context"
+
+	"gorm.io/gorm"
+
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utility"
-	"gorm.io/gorm"
 )
 
 func (r *repository) AssignMultipleRole(ctx context.Context, userID uint64, roleAssignments []struct {
 	DomainID uint64
 	RoleID   uint64
-}, tx *gorm.DB) (err error) {
-	// if tx is nil, use default db
-	if tx == nil {
-		tx = r.db
+}, tx *gorm.DB) error {
+	db := r.db
+	if tx != nil {
+		db = tx
 	}
 
 	for _, ra := range roleAssignments {
@@ -22,11 +24,11 @@ func (r *repository) AssignMultipleRole(ctx context.Context, userID uint64, role
 			DomainID: ra.DomainID,
 			RoleID:   ra.RoleID,
 		}
-		if err = tx.WithContext(ctx).Create(&userRole).Error; err != nil {
-			err = utility.LogError("error assign multiple role", err)
-			return
+
+		if err := r.base.Create(ctx, &userRole, db); err != nil {
+			return utility.WrapError(utility.ErrDatabase, "error assigning multiple roles")
 		}
 	}
 
-	return
+	return nil
 }

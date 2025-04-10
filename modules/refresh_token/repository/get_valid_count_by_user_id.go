@@ -2,22 +2,22 @@ package repository
 
 import (
 	"context"
-	"github.com/PhantomX7/dhamma/utility"
 	"time"
 
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
-func (r *repository) GetValidCountByUserID(ctx context.Context, userID uint64) (count int64, err error) {
-	err = r.db.
-		WithContext(ctx).
+func (r *repository) GetValidCountByUserID(ctx context.Context, userID uint64) (int64, error) {
+	var count int64
+	err := r.db.WithContext(ctx).
 		Model(&entity.RefreshToken{}).
 		Where("user_id = ? AND is_valid = ? AND expires_at > ?", userID, true, time.Now()).
 		Count(&count).Error
+
 	if err != nil {
-		err = utility.LogError("error count valid refresh token", err)
-		return
+		return 0, utility.WrapError(utility.ErrDatabase, "failed to count valid refresh tokens")
 	}
 
-	return
+	return count, nil
 }

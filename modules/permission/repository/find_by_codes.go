@@ -2,19 +2,19 @@ package repository
 
 import (
 	"context"
-	"github.com/PhantomX7/dhamma/utility"
 
 	"github.com/PhantomX7/dhamma/entity"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
-func (r *repository) FindByCodes(ctx context.Context, permissionCodes []string) (permissions []entity.Permission, err error) {
+func (r *repository) FindByCodes(ctx context.Context, permissionCodes []string) ([]entity.Permission, error) {
+	var permissions []entity.Permission
+	db := r.db.WithContext(ctx)
 
-	err = r.db.WithContext(ctx).
-		Where("code IN ?", permissionCodes).Find(&permissions).Error
+	err := db.Where("code IN ?", permissionCodes).Find(&permissions).Error
 	if err != nil {
-		err = utility.LogError("error find permission by code", err)
-		return
+		return nil, utility.WrapError(err, "failed to find permissions by codes")
 	}
 
-	return
+	return permissions, nil
 }

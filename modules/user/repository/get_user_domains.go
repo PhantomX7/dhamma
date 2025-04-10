@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utility"
 )
@@ -12,7 +13,7 @@ func (r *repository) GetUserDomains(ctx context.Context, userID uint64) (userM e
 		Preload("Domains").
 		Where("id = ?", userID).Take(&userM).Error
 	if err != nil {
-		err = utility.LogError("error get user domains", err)
+		err = utility.WrapError(err, "error get user domains")
 		return
 	}
 
