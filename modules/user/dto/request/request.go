@@ -3,8 +3,8 @@ package request
 import "github.com/PhantomX7/dhamma/utility/pagination"
 
 type UserCreateRequest struct {
-	Username string `form:"username" json:"username" binding:"required,unique=users.username"`
-	Password string `form:"password" json:"password" binding:"required"`
+	Username string `json:"username" form:"username" binding:"required,unique=users.username"`
+	Password string `json:"password" form:"password" binding:"required"`
 }
 type AssignDomainRequest struct {
 	DomainID uint64 `json:"domain_id" form:"domain_id" binding:"required,exist=domains.id"`
@@ -12,6 +12,10 @@ type AssignDomainRequest struct {
 
 type AssignRoleRequest struct {
 	RoleID uint64 `json:"role_id" form:"role_id" binding:"required,exist=roles.id"`
+}
+
+type RemoveDomainRequest struct {
+	DomainID uint64 `json:"domain_id" form:"domain_id" binding:"required"`
 }
 
 func NewUserPagination(conditions map[string][]string) *pagination.Pagination {

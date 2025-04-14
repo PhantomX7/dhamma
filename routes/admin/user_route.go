@@ -14,5 +14,6 @@ func UserRoute(route *gin.Engine, middleware *middleware.Middleware, userControl
 		routes.POST("", userController.Create)
 		routes.POST("/:id/assign-domain", userController.AssignDomain)
 		routes.POST("/:id/assign-role", userController.AssignRole)
+		routes.POST("/:id/remove-domain", userController.RemoveDomain)
 	}
 }

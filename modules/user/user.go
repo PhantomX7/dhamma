@@ -39,12 +39,15 @@ type Service interface {
 	Create(ctx context.Context, request request.UserCreateRequest) (entity.User, error)
 	AssignDomain(ctx context.Context, userID uint64, request request.AssignDomainRequest) error
 	AssignRole(ctx context.Context, userID uint64, request request.AssignRoleRequest) error
+	RemoveDomain(ctx context.Context, userID uint64, request request.RemoveDomainRequest) error
 }
 
+// Update the Controller interface to include RemoveDomain
 type Controller interface {
 	Index(ctx *gin.Context)
 	Show(ctx *gin.Context)
 	Create(ctx *gin.Context)
 	AssignDomain(ctx *gin.Context)
 	AssignRole(ctx *gin.Context)
+	RemoveDomain(ctx *gin.Context)
 }
