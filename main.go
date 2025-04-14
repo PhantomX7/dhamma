@@ -83,8 +83,8 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 
 	server := gin.Default()
 
-	// register m
-	//server.Use(m.Logger())
+	// Enable CORS middleware
+	server.Use(m.CORS())
 
 	// register static files
 	server.Static("/assets", "./assets")
