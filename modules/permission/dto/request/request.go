@@ -1,6 +1,8 @@
 package request
 
-import "github.com/PhantomX7/dhamma/utility/pagination"
+import (
+	"github.com/PhantomX7/dhamma/utility/pagination"
+)
 
 type PermissionCreateRequest struct {
 	Name        string `json:"name" form:"name" binding:"required"`
@@ -29,6 +31,14 @@ func NewPermissionPagination(conditions map[string][]string) *pagination.Paginat
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
 			},
+		}).
+		AddFilter("type", pagination.FilterConfig{
+			Field: "type",
+			Type:  pagination.FilterTypeEnum,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorIn, pagination.OperatorEquals,
+			},
+			EnumValues: []string{"API", "WEB"},
 		}).
 		AddSort("id", pagination.SortConfig{
 			Field:   "id",

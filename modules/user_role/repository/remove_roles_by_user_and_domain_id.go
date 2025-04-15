@@ -10,12 +10,9 @@ import (
 )
 
 func (r *repository) RemoveRolesByUserAndDomainID(ctx context.Context, userID, domainID uint64, tx *gorm.DB) error {
-	db := r.db
-	if tx != nil {
-		db = tx
-	}
+	db := r.prepareDB(ctx, tx)
 
-	result := db.WithContext(ctx).
+	result := db.
 		Where("user_id = ? AND domain_id = ?", userID, domainID).
 		Delete(&entity.UserRole{})
 
