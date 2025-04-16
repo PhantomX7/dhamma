@@ -6,7 +6,7 @@ import (
 
 	"github.com/jinzhu/copier"
 
-	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/constants/permissions"
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/permission/dto/request"
 )
@@ -18,7 +18,7 @@ func (s *service) Create(ctx context.Context, request request.PermissionCreateRe
 	}
 
 	permission.Code = fmt.Sprintf("web:%s/%s", permission.Object, permission.Action)
-	permission.Type = constants.EnumPermissionTypeWeb
+	permission.Type = permissions.PermissionTypeWeb
 
 	err = s.permissionRepo.Create(ctx, &permission, nil)
 	if err != nil {

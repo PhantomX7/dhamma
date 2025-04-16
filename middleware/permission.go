@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/constants/permissions"
 	"github.com/PhantomX7/dhamma/utility"
 	"github.com/gin-gonic/gin"
 )
@@ -45,7 +45,7 @@ func (m *Middleware) Permission(config PermissionConfig) gin.HandlerFunc {
 			fmt.Sprintf("%d", *contextValues.DomainID),
 			config.Object,
 			config.Action,
-			constants.EnumPermissionTypeApi,
+			permissions.PermissionTypeApi,
 		)
 
 		if !hasPermission {
