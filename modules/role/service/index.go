@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
@@ -20,11 +21,35 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	}
 
 	// only query specific domain
-	if contextValues.DomainID != nil {
-		pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-			return db.Where("domain_id = ?", *contextValues.DomainID)
-		})
-	}
+	// if contextValues.DomainID != nil {
+	// 	pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
+	// 		return db.Where("domain_id = ?", *contextValues.DomainID)
+	// 	})
+	// }
+
+	// Combine all scopes into a single AddCustomScope call
+	pg.AddCustomScope(
+		// Base join and preload
+		func(db *gorm.DB) *gorm.DB {
+			return db.
+				Joins("LEFT JOIN domains ON domains.id = roles.domain_id")
+		},
+		// Domain filter scope
+		func(db *gorm.DB) *gorm.DB {
+			if contextValues.DomainID != nil {
+				return db.Where("domain_id = ?", *contextValues.DomainID)
+			}
+			return db
+		},
+
+		// Super admin filter scope
+		// func(db *gorm.DB) *gorm.DB {
+		// 	if !contextValues.IsRoot {
+		// 		return db.Where("users.is_super_admin = ?", false)
+		// 	}
+		// 	return db
+		// },
+	)
 
 	roles, err = s.roleRepo.FindAll(ctx, pg)
 	if err != nil {
