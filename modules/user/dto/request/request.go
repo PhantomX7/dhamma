@@ -18,6 +18,7 @@ type RemoveDomainRequest struct {
 	DomainID uint64 `json:"domain_id" form:"domain_id" binding:"required"`
 }
 
+// NewUserPagination creates a pagination object for user listing with filter definitions.
 func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
 		AddFilter("id", pagination.FilterConfig{
@@ -47,6 +48,16 @@ func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorBetween, pagination.OperatorEquals,
 			},
+		}).
+		// Add filter for domain name
+		AddFilter("domain_name", pagination.FilterConfig{
+			// Note: The actual DB field is 'name' in the 'domains' table, aliased as 'd'
+			Field: "d.name",
+			Type:  pagination.FilterTypeString,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
+			},
+			// No Join needed here as it's handled in the service's custom scope
 		}).
 		AddSort("id", pagination.SortConfig{
 			Field:   "id",
