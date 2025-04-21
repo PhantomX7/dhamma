@@ -32,7 +32,7 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 		// Base join and preload
 		func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("LEFT JOIN domains ON domains.id = roles.domain_id")
+				Joins("Domain")
 		},
 		// Domain filter scope
 		func(db *gorm.DB) *gorm.DB {

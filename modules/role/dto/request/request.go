@@ -39,7 +39,7 @@ func NewRolePagination(conditions map[string][]string) *pagination.Pagination {
 			Field:     "name",
 			Type:      pagination.FilterTypeString,
 			Operators: []pagination.FilterOperator{pagination.OperatorEquals, pagination.OperatorLike},
-			TableName: "domains",
+			TableName: "Domain",
 		}).
 		AddFilter("created_at", pagination.FilterConfig{
 			Field:     "created_at",

@@ -44,7 +44,7 @@ const (
 type FilterConfig struct {
 	Field      string
 	Type       FilterType
-	TableName  string // For joined tables
+	TableName  string // For joined tables, use the field struct name
 	Operators  []FilterOperator
 	EnumValues []string // For enum type validation
 }
