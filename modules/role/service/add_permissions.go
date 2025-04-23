@@ -27,7 +27,7 @@ func (s *service) AddPermissions(ctx context.Context, roleID uint64, request req
 		}
 	}
 
-	s.casbin.AddPermissions(role.ID, role.DomainID, request.Permissions)
+	s.casbin.AddRolePermissions(role.ID, role.DomainID, request.Permissions)
 
 	return
 }

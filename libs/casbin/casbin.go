@@ -2,7 +2,10 @@ package casbin
 
 import (
 	"fmt"
+	"strings"
 
+	// Ensure this is imported
+	"github.com/PhantomX7/dhamma/constants/permissions"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
@@ -11,7 +14,8 @@ import (
 
 type Client interface {
 	GetEnforcer() *casbin.Enforcer
-	AddPermissions(roleID uint64, domainID uint64, permissionsCodes []string)
+	AddRolePermissions(roleID uint64, domainID uint64, permissionsCodes []string) error
+	DeleteRolePermissions(roleID uint64, domainID uint64, permissionsCodes []string) error
 	GetRolePermissions(roleID uint64, domainID uint64) []string
 	AddUserRole(userID uint64, roleID uint64, domainID uint64) error
 	GetUserPermissions(userID uint64, domainID uint64) []string
@@ -25,7 +29,8 @@ func (c *client) GetEnforcer() *casbin.Enforcer {
 	return c.enforcer
 }
 
-func New(db *gorm.DB) Client {
+// New creates a new Casbin client instance.
+func New(db *gorm.DB) (Client, error) {
 	// Initialize  casbin adapter
 	adapter, err := gormadapter.NewAdapterByDB(db)
 	if err != nil {
@@ -55,5 +60,25 @@ func New(db *gorm.DB) Client {
 
 	return &client{
 		enforcer: enforcer,
+	}, nil
+}
+
+func parsePermissionCode(code string) (object string, action string, permType string, err error) {
+	permType = permissions.PermissionTypeApi // Default type
+	codeToParse := code
+
+	parts := strings.SplitN(code, ":", 2)
+	if len(parts) == 2 {
+		permType = permissions.PermissionTypeWeb
+		codeToParse = parts[1]
 	}
+
+	actionParts := strings.SplitN(codeToParse, "/", 2)
+	if len(actionParts) != 2 || actionParts[0] == "" || actionParts[1] == "" {
+		err = fmt.Errorf("invalid permission code format: %s", code)
+		return
+	}
+	object = actionParts[0]
+	action = actionParts[1]
+	return
 }

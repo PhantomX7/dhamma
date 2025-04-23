@@ -11,7 +11,6 @@ import (
 
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"go.uber.org/zap"
 
 	"github.com/PhantomX7/dhamma/config"
 	"github.com/PhantomX7/dhamma/libs"
@@ -56,7 +55,6 @@ func main() {
 	app := fx.New(
 		// fx.NopLogger, // disable logger for fx
 		fx.Provide(
-			initLogger,
 			setupDatabase,
 			customValidator.New, // initiate custom validator
 			middleware.New,      // initiate middleware
@@ -68,6 +66,7 @@ func main() {
 		libs.Module,
 		routes.Module,
 		fx.Invoke(
+			initLogger,
 			startCron,
 			startServer,
 		),
@@ -227,8 +226,8 @@ func startCron(lc fx.Lifecycle, cron gocron.Scheduler) {
 	})
 }
 
-func initLogger(lc fx.Lifecycle) *zap.Logger {
-	l, err := customLogger.NewLogger()
+func initLogger(lc fx.Lifecycle) {
+	err := customLogger.NewLogger()
 	if err != nil {
 		panic(err)
 	}
@@ -236,9 +235,7 @@ func initLogger(lc fx.Lifecycle) *zap.Logger {
 		OnStop: func(ctx context.Context) error {
 			log.Println("Stopping log")
 
-			return l.Sync()
+			return customLogger.Logger.Sync()
 		},
 	})
-
-	return l
 }

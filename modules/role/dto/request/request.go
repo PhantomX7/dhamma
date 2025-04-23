@@ -16,7 +16,11 @@ type RoleUpdateRequest struct {
 }
 
 type RoleAddPermissionsRequest struct {
-	Permissions []string `json:"permissions" form:"permissions[]" binding:"required,dive,exist=permissions.code"`
+	Permissions []string `json:"permissions" form:"permissions[]" binding:"required,min=1,dive,exist=permissions.code"`
+}
+
+type RoleDeletePermissionsRequest struct {
+	Permissions []string `json:"permissions" binding:"required,min=1,dive,exist=permissions.code"`
 }
 
 func NewRolePagination(conditions map[string][]string) *pagination.Pagination {

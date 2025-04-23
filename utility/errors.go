@@ -5,16 +5,20 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/PhantomX7/dhamma/utility/logger"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 // Common repository errors
 var (
-	ErrNotFound    = errors.New("record not found")
-	ErrDuplicate   = errors.New("duplicate record")
-	ErrInvalidData = errors.New("invalid data")
-	ErrForeignKey  = errors.New("foreign key constraint failed")
-	ErrDatabase    = errors.New("database error")
+	ErrNotFound         = errors.New("record not found")
+	ErrDuplicate        = errors.New("duplicate record")
+	ErrInvalidData      = errors.New("invalid data")
+	ErrForeignKey       = errors.New("foreign key constraint failed")
+	ErrDatabase         = errors.New("database error")
+	ErrPermissionDenied = errors.New("permission denied")
+	ErrInvalidRequest   = errors.New("invalid request")
 )
 
 func LogError(errString string, err error) error {
@@ -31,6 +35,9 @@ func WrapError(err error, format string, args ...any) error {
 	}
 
 	message := fmt.Sprintf(format, args...)
+	logger.Logger.Error(message,
+		zap.Error(err),
+	)
 	return fmt.Errorf("%s: %w", message, err)
 }
 

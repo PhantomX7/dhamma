@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/PhantomX7/dhamma/modules/role/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
+	"github.com/gin-gonic/gin"
 )
 
-func (c *controller) AddPermissions(ctx *gin.Context) {
-	var req request.RoleAddPermissionsRequest
+// DeletePermissions handles the HTTP request to remove permissions from a role.
+func (c *controller) DeletePermissions(ctx *gin.Context) {
+	var req request.RoleDeletePermissionsRequest
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -23,19 +23,19 @@ func (c *controller) AddPermissions(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to add role permission", err.Error()),
+			utility.BuildResponseFailed("failed to delete role permission", err.Error()),
 		)
 		return
 	}
 
-	res, err := c.roleService.AddPermissions(ctx.Request.Context(), roleID, req)
+	err = c.roleService.DeletePermissions(ctx.Request.Context(), roleID, req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
 			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to add role permission", err.Error()),
+			utility.BuildResponseFailed("failed to delete role permission", err.Error()),
 		)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utility.BuildResponseSuccess("ok", res))
+	ctx.JSON(http.StatusOK, utility.BuildResponseSuccess("ok", nil))
 }
