@@ -2,15 +2,17 @@ package middleware
 
 import (
 	"context"
-	"log"
+
+	"go.uber.org/zap"
 
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/libs/casbin"
 	"github.com/PhantomX7/dhamma/modules/domain"
-	"github.com/PhantomX7/dhamma/modules/permission" // Import permission module
+	"github.com/PhantomX7/dhamma/modules/permission"
 	"github.com/PhantomX7/dhamma/modules/refresh_token"
 	"github.com/PhantomX7/dhamma/modules/user"
 	"github.com/PhantomX7/dhamma/modules/user_domain"
+	"github.com/PhantomX7/dhamma/utility/logger"
 	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
@@ -24,6 +26,8 @@ type Middleware struct {
 	permissionDefinitions map[string]entity.Permission // Add map to store definitions
 }
 
+// New creates a new Middleware instance.
+// It loads permission definitions from the repository at startup.
 func New(
 	userRepo user.Repository,
 	refreshTokenRepo refresh_token.Repository,
@@ -42,21 +46,20 @@ func New(
 			DefaultLimit: 1000,
 		}))
 	if err != nil {
-		// Log the error and potentially panic or handle gracefully
-		log.Fatalf("Failed to load permission definitions: %v", err)
+		logger.Get().Fatal("Failed to load permission definitions", zap.Error(err))
 	}
 	for _, p := range allPermissions {
 		permissionDefsMap[p.Code] = p
 	}
-	log.Printf("Loaded %d permission definitions", len(permissionDefsMap))
+	logger.Get().Info("Loaded permission definitions", zap.Int("count", len(permissionDefsMap)))
 
 	return &Middleware{
 		userRepo:              userRepo,
 		refreshTokenRepo:      refreshTokenRepo,
 		userDomainRepo:        userDomainRepo,
 		domainRepo:            domainRepo,
-		permissionRepo:        permissionRepo, // Store injected repo
+		permissionRepo:        permissionRepo,
 		casbin:                casbin,
-		permissionDefinitions: permissionDefsMap, // Store loaded definitions
+		permissionDefinitions: permissionDefsMap,
 	}
 }

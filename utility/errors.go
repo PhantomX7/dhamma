@@ -3,11 +3,9 @@ package utility
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/PhantomX7/dhamma/utility/logger"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 // Common repository errors
@@ -21,13 +19,6 @@ var (
 	ErrInvalidRequest   = errors.New("invalid request")
 )
 
-func LogError(errString string, err error) error {
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		log.Print(errString, ": ", err)
-	}
-	return err
-}
-
 // WrapError wraps an error with additional context
 func WrapError(err error, format string, args ...any) error {
 	if err == nil {
@@ -35,7 +26,7 @@ func WrapError(err error, format string, args ...any) error {
 	}
 
 	message := fmt.Sprintf(format, args...)
-	logger.Logger.Error(message,
+	logger.Get().Error(message,
 		zap.Error(err),
 	)
 	return fmt.Errorf("%s: %w", message, err)

@@ -9,8 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
+// Logger is a middleware function that logs request details, handles request IDs,
+// sets up a context-specific logger, and logs any errors encountered during the request lifecycle.
 func (m *Middleware) Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -26,31 +29,50 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 		c.Header("X-Request-ID", requestID)
 
 		// Add logger with request ID to context
-		contextLogger := logger.Logger.With(
+		contextLogger := logger.Get().With(
 			zap.String("request_id", requestID),
 			zap.String("client_ip", c.ClientIP()),
 		)
-		c.Set("logger", contextLogger)
+
+		// Add logger to context
+		c.Request = c.Request.WithContext(logger.WithCtx(c.Request.Context(), contextLogger))
+		c.Set("logger", contextLogger) // Set the logger in the context for handlers to use
 
 		// Log request start
 		contextLogger.Info("request started",
+			zap.String("request_id", requestID),
+			zap.String("client_ip", c.ClientIP()),
 			zap.String("method", c.Request.Method),
 			zap.String("path", c.Request.URL.Path),
 			zap.String("query", c.Request.URL.RawQuery),
 			zap.String("user_agent", c.Request.UserAgent()),
 		)
 
-		// Process request
+		// Process request (executes downstream handlers)
 		c.Next()
 
 		// Calculate duration
 		duration := time.Since(start)
 
+		// --- Error Logging ---
+		// Check for errors after handlers have run
+		requestErrors := c.Errors // Get errors attached to the context by handlers
+		errorFields := []zap.Field{}
+		if len(requestErrors) > 0 {
+			// Log each error attached to the context
+			for _, err := range requestErrors {
+				contextLogger.Error("request error encountered", zap.Error(err))
+				// Optionally collect error messages for the final log entry
+				errorFields = append(errorFields, zap.String("error", err.Error()))
+			}
+		}
+		// --- End Error Logging ---
+
 		// Update Prometheus metrics
 		metrics.HttpRequestsTotal.WithLabelValues(
 			c.Request.Method,
 			c.Request.URL.Path,
-			//string(rune(c.Writer.Status())),
+			//string(rune(c.Writer.Status())), // Status might not be final yet, consider moving if needed
 			//requestID,
 		).Inc()
 
@@ -61,12 +83,31 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 		).Observe(duration.Seconds())
 
 		// Log request completion
-		contextLogger.Info("request completed",
+		// Add error fields to the final log if any occurred
+		finalLogFields := []zap.Field{
+			zap.String("request_id", requestID),
 			zap.String("method", c.Request.Method),
 			zap.String("path", c.Request.URL.Path),
 			zap.Int("status", c.Writer.Status()),
 			zap.Duration("duration", duration),
 			zap.Int("body_size", c.Writer.Size()),
-		)
+		}
+		if len(errorFields) > 0 {
+			finalLogFields = append(finalLogFields, zap.Array("errors", zapcore.ArrayMarshalerFunc(func(enc zapcore.ArrayEncoder) error {
+				for _, err := range requestErrors {
+					enc.AppendString(err.Error())
+				}
+				return nil
+			})))
+		}
+
+		// Use appropriate log level based on status/errors
+		if c.Writer.Status() >= 500 || len(requestErrors) > 0 {
+			contextLogger.Error("request completed with errors", finalLogFields...)
+		} else if c.Writer.Status() >= 400 {
+			contextLogger.Warn("request completed with client error", finalLogFields...)
+		} else {
+			contextLogger.Info("request completed successfully", finalLogFields...)
+		}
 	}
 }

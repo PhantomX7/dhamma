@@ -1,9 +1,10 @@
 package middleware
 
 import (
+	"net/http"
+
 	"github.com/PhantomX7/dhamma/utility"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func (m *Middleware) ValidateDomain() gin.HandlerFunc {

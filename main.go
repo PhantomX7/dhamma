@@ -34,18 +34,9 @@ import (
 	gormLogger "gorm.io/gorm/logger"
 )
 
-// func args(db *gorm.DB) bool {
-// 	if len(os.Args) > 1 {
-// 		flag := command.Commands(db)
-// 		if !flag {
-// 			return false
-// 		}
-// 	}
-
-// 	return true
-// }
-
 func main() {
+	// initialize logger
+	logger.NewLogger()
 
 	// load config from .env
 	config.LoadEnv()
@@ -64,7 +55,6 @@ func main() {
 		libs.Module,
 		routes.Module,
 		fx.Invoke(
-			initLogger,
 			startCron,
 			startServer,
 		),
@@ -81,7 +71,7 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 	server := gin.Default()
 
 	// Enable CORS middleware
-	server.Use(m.CORS())
+	server.Use(m.CORS(), m.Logger())
 
 	// register static files
 	server.Static("/assets", "./assets")
@@ -90,6 +80,7 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 	return server
 }
 
+// startServer initializes and starts the HTTP server.
 func startServer(
 	lc fx.Lifecycle,
 	server *gin.Engine,
@@ -119,18 +110,18 @@ func startServer(
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
 			go func() {
-				log.Printf("api is available at %s\n", srv.Addr)
+				logger.Get().Info("api is available", zap.String("address", srv.Addr))
 
 				// service connections
 				if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-					log.Fatalf("listen: %s\n", err)
+					logger.Get().Fatal("listen error", zap.Error(err))
 				}
 			}()
 
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			logger.Logger.Info("Shutting down HTTP server...")
+			logger.Get().Info("Shutting down HTTP server...")
 
 			// Create a timeout context for shutdown
 			ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -138,17 +129,20 @@ func startServer(
 
 			// Shutdown the server
 			if err := srv.Shutdown(ctx); err != nil {
-				log.Printf("Server forced to shutdown: %v", err)
+				logger.Get().Error("Server forced to shutdown", zap.Error(err))
 				return err
 			}
 
-			logger.Logger.Info("Server shutdown completed")
+			logger.Get().Info("Server shutdown completed")
+			// Flush any buffered log entries
+			logger.Get().Sync()
 			return nil
 		},
 	})
 
 }
 
+// setupDatabase initializes the database connection and runs migrations.
 func setupDatabase(lc fx.Lifecycle) *gorm.DB {
 	dsn := fmt.Sprintf(
 		"%s:%s@(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=Asia%%2FJakarta",
@@ -163,34 +157,32 @@ func setupDatabase(lc fx.Lifecycle) *gorm.DB {
 		SkipDefaultTransaction: true,
 		//DisableForeignKeyConstraintWhenMigrating: true,
 		Logger: gormLogger.New(
-			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			log.New(os.Stdout, "\r\n", log.LstdFlags), // Keep standard log for GORM for now, or replace with a zap-compatible GORM logger if available/needed
 			gormLogger.Config{
 				IgnoreRecordNotFoundError: true,
 			},
 		),
 	})
 	if err != nil {
-		logger.Logger.Info("error initializing database", zap.Error(err))
-		panic(err)
+		logger.Get().Fatal("error initializing database", zap.Error(err))
 	}
 
 	// run migration
 	if err = migration.RunMigration(db); err != nil {
-		logger.Logger.Error("error running migration", zap.Error(err))
-		panic(err)
+		logger.Get().Fatal("error running migration", zap.Error(err))
 	}
 
 	// Database lifecycle hooks
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			logger.Logger.Info("Ensuring database connection...")
-			db, _ := db.DB()
-			return db.PingContext(ctx)
+			logger.Get().Info("Ensuring database connection...")
+			dbInstance, _ := db.DB()
+			return dbInstance.PingContext(ctx)
 		},
 		OnStop: func(ctx context.Context) error {
-			logger.Logger.Info("Closing database connection...")
-			db, _ := db.DB()
-			return db.Close()
+			logger.Get().Info("Closing database connection...")
+			dbInstance, _ := db.DB()
+			return dbInstance.Close()
 		},
 	})
 
@@ -211,30 +203,15 @@ func registerValidators(validators map[string]validator.Func) {
 func startCron(lc fx.Lifecycle, cron gocron.Scheduler) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			logger.Logger.Info("Starting Cron")
+			logger.Get().Info("Starting Cron")
 
 			cron.Start()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			logger.Logger.Info("Stopping cron")
+			logger.Get().Info("Stopping cron")
 
 			return cron.Shutdown()
-		},
-	})
-}
-
-func initLogger(lc fx.Lifecycle) {
-	err := logger.NewLogger()
-	if err != nil {
-		panic(err)
-	}
-	lc.Append(fx.Hook{
-		OnStop: func(ctx context.Context) error {
-			logger.Logger.Info("Stopping log")
-
-			// Flush any buffered log entries
-			return logger.Logger.Sync()
 		},
 	})
 }

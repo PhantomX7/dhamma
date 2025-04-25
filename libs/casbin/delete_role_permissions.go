@@ -23,7 +23,7 @@ func (c *client) DeleteRolePermissions(roleID uint64, domainID uint64, permissio
 		object, action, permissionType, parseErr := parsePermissionCode(code)
 		if parseErr != nil {
 			// Log the parsing error and collect it
-			logger.Logger.Warn("Skipping invalid permission code format during deletion", zap.String("code", code), zap.Error(parseErr))
+			logger.Get().Warn("Skipping invalid permission code format during deletion", zap.String("code", code), zap.Error(parseErr))
 			encounteredErrors = append(encounteredErrors, parseErr) // Collect the error
 			continue                                                // Skip to the next permission code
 		}
@@ -43,7 +43,7 @@ func (c *client) DeleteRolePermissions(roleID uint64, domainID uint64, permissio
 	if len(rules) == 0 {
 		// Check if the original input was also empty
 		if len(permissionCodes) == 0 {
-			logger.Logger.Info("No permissions provided to delete.", zap.Uint64("roleID", roleID), zap.Uint64("domainID", domainID))
+			logger.Get().Info("No permissions provided to delete.", zap.Uint64("roleID", roleID), zap.Uint64("domainID", domainID))
 			return nil // Nothing to do
 		}
 		// Input was provided, but all were invalid
@@ -53,7 +53,7 @@ func (c *client) DeleteRolePermissions(roleID uint64, domainID uint64, permissio
 	// Attempt to remove the valid policies in a batch
 	_, err := c.enforcer.RemovePolicies(rules)
 	if err != nil {
-		logger.Logger.Error("Failed to remove policies from Casbin",
+		logger.Get().Error("Failed to remove policies from Casbin",
 			zap.Uint64("roleID", roleID),
 			zap.Uint64("domainID", domainID),
 			zap.Error(err),
@@ -65,7 +65,7 @@ func (c *client) DeleteRolePermissions(roleID uint64, domainID uint64, permissio
 	// Persist changes if auto-save is disabled or not guaranteed by the adapter
 	err = c.enforcer.SavePolicy()
 	if err != nil {
-		logger.Logger.Error("Failed to save policy after deletion",
+		logger.Get().Error("Failed to save policy after deletion",
 			zap.Uint64("roleID", roleID),
 			zap.Uint64("domainID", domainID),
 			zap.Error(err),
@@ -75,7 +75,7 @@ func (c *client) DeleteRolePermissions(roleID uint64, domainID uint64, permissio
 	}
 
 	// Log successful processing
-	logger.Logger.Info("Successfully processed policy removal request",
+	logger.Get().Info("Successfully processed policy removal request",
 		zap.Uint64("roleID", roleID),
 		zap.Uint64("domainID", domainID),
 		zap.Int("valid_rules_count", len(rules)), // Log how many were attempted

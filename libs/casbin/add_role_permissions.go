@@ -23,8 +23,8 @@ func (c *client) AddRolePermissions(roleID uint64, domainID uint64, permissionsC
 
 		if parseErr != nil {
 			// Log and collect parsing error, then continue to next code
-			// Use c.logger instead of logger.Logger if 'c' has the logger instance
-			logger.Logger.Warn("Skipping invalid permission code", zap.String("code", permissionCode), zap.Error(parseErr))
+			// Use c.logger instead of logger.Get if 'c' has the logger instance
+			logger.Get().Warn("Skipping invalid permission code", zap.String("code", permissionCode), zap.Error(parseErr))
 			encounteredErrors = append(encounteredErrors, parseErr)
 			continue // Skip to the next permission code
 		}
@@ -33,7 +33,7 @@ func (c *client) AddRolePermissions(roleID uint64, domainID uint64, permissionsC
 		added, err := c.enforcer.AddPolicy(roleStr, domainStr, permissionObject, permissionAction, permissionType)
 		if err != nil {
 			// Log and collect error, then continue
-			logger.Logger.Error(
+			logger.Get().Error(
 				"Failed to add policy to Casbin",
 				zap.Uint64("roleID", roleID),
 				zap.Uint64("domainID", domainID),
@@ -48,7 +48,7 @@ func (c *client) AddRolePermissions(roleID uint64, domainID uint64, permissionsC
 		if !added {
 			// Policy already existed, which might be okay or might indicate an issue depending on requirements.
 			// Log it for information.
-			logger.Logger.Info(
+			logger.Get().Info(
 				"Policy already exists in Casbin",
 				zap.Uint64("roleID", roleID),
 				zap.Uint64("domainID", domainID),
@@ -74,7 +74,7 @@ func (c *client) AddRolePermissions(roleID uint64, domainID uint64, permissionsC
 	// Persist changes if auto-save is disabled
 	err := c.enforcer.SavePolicy()
 	if err != nil {
-		logger.Logger.Error("Failed to save policy after adding permissions", zap.Error(err))
+		logger.Get().Error("Failed to save policy after adding permissions", zap.Error(err))
 		return fmt.Errorf("casbin policy save failed: %w", err)
 	}
 

@@ -41,7 +41,7 @@ func (m *Middleware) Permission(config PermissionConfig) gin.HandlerFunc {
 		if !exists {
 			// This should ideally not happen if permissions are seeded correctly
 			// Log this occurrence for investigation
-			logger.Logger.Error("Permission definition not found in cache", zap.String("code", permissionCode))
+			logger.Get().Error("Permission definition not found in cache", zap.String("code", permissionCode))
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"error": "permission definition error",
 			})
@@ -70,7 +70,7 @@ func (m *Middleware) Permission(config PermissionConfig) gin.HandlerFunc {
 
 		// Handle potential Casbin errors
 		if casbinErr != nil {
-			logger.Logger.Error("Casbin enforce error", zap.Error(casbinErr))
+			logger.Get().Error("Casbin enforce error", zap.Error(casbinErr))
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "permission check error",
 			})
