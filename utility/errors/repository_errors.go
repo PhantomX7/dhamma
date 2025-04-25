@@ -1,4 +1,4 @@
-package utility
+package errors
 
 import (
 	"errors"

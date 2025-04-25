@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) HasRole(ctx context.Context, userID, roleID uint64) (bool, error) {
@@ -16,7 +16,7 @@ func (r *repository) HasRole(ctx context.Context, userID, roleID uint64) (bool, 
 		Count(&count).Error
 
 	if err != nil {
-		return false, utility.WrapError(utility.ErrDatabase, "error checking role association")
+		return false, errors.WrapError(errors.ErrDatabase, "error checking role association")
 	}
 
 	return count > 0, nil

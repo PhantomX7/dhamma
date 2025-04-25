@@ -30,7 +30,6 @@ var Permissions = permission{
 type Repository interface {
 	repository.BaseRepositoryInterface[entity.User]
 	FindByUsername(ctx context.Context, username string) (entity.User, error)
-	GetUserDomains(ctx context.Context, userID uint64) (entity.User, error)
 }
 
 type Service interface {

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 
 	"gorm.io/gorm"
 )
@@ -21,7 +21,7 @@ func (r *repository) RemoveRole(ctx context.Context, userID, roleID uint64, tx *
 		Delete(&entity.UserRole{}).Error
 
 	if err != nil {
-		return utility.WrapError(utility.ErrDatabase, "error removing role")
+		return errors.WrapError(errors.ErrDatabase, "error removing role")
 	}
 
 	return nil

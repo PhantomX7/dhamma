@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) ([]entity.UserRole, error) {
@@ -15,7 +15,7 @@ func (r *repository) FindByUserID(ctx context.Context, userID uint64, preloadRel
 
 	userRoles, err := r.base.FindByField(ctx, "user_id", userID, preloads...)
 	if err != nil {
-		return nil, utility.WrapError(utility.ErrDatabase, "error finding roles for user")
+		return nil, errors.WrapError(errors.ErrDatabase, "error finding roles for user")
 	}
 
 	return userRoles, nil

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) FindByID(ctx context.Context, refreshTokenID string) (entity.RefreshToken, error) {
@@ -17,7 +17,7 @@ func (r *repository) FindByID(ctx context.Context, refreshTokenID string) (entit
 		Take(&refreshToken)
 
 	if result.Error != nil {
-		return refreshToken, utility.WrapError(utility.ErrNotFound, "refresh token not found or expired")
+		return refreshToken, errors.WrapError(errors.ErrNotFound, "refresh token not found or expired")
 	}
 
 	return refreshToken, nil

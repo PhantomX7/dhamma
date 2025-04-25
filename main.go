@@ -77,8 +77,9 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 	server.Use(
 		// Configure ginzap middleware
 		ginzap.RecoveryWithZap(logger.Get(), true),
-		m.CORS(),   // Your custom CORS middleware
-		m.Logger(), // Your custom detailed logger middleware
+		m.ErrorHandler(), // Your custom error handler middleware
+		m.CORS(),         // Your custom CORS middleware
+		m.Logger(),       // Your custom detailed logger middleware
 	)
 
 	// register static files

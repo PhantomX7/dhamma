@@ -13,6 +13,7 @@ import (
 
 // Logger is a middleware function that logs request details, handles request IDs,
 // sets up a context-specific logger, and logs any errors encountered during the request lifecycle.
+// It also handle the error response if error occurred.
 func (m *Middleware) Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -53,6 +54,7 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 				errorFields = append(errorFields, zap.String("error", err.Error()))
 			}
 		}
+
 		// --- End Error Logging ---
 
 		// Update Prometheus metrics

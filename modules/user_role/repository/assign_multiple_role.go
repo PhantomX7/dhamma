@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) AssignMultipleRole(ctx context.Context, userID uint64, roleAssignments []struct {
@@ -26,7 +26,7 @@ func (r *repository) AssignMultipleRole(ctx context.Context, userID uint64, role
 		}
 
 		if err := r.base.Create(ctx, &userRole, db); err != nil {
-			return utility.WrapError(utility.ErrDatabase, "error assigning multiple roles")
+			return errors.WrapError(errors.ErrDatabase, "error assigning multiple roles")
 		}
 	}
 

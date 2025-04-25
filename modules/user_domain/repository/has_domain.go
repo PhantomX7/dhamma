@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) HasDomain(ctx context.Context, userID, domainID uint64) (bool, error) {
@@ -16,7 +16,7 @@ func (r *repository) HasDomain(ctx context.Context, userID, domainID uint64) (bo
 		Count(&count).Error
 
 	if err != nil {
-		return false, utility.WrapError(utility.ErrDatabase, "error checking domain association")
+		return false, errors.WrapError(errors.ErrDatabase, "error checking domain association")
 	}
 
 	return count > 0, nil

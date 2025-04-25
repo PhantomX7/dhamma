@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) FindByCodes(ctx context.Context, permissionCodes []string) ([]entity.Permission, error) {
@@ -13,7 +13,7 @@ func (r *repository) FindByCodes(ctx context.Context, permissionCodes []string) 
 
 	err := db.Where("code IN ?", permissionCodes).Find(&permissions).Error
 	if err != nil {
-		return nil, utility.WrapError(err, "failed to find permissions by codes")
+		return nil, errors.WrapError(err, "failed to find permissions by codes")
 	}
 
 	return permissions, nil

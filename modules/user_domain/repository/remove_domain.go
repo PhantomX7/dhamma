@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) RemoveDomain(ctx context.Context, userID, domainID uint64, tx *gorm.DB) error {
@@ -14,11 +14,11 @@ func (r *repository) RemoveDomain(ctx context.Context, userID, domainID uint64, 
 
 	result := db.Where("user_id = ? AND domain_id = ?", userID, domainID).Delete(&entity.UserDomain{})
 	if result.Error != nil {
-		return utility.WrapError(utility.ErrDatabase, "failed to remove domain from user")
+		return errors.WrapError(errors.ErrDatabase, "failed to remove domain from user")
 	}
 
 	if result.RowsAffected == 0 {
-		return utility.WrapError(utility.ErrNotFound, "domain assignment not found")
+		return errors.WrapError(errors.ErrNotFound, "domain assignment not found")
 	}
 
 	return nil

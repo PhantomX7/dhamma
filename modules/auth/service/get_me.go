@@ -21,7 +21,7 @@ func (s *service) GetMe(ctx context.Context) (res response.MeResponse, err error
 
 	// override user roles with specific domain roles
 	if contextValues.DomainID != nil {
-		userRoles, err := s.userRoleRepo.FindByUserIDAndDomainID(ctx, contextValues.UserID, *contextValues.DomainID, true)
+		userRoles, err := s.userRoleRepo.FindByUserIDAndDomainID(ctx, contextValues.UserID, *contextValues.DomainID, "Domain", "Role")
 		if err != nil {
 			return response.MeResponse{}, err
 		}

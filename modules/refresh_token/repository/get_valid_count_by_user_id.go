@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (r *repository) GetValidCountByUserID(ctx context.Context, userID uint64) (int64, error) {
@@ -16,7 +16,7 @@ func (r *repository) GetValidCountByUserID(ctx context.Context, userID uint64) (
 		Count(&count).Error
 
 	if err != nil {
-		return 0, utility.WrapError(utility.ErrDatabase, "failed to count valid refresh tokens")
+		return 0, errors.WrapError(errors.ErrDatabase, "failed to count valid refresh tokens")
 	}
 
 	return count, nil
