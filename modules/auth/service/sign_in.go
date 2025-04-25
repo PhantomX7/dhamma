@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/utility/errors"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -21,13 +21,13 @@ func (s *service) SignIn(ctx context.Context, request request.SignInRequest) (re
 
 	user, err = s.userRepo.FindByUsername(ctx, request.Username)
 	if err != nil {
-		err = errors.New("invalid username or password")
+		err = errors.NewServiceError("invalid username or password", nil)
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
-		err = errors.New("invalid username or password")
+		err = errors.NewServiceError("invalid username or password", nil)
 		return
 	}
 

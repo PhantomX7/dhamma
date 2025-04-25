@@ -49,7 +49,6 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 		if len(requestErrors) > 0 {
 			// Log each error attached to the context
 			for _, err := range requestErrors {
-				contextLogger.Error("request error encountered", zap.Error(err))
 				// Optionally collect error messages for the final log entry
 				errorFields = append(errorFields, zap.String("error", err.Error()))
 			}

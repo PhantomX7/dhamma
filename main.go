@@ -22,7 +22,6 @@ import (
 	customValidator "github.com/PhantomX7/dhamma/utility/validator"
 
 	"github.com/common-nighthawk/go-figure"
-	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-co-op/gocron/v2"
@@ -71,12 +70,31 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	server := gin.Default()
+	server := gin.New()
 
 	// Enable CORS middleware and custom logger
 	server.Use(
-		// Configure ginzap middleware
-		ginzap.RecoveryWithZap(logger.Get(), true),
+		gin.Recovery(),
+		gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+			var statusColor, methodColor, resetColor string
+			if param.IsOutputColor() {
+				statusColor = param.StatusCodeColor()
+				methodColor = param.MethodColor()
+				resetColor = param.ResetColor()
+			}
+
+			if param.Latency > time.Minute {
+				param.Latency = param.Latency.Truncate(time.Second)
+			}
+			return fmt.Sprintf("[GIN] %v |%s %3d %s| %13v | %15s |%s %-7s %s %#v\n",
+				param.TimeStamp.Format("2006/01/02 - 15:04:05"),
+				statusColor, param.StatusCode, resetColor,
+				param.Latency,
+				param.ClientIP,
+				methodColor, param.Method, resetColor,
+				param.Path,
+			)
+		}),
 		m.ErrorHandler(), // Your custom error handler middleware
 		m.CORS(),         // Your custom CORS middleware
 		m.Logger(),       // Your custom detailed logger middleware

@@ -7,7 +7,6 @@ import (
 
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
-	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (c *controller) SignIn(ctx *gin.Context) {
@@ -15,14 +14,14 @@ func (c *controller) SignIn(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.Error(errors.NewValidationError(err))
+		ctx.Error(err)
 		return
 	}
 
 	res, err := c.authService.SignIn(ctx.Request.Context(), req)
 	if err != nil {
 		// Use the new error type
-		ctx.Error(errors.NewServiceError("failed to sign in", err))
+		ctx.Error(err)
 		return
 	}
 

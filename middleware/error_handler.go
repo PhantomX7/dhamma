@@ -6,6 +6,7 @@ import (
 	"github.com/PhantomX7/dhamma/utility"
 	"github.com/PhantomX7/dhamma/utility/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 // ErrorHandler middleware handles application errors
@@ -25,24 +26,23 @@ func (m *Middleware) ErrorHandler() gin.HandlerFunc {
 			}
 
 			// Handle different error types
-			if appErr, ok := err.(*errors.AppError); ok {
-				switch appErr.Type {
-				case errors.ErrorTypeValidation:
-					c.AbortWithStatusJSON(appErr.Status, utility.ValidationErrorResponse(appErr.Err))
-				case errors.ErrorTypeService:
-					c.AbortWithStatusJSON(appErr.Status, utility.BuildResponseFailed(appErr.Message, appErr.Err.Error()))
-				case errors.ErrorTypeBadRequest:
-					c.AbortWithStatusJSON(appErr.Status, utility.BuildResponseFailed(appErr.Message, appErr.Err.Error()))
-				default:
-					c.AbortWithStatusJSON(http.StatusInternalServerError, utility.BuildResponseFailed("Internal server error", "An unexpected error occurred"))
-				}
+			switch e := err.(type) {
+			case *errors.AppError:
+				// Handle application error
+				c.AbortWithStatusJSON(e.Status, utility.BuildResponseFailed(e.Message, e.Err))
+
+				return
+			case validator.ValidationErrors:
+				// Handle validation errors
+				c.AbortWithStatusJSON(http.StatusUnprocessableEntity, utility.ValidationErrorResponse(e))
+
 				return
 			}
 
 			// Handle generic errors
 			c.AbortWithStatusJSON(
 				http.StatusInternalServerError,
-				utility.BuildResponseFailed("Internal server error", err.Error()),
+				utility.BuildResponseFailed("Internal server error", "An unexpected error occurred"),
 			)
 		}
 	}
