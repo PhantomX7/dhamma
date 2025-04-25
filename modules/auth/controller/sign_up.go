@@ -14,16 +14,13 @@ func (c *controller) SignUp(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	res, err := c.authService.SignUp(ctx.Request.Context(), req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to sign up", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

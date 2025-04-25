@@ -29,7 +29,12 @@ func (m *Middleware) ErrorHandler() gin.HandlerFunc {
 			switch e := err.(type) {
 			case *errors.AppError:
 				// Handle application error
-				c.AbortWithStatusJSON(e.Status, utility.BuildResponseFailed(e.Message, e.Err))
+				if errors.IsDatabaseError(e.Err) {
+					// Handle database error
+					c.AbortWithStatusJSON(http.StatusInternalServerError, utility.BuildResponseFailed("Internal server error", "Database error"))
+					return
+				}
+				c.AbortWithStatusJSON(e.Status, utility.BuildResponseFailed(e.Message, nil))
 
 				return
 			case validator.ValidationErrors:

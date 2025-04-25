@@ -14,16 +14,13 @@ func (c *controller) UpdatePassword(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	err := c.authService.UpdatePassword(ctx.Request.Context(), req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to update password", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

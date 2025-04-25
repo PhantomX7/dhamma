@@ -20,7 +20,6 @@ func (c *controller) SignIn(ctx *gin.Context) {
 
 	res, err := c.authService.SignIn(ctx.Request.Context(), req)
 	if err != nil {
-		// Use the new error type
 		ctx.Error(err)
 		return
 	}

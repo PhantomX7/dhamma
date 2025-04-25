@@ -3,6 +3,7 @@ package errors
 import (
 	"errors"
 	"fmt"
+	"net/http"
 )
 
 // Common repository errors
@@ -23,7 +24,11 @@ func WrapError(err error, format string, args ...any) error {
 	}
 
 	message := fmt.Sprintf(format, args...)
-	return fmt.Errorf("%s: %w", message, err)
+	return &AppError{
+		Message: message,
+		Err:     err,
+		Status:  http.StatusUnprocessableEntity,
+	}
 }
 
 // IsNotFound checks if the error is a not found error
@@ -34,4 +39,9 @@ func IsNotFound(err error) bool {
 // IsDuplicate checks if the error is a duplicate error
 func IsDuplicate(err error) bool {
 	return errors.Is(err, ErrDuplicate)
+}
+
+// IsDatabaseError checks if the error is a database error
+func IsDatabaseError(err error) bool {
+	return errors.Is(err, ErrDatabase)
 }

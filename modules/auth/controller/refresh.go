@@ -14,16 +14,13 @@ func (c *controller) Refresh(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	res, err := c.authService.Refresh(ctx.Request.Context(), req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to refresh token", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 
