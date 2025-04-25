@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"log" // Import mime package
 	"net/http"
-	"os"
+	"os" // Import strings package
 	"time"
 
 	"github.com/PhantomX7/dhamma/constants"
@@ -22,6 +22,7 @@ import (
 	customValidator "github.com/PhantomX7/dhamma/utility/validator"
 
 	"github.com/common-nighthawk/go-figure"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-co-op/gocron/v2"
@@ -35,11 +36,11 @@ import (
 )
 
 func main() {
-	// initialize logger
-	logger.NewLogger()
-
 	// load config from .env
 	config.LoadEnv()
+
+	// initialize logger
+	logger.NewLogger()
 
 	app := fx.New(
 		fx.NopLogger, // disable logger for fx
@@ -62,6 +63,8 @@ func main() {
 	app.Run()
 }
 
+// setupServer configures and returns the Gin engine.
+// It sets up middleware including CORS and logging.
 func setupServer(m *middleware.Middleware) *gin.Engine {
 	// set gin mode
 	if config.APP_ENV == constants.EnumRunProduction {
@@ -70,11 +73,17 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 
 	server := gin.Default()
 
-	// Enable CORS middleware
-	server.Use(m.CORS(), m.Logger())
+	// Enable CORS middleware and custom logger
+	server.Use(
+		// Configure ginzap middleware
+		ginzap.RecoveryWithZap(logger.Get(), true),
+		m.CORS(),   // Your custom CORS middleware
+		m.Logger(), // Your custom detailed logger middleware
+	)
 
 	// register static files
 	server.Static("/assets", "./assets")
+	// Register Prometheus metrics endpoint
 	server.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	return server
@@ -139,7 +148,6 @@ func startServer(
 			return nil
 		},
 	})
-
 }
 
 // setupDatabase initializes the database connection and runs migrations.

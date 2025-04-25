@@ -3,9 +3,6 @@ package utility
 import (
 	"errors"
 	"fmt"
-
-	"github.com/PhantomX7/dhamma/utility/logger"
-	"go.uber.org/zap"
 )
 
 // Common repository errors
@@ -26,9 +23,6 @@ func WrapError(err error, format string, args ...any) error {
 	}
 
 	message := fmt.Sprintf(format, args...)
-	logger.Get().Error(message,
-		zap.Error(err),
-	)
 	return fmt.Errorf("%s: %w", message, err)
 }
 

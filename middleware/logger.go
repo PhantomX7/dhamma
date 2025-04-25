@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/PhantomX7/dhamma/constants"
-	"github.com/PhantomX7/dhamma/metrics"
 	"github.com/PhantomX7/dhamma/utility/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -36,18 +35,6 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 
 		// Add logger to context
 		c.Request = c.Request.WithContext(logger.WithCtx(c.Request.Context(), contextLogger))
-		c.Set("logger", contextLogger) // Set the logger in the context for handlers to use
-
-		// Log request start
-		contextLogger.Info("request started",
-			zap.String("request_id", requestID),
-			zap.String("client_ip", c.ClientIP()),
-			zap.String("method", c.Request.Method),
-			zap.String("path", c.Request.URL.Path),
-			zap.String("query", c.Request.URL.RawQuery),
-			zap.String("user_agent", c.Request.UserAgent()),
-		)
-
 		// Process request (executes downstream handlers)
 		c.Next()
 
@@ -69,23 +56,25 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 		// --- End Error Logging ---
 
 		// Update Prometheus metrics
-		metrics.HttpRequestsTotal.WithLabelValues(
-			c.Request.Method,
-			c.Request.URL.Path,
-			//string(rune(c.Writer.Status())), // Status might not be final yet, consider moving if needed
-			//requestID,
-		).Inc()
+		// metrics.HttpRequestsTotal.WithLabelValues(
+		// 	c.Request.Method,
+		// 	c.Request.URL.Path,
+		// 	//string(rune(c.Writer.Status())), // Status might not be final yet, consider moving if needed
+		// 	//requestID,
+		// ).Inc()
 
-		metrics.HttpRequestDuration.WithLabelValues(
-			c.Request.Method,
-			c.Request.URL.Path,
-			requestID,
-		).Observe(duration.Seconds())
+		// metrics.HttpRequestDuration.WithLabelValues(
+		// 	c.Request.Method,
+		// 	c.Request.URL.Path,
+		// 	requestID,
+		// ).Observe(duration.Seconds())
 
 		// Log request completion
 		// Add error fields to the final log if any occurred
 		finalLogFields := []zap.Field{
 			zap.String("request_id", requestID),
+			zap.String("client_ip", c.ClientIP()),
+			zap.String("user_agent", c.Request.UserAgent()),
 			zap.String("method", c.Request.Method),
 			zap.String("path", c.Request.URL.Path),
 			zap.Int("status", c.Writer.Status()),
@@ -102,7 +91,7 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 		}
 
 		// Use appropriate log level based on status/errors
-		if c.Writer.Status() >= 500 || len(requestErrors) > 0 {
+		if c.Writer.Status() >= 500 {
 			contextLogger.Error("request completed with errors", finalLogFields...)
 		} else if c.Writer.Status() >= 400 {
 			contextLogger.Warn("request completed with client error", finalLogFields...)

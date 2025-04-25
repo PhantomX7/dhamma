@@ -19,38 +19,52 @@ var loggerContextKey = loggerKeyType{}
 var logger *zap.Logger
 
 // NewLogger creates a new zap logger instance based on the APP_ENV environment variable.
-// It defaults to a production configuration and switches to development if APP_ENV is "development".
+// It uses Console encoding for "development" and JSON encoding otherwise (production).
 func NewLogger() error {
-	// Default to production configuration
-	config := zap.NewProductionConfig()
+	var config zap.Config
+	var encoderConfig zapcore.EncoderConfig
 
-	// Check the environment variable
+	// Check the environment variable to decide on base config and encoding
 	env := os.Getenv("APP_ENV")
 	if env == "development" {
-		// Use development configuration if specified
+		// Use development config (defaults to console encoding)
 		config = zap.NewDevelopmentConfig()
-		// Optional: Adjust development logging level if needed, e.g., DebugLevel
+		encoderConfig = zap.NewDevelopmentEncoderConfig()
+
+		// Customize development encoder
 		config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-	}
+		encoderConfig.TimeKey = "timestamp"
+		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		// encoderConfig.StacktraceKey = "stacktrace"
+		encoderConfig.StacktraceKey = ""
+		encoderConfig.CallerKey = "caller"
+		encoderConfig.MessageKey = "msg"
+		encoderConfig.NameKey = "name"
 
-	// Apply common encoder settings regardless of environment
-	config.EncoderConfig.TimeKey = "timestamp"
-	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	// Keep stacktrace for development, disable for production (default in NewProductionConfig)
-	if env != "development" {
-		config.EncoderConfig.StacktraceKey = "" // Disable stacktrace in production JSON
 	} else {
-		// Development config usually includes stacktrace by default, but ensure it's set if needed
-		config.EncoderConfig.StacktraceKey = "stacktrace"
+		// Use production config (defaults to JSON encoding)
+		config = zap.NewProductionConfig()
+		encoderConfig = zap.NewProductionEncoderConfig()
+
+		// Customize production encoder (JSON)
+		encoderConfig.TimeKey = "timestamp"
+		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		encoderConfig.StacktraceKey = ""
+		// LevelKey, CallerKey, MessageKey, NameKey are standard in production JSON encoder
 	}
 
-	// Set output paths (stdout is often default, but explicit is fine)
+	// Apply the configured encoder settings
+	config.EncoderConfig = encoderConfig
+
+	// Set output paths
 	config.OutputPaths = []string{"stdout"}
 	config.ErrorOutputPaths = []string{"stderr"}
 
 	var err error
 	// Build the logger from the final configuration
-	logger, err = config.Build()
+	// AddCallerSkip(1) helps ensure the caller field shows the correct location in your code
+	logger, err = config.Build(zap.AddCallerSkip(1))
 	if err != nil {
 		return err
 	}

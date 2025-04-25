@@ -3,9 +3,12 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/logger"
 	"github.com/PhantomX7/dhamma/utility/pagination"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -46,6 +49,9 @@ func (r BaseRepository[T]) Count(ctx context.Context, pg *pagination.Pagination)
 		Model((*T)(nil)).
 		Count(&count).Error
 	if err != nil {
+		// Log the error using logger from context
+		logger.FromCtx(ctx).Error("failed to count records", zap.Error(err))
+		// Return a wrapped generic database error
 		return 0, utility.WrapError(utility.ErrDatabase, "failed to count records")
 	}
 	return count, nil
@@ -63,11 +69,17 @@ func (r BaseRepository[T]) FindByID(ctx context.Context, id uint64, preloads ...
 	db = r.applyPreloads(db, preloads...)
 
 	result := db.First(&entity, id)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return entity, utility.WrapError(utility.ErrNotFound, "entity with ID %d not found", id)
-	}
 	if result.Error != nil {
-		return entity, utility.WrapError(utility.ErrDatabase, "failed to find entity with ID %d", id)
+		errMessage := fmt.Sprintf("failed to find %T entity with ID %d", *new(T), id)
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// Return not found error
+			return entity, utility.ErrNotFound
+		}
+
+		// Log the specific error
+		logger.FromCtx(ctx).Error(errMessage, zap.Uint64("id", id), zap.Error(result.Error))
+		// Return wrapped generic database error
+		return entity, utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 
 	return entity, nil
@@ -82,7 +94,12 @@ func (r BaseRepository[T]) Create(ctx context.Context, model *T, tx *gorm.DB) er
 
 	err := db.Create(model).Error
 	if err != nil {
-		return utility.WrapError(utility.ErrDatabase, "failed to create record")
+		// Include entity type in the error message
+		errMessage := fmt.Sprintf("failed to create %T record", *model) // Use model to get type
+		// Log the error
+		logger.FromCtx(ctx).Error(errMessage, zap.Error(err))
+		// Return wrapped generic database error
+		return utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 	return nil
 }
@@ -97,7 +114,12 @@ func (r BaseRepository[T]) Update(ctx context.Context, model *T, tx *gorm.DB) er
 
 	err := db.Save(model).Error
 	if err != nil {
-		return utility.WrapError(utility.ErrDatabase, "failed to update record")
+		// Include entity type in the error message
+		errMessage := fmt.Sprintf("failed to update %T record", *model) // Use model to get type
+		// Log the error
+		logger.FromCtx(ctx).Error(errMessage, zap.Error(err))
+		// Return wrapped generic database error
+		return utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 	return nil
 }
@@ -112,7 +134,12 @@ func (r BaseRepository[T]) Delete(ctx context.Context, model *T, tx *gorm.DB) er
 
 	err := db.Delete(model).Error
 	if err != nil {
-		return utility.WrapError(utility.ErrDatabase, "failed to delete record")
+		// Include entity type in the error message
+		errMessage := fmt.Sprintf("failed to delete %T record", *model) // Use model to get type
+		// Log the error
+		logger.FromCtx(ctx).Error(errMessage, zap.Error(err))
+		// Return wrapped generic database error
+		return utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 	return nil
 }
@@ -132,6 +159,9 @@ func (r BaseRepository[T]) FindAll(ctx context.Context, pg *pagination.Paginatio
 		Scopes(metaScopes...).
 		Find(&entities).Error
 	if err != nil {
+		// Log the error
+		logger.FromCtx(ctx).Error("failed to find records", zap.Error(err))
+		// Return wrapped generic database error
 		return nil, utility.WrapError(utility.ErrDatabase, "failed to find records")
 	}
 
@@ -150,7 +180,12 @@ func (r BaseRepository[T]) FindByField(ctx context.Context, fieldName string, va
 
 	err := db.Where(fieldName+" = ?", value).Find(&entities).Error
 	if err != nil {
-		return nil, utility.WrapError(utility.ErrDatabase, "failed to find records with %s=%v", fieldName, value)
+		// Include entity type in the error message
+		errMessage := fmt.Sprintf("failed to find %T records with %s=%v", *new(T), fieldName, value)
+		// Log the error
+		logger.FromCtx(ctx).Error(errMessage, zap.String("field", fieldName), zap.Any("value", value), zap.Error(err))
+		// Return wrapped generic database error
+		return nil, utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 	return entities, nil
 }
@@ -167,11 +202,17 @@ func (r BaseRepository[T]) FindOneByField(ctx context.Context, fieldName string,
 	db = r.applyPreloads(db, preloads...)
 
 	result := db.Where(fieldName+" = ?", value).First(&entity)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return entity, utility.WrapError(utility.ErrNotFound, "entity with %s=%v not found", fieldName, value)
-	}
 	if result.Error != nil {
-		return entity, utility.WrapError(utility.ErrDatabase, "failed to find entity with %s=%v", fieldName, value)
+		// Include entity type in the error message
+		errMessage := fmt.Sprintf("failed to find %T entity with %s=%v", *new(T), fieldName, value)
+		// Log the specific error
+		logger.FromCtx(ctx).Error(errMessage, zap.String("field", fieldName), zap.Any("value", value), zap.Error(result.Error))
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// Return not found error (message is less critical here as the error type is specific)
+			return entity, utility.ErrNotFound
+		}
+		// Return wrapped generic database error
+		return entity, utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 
 	return entity, nil
@@ -189,7 +230,12 @@ func (r BaseRepository[T]) FindByFields(ctx context.Context, conditions map[stri
 
 	err := db.Where(conditions).Find(&entities).Error
 	if err != nil {
-		return nil, utility.WrapError(utility.ErrDatabase, "failed to find records with conditions")
+		// Include entity type in the error message
+		errMessage := fmt.Sprintf("failed to find %T records with conditions", *new(T))
+		// Log the error
+		logger.FromCtx(ctx).Error(errMessage, zap.Any("conditions", conditions), zap.Error(err))
+		// Return wrapped generic database error
+		return nil, utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 	return entities, nil
 }
@@ -202,7 +248,12 @@ func (r BaseRepository[T]) Exists(ctx context.Context, conditions map[string]any
 	var count int64
 	err := r.DB.WithContext(ctx).Model((*T)(nil)).Where(conditions).Count(&count).Error
 	if err != nil {
-		return false, utility.WrapError(utility.ErrDatabase, "failed to check if record exists")
+		// Include entity type in the error message
+		errMessage := fmt.Sprintf("failed to check if %T record exists with conditions", *new(T))
+		// Log the error
+		logger.FromCtx(ctx).Error(errMessage, zap.Any("conditions", conditions), zap.Error(err))
+		// Return wrapped generic database error
+		return false, utility.WrapError(utility.ErrDatabase, errMessage)
 	}
 	return count > 0, nil
 }
