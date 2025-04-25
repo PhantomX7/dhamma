@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/PhantomX7/dhamma/constants"
+	"github.com/PhantomX7/dhamma/utility/errors"
 	"github.com/PhantomX7/dhamma/utility/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 // Logger is a middleware function that logs request details, handles request IDs,
@@ -42,20 +43,6 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 		// Calculate duration
 		duration := time.Since(start)
 
-		// --- Error Logging ---
-		// Check for errors after handlers have run
-		requestErrors := c.Errors // Get errors attached to the context by handlers
-		errorFields := []zap.Field{}
-		if len(requestErrors) > 0 {
-			// Log each error attached to the context
-			for _, err := range requestErrors {
-				// Optionally collect error messages for the final log entry
-				errorFields = append(errorFields, zap.String("error", err.Error()))
-			}
-		}
-
-		// --- End Error Logging ---
-
 		// Update Prometheus metrics
 		// metrics.HttpRequestsTotal.WithLabelValues(
 		// 	c.Request.Method,
@@ -82,20 +69,31 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 			zap.Duration("duration", duration),
 			zap.Int("body_size", c.Writer.Size()),
 		}
-		if len(errorFields) > 0 {
-			finalLogFields = append(finalLogFields, zap.Array("errors", zapcore.ArrayMarshalerFunc(func(enc zapcore.ArrayEncoder) error {
-				for _, err := range requestErrors {
-					enc.AppendString(err.Error())
-				}
-				return nil
-			})))
-		}
 
 		// Use appropriate log level based on status/errors
 		if c.Writer.Status() >= 500 {
 			contextLogger.Error("request completed with errors", finalLogFields...)
 		} else if c.Writer.Status() >= 400 {
-			contextLogger.Warn("request completed with client error", finalLogFields...)
+			// Check if there are any errors
+			if len(c.Errors) > 0 {
+				// Get the last error
+				err := c.Errors.Last().Err
+
+				// Handle different error types
+				switch e := err.(type) {
+				case *errors.AppError:
+					// Handle application error
+					finalLogFields = append(finalLogFields, zap.Error(e.Err))
+				case validator.ValidationErrors:
+					// Handle validation errors
+					finalLogFields = append(finalLogFields, zap.String("error", "validation_errors"))
+				default:
+					// Handle other types of errors
+					finalLogFields = append(finalLogFields, zap.Error(e))
+				}
+			} else {
+				contextLogger.Warn("request completed with client error", finalLogFields...)
+			}
 		} else {
 			contextLogger.Info("request completed successfully", finalLogFields...)
 		}

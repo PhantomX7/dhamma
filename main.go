@@ -73,6 +73,7 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 	server := gin.New()
 
 	// Enable CORS middleware and custom logger
+	// the order is important
 	server.Use(
 		gin.Recovery(),
 		gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
@@ -95,9 +96,9 @@ func setupServer(m *middleware.Middleware) *gin.Engine {
 				param.Path,
 			)
 		}),
-		m.ErrorHandler(), // Your custom error handler middleware
 		m.CORS(),         // Your custom CORS middleware
 		m.Logger(),       // Your custom detailed logger middleware
+		m.ErrorHandler(), // Your custom error handler middleware
 	)
 
 	// register static files
