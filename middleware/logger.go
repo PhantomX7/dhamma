@@ -1,12 +1,14 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/metrics"
+	"github.com/PhantomX7/dhamma/utility/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
-	"time"
 )
 
 func (m *Middleware) Logger() gin.HandlerFunc {
@@ -24,7 +26,7 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 		c.Header("X-Request-ID", requestID)
 
 		// Add logger with request ID to context
-		contextLogger := m.logger.With(
+		contextLogger := logger.Logger.With(
 			zap.String("request_id", requestID),
 			zap.String("client_ip", c.ClientIP()),
 		)

@@ -12,8 +12,6 @@ import (
 	"github.com/PhantomX7/dhamma/modules/user"
 	"github.com/PhantomX7/dhamma/modules/user_domain"
 	"github.com/PhantomX7/dhamma/utility/pagination"
-
-	"go.uber.org/zap"
 )
 
 type Middleware struct {
@@ -23,7 +21,6 @@ type Middleware struct {
 	domainRepo            domain.Repository
 	permissionRepo        permission.Repository
 	casbin                casbin.Client
-	logger                *zap.Logger
 	permissionDefinitions map[string]entity.Permission // Add map to store definitions
 }
 
@@ -34,7 +31,6 @@ func New(
 	domainRepo domain.Repository,
 	permissionRepo permission.Repository,
 	casbin casbin.Client,
-	logger *zap.Logger,
 ) *Middleware {
 
 	// Load permission definitions at startup
@@ -61,7 +57,6 @@ func New(
 		domainRepo:            domainRepo,
 		permissionRepo:        permissionRepo, // Store injected repo
 		casbin:                casbin,
-		logger:                logger,
 		permissionDefinitions: permissionDefsMap, // Store loaded definitions
 	}
 }

@@ -18,7 +18,7 @@ import (
 	"github.com/PhantomX7/dhamma/migration"
 	"github.com/PhantomX7/dhamma/modules"
 	"github.com/PhantomX7/dhamma/routes"
-	customLogger "github.com/PhantomX7/dhamma/utility/logger"
+	"github.com/PhantomX7/dhamma/utility/logger"
 	customValidator "github.com/PhantomX7/dhamma/utility/validator"
 
 	"github.com/common-nighthawk/go-figure"
@@ -28,9 +28,10 @@ import (
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormLogger "gorm.io/gorm/logger"
 )
 
 // func args(db *gorm.DB) bool {
@@ -49,11 +50,8 @@ func main() {
 	// load config from .env
 	config.LoadEnv()
 
-	// if !args(db) {
-	// 	return
-	// }
 	app := fx.New(
-		// fx.NopLogger, // disable logger for fx
+		fx.NopLogger, // disable logger for fx
 		fx.Provide(
 			setupDatabase,
 			customValidator.New, // initiate custom validator
@@ -132,7 +130,7 @@ func startServer(
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			log.Println("Shutting down HTTP server...")
+			logger.Logger.Info("Shutting down HTTP server...")
 
 			// Create a timeout context for shutdown
 			ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -144,7 +142,7 @@ func startServer(
 				return err
 			}
 
-			log.Println("Server shutdown completed")
+			logger.Logger.Info("Server shutdown completed")
 			return nil
 		},
 	})
@@ -164,33 +162,33 @@ func setupDatabase(lc fx.Lifecycle) *gorm.DB {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
 		//DisableForeignKeyConstraintWhenMigrating: true,
-		Logger: logger.New(
+		Logger: gormLogger.New(
 			log.New(os.Stdout, "\r\n", log.LstdFlags),
-			logger.Config{
+			gormLogger.Config{
 				IgnoreRecordNotFoundError: true,
 			},
 		),
 	})
 	if err != nil {
-		log.Println(err)
+		logger.Logger.Info("error initializing database", zap.Error(err))
 		panic(err)
 	}
 
 	// run migration
 	if err = migration.RunMigration(db); err != nil {
-		log.Println(err)
+		logger.Logger.Error("error running migration", zap.Error(err))
 		panic(err)
 	}
 
 	// Database lifecycle hooks
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			log.Println("Ensuring database connection...")
+			logger.Logger.Info("Ensuring database connection...")
 			db, _ := db.DB()
 			return db.PingContext(ctx)
 		},
 		OnStop: func(ctx context.Context) error {
-			log.Println("Closing database connection...")
+			logger.Logger.Info("Closing database connection...")
 			db, _ := db.DB()
 			return db.Close()
 		},
@@ -213,13 +211,13 @@ func registerValidators(validators map[string]validator.Func) {
 func startCron(lc fx.Lifecycle, cron gocron.Scheduler) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			log.Println("Starting Cron")
+			logger.Logger.Info("Starting Cron")
 
 			cron.Start()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			log.Println("Stopping cron")
+			logger.Logger.Info("Stopping cron")
 
 			return cron.Shutdown()
 		},
@@ -227,15 +225,16 @@ func startCron(lc fx.Lifecycle, cron gocron.Scheduler) {
 }
 
 func initLogger(lc fx.Lifecycle) {
-	err := customLogger.NewLogger()
+	err := logger.NewLogger()
 	if err != nil {
 		panic(err)
 	}
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
-			log.Println("Stopping log")
+			logger.Logger.Info("Stopping log")
 
-			return customLogger.Logger.Sync()
+			// Flush any buffered log entries
+			return logger.Logger.Sync()
 		},
 	})
 }
