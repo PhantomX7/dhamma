@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
+	"github.com/PhantomX7/dhamma/utility/errors"
 
 	"github.com/gin-gonic/gin"
 
@@ -22,7 +23,10 @@ func (c *controller) Update(ctx *gin.Context) {
 
 	domainID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		ctx.Error(err)
+		ctx.Error(&errors.AppError{
+			Message: "invalid domain id",
+			Status:  http.StatusBadRequest,
+		})
 		return
 	}
 
