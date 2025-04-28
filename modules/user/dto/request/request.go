@@ -3,9 +3,10 @@ package request
 import "github.com/PhantomX7/dhamma/utility/pagination"
 
 type UserCreateRequest struct {
-	Username string `json:"username" form:"username" binding:"required,unique=users.username"`
-	Password string `json:"password" form:"password" binding:"required"`
+	Username string `json:"username" form:"username" binding:"required,min=3,unique=users.username"`
+	Password string `json:"password" form:"password" binding:"required,min=8"`
 }
+
 type AssignDomainRequest struct {
 	DomainID uint64 `json:"domain_id" form:"domain_id" binding:"required,exist=domains.id"`
 }
