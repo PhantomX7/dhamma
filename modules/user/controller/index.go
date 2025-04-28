@@ -12,10 +12,7 @@ import (
 func (c *controller) Index(ctx *gin.Context) {
 	res, meta, err := c.userService.Index(ctx.Request.Context(), request.NewUserPagination(ctx.Request.URL.Query()))
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to get all user", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

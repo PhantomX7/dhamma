@@ -12,10 +12,7 @@ import (
 func (c *controller) Index(ctx *gin.Context) {
 	res, meta, err := c.roleService.Index(ctx.Request.Context(), request.NewRolePagination(ctx.Request.URL.Query()))
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to get all role", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

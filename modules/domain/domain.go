@@ -14,8 +14,6 @@ import (
 
 type Repository interface {
 	repository.BaseRepositoryInterface[entity.Domain]
-	FindByCode(ctx context.Context, code string) (entity.Domain, error)
-	GetDomainRoles(ctx context.Context, domainID uint64) (entity.Domain, error)
 }
 
 type Service interface {
@@ -23,7 +21,6 @@ type Service interface {
 	Show(ctx context.Context, domainID uint64) (entity.Domain, error)
 	Update(ctx context.Context, domainID uint64, request request.DomainUpdateRequest) (entity.Domain, error)
 	Create(ctx context.Context, request request.DomainCreateRequest) (entity.Domain, error)
-	ShowWithRoles(ctx context.Context, domainID uint64) (entity.Domain, error)
 }
 
 type Controller interface {

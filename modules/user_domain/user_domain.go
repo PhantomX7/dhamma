@@ -12,5 +12,5 @@ type Repository interface {
 	HasDomain(ctx context.Context, userID, domainID uint64) (bool, error)
 	AssignDomain(ctx context.Context, userID, domainID uint64, tx *gorm.DB) error
 	RemoveDomain(ctx context.Context, userID, domainID uint64, tx *gorm.DB) error
-	FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) ([]entity.UserDomain, error)
+	FindByUserID(ctx context.Context, userID uint64, preloads ...string) ([]entity.UserDomain, error)
 }

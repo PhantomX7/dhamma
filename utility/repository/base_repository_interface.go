@@ -26,4 +26,19 @@ type BaseRepositoryInterface[T any] interface {
 
 	// Count counts entities with pagination filters
 	Count(ctx context.Context, pg *pagination.Pagination) (int64, error)
+
+	// FindByField retrieves entities where a specific field matches the given value.
+	FindByField(ctx context.Context, fieldName string, value any, preloads ...string) ([]T, error)
+
+	// FindOneByField retrieves a single entity where a specific field matches the given value.
+	FindOneByField(ctx context.Context, fieldName string, value any, preloads ...string) (T, error)
+
+	// FindByFields retrieves entities matching multiple field conditions.
+	FindByFields(ctx context.Context, conditions map[string]any, preloads ...string) ([]T, error)
+
+	// FindOneByFields retrieves a single entity matching multiple field conditions.
+	FindOneByFields(ctx context.Context, conditions map[string]any, preloads ...string) (T, error)
+
+	// Exists checks if any records match the given conditions.
+	Exists(ctx context.Context, conditions map[string]any) (bool, error)
 }

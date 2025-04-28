@@ -15,25 +15,19 @@ func (c *controller) DeletePermissions(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	roleID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to delete role permission", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 
 	err = c.roleService.DeletePermissions(ctx.Request.Context(), roleID, req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to delete role permission", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

@@ -52,3 +52,28 @@ func (r *repository) Delete(ctx context.Context, user *entity.User, tx *gorm.DB)
 func (r *repository) Count(ctx context.Context, pg *pagination.Pagination) (int64, error) {
 	return r.base.Count(ctx, pg)
 }
+
+// FindByField retrieves user entities where a specific field matches the given value.
+func (r *repository) FindByField(ctx context.Context, fieldName string, value any, preloads ...string) ([]entity.User, error) {
+	return r.base.FindByField(ctx, fieldName, value, preloads...)
+}
+
+// FindOneByField retrieves a single user entity where a specific field matches the given value.
+func (r *repository) FindOneByField(ctx context.Context, fieldName string, value any, preloads ...string) (entity.User, error) {
+	return r.base.FindOneByField(ctx, fieldName, value, preloads...)
+}
+
+// FindByFields retrieves user entities matching multiple field conditions.
+func (r *repository) FindByFields(ctx context.Context, conditions map[string]any, preloads ...string) ([]entity.User, error) {
+	return r.base.FindByFields(ctx, conditions, preloads...)
+}
+
+// FindOneByFields retrieves a single user entity matching multiple field conditions.
+func (r *repository) FindOneByFields(ctx context.Context, conditions map[string]any, preloads ...string) (entity.User, error) {
+	return r.base.FindOneByFields(ctx, conditions, preloads...)
+}
+
+// Exists checks if any user records match the given conditions.
+func (r *repository) Exists(ctx context.Context, conditions map[string]any) (bool, error) {
+	return r.base.Exists(ctx, conditions)
+}

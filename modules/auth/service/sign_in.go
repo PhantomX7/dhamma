@@ -19,7 +19,7 @@ func (s *service) SignIn(ctx context.Context, request request.SignInRequest) (re
 
 	request.Username = strings.ToLower(strings.TrimSpace(request.Username))
 
-	user, err = s.userRepo.FindByUsername(ctx, request.Username)
+	user, err = s.userRepo.FindOneByField(ctx, "username", request.Username)
 	if err != nil {
 		err = errors.NewServiceError("invalid username or password", nil)
 		return

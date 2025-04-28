@@ -15,25 +15,19 @@ func (c *controller) AssignRole(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	userID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to get user", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 
 	err = c.userService.AssignRole(ctx.Request.Context(), userID, req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to assign role to user", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

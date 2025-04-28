@@ -82,5 +82,5 @@ func (c *client) DeleteRolePermissions(roleID uint64, domainID uint64, permissio
 		zap.Strings("original_permissions_requested", permissionCodes),
 	)
 
-	return nil // Success
+	return nil
 }

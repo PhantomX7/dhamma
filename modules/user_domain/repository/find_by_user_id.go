@@ -7,12 +7,7 @@ import (
 	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
-func (r *repository) FindByUserID(ctx context.Context, userID uint64, preloadRelations bool) ([]entity.UserDomain, error) {
-	var preloads []string
-	if preloadRelations {
-		preloads = append(preloads, "Domain")
-	}
-
+func (r *repository) FindByUserID(ctx context.Context, userID uint64, preloads ...string) ([]entity.UserDomain, error) {
 	domains, err := r.base.FindByField(ctx, "user_id", userID, preloads...)
 	if err != nil {
 		return nil, errors.WrapError(errors.ErrDatabase, "error finding domains for user")

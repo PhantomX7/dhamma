@@ -15,25 +15,19 @@ func (c *controller) Update(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	roleID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to update role", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 
 	res, err := c.roleService.Update(ctx.Request.Context(), roleID, req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to update role", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

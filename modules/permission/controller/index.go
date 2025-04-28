@@ -12,10 +12,7 @@ import (
 func (c *controller) Index(ctx *gin.Context) {
 	res, meta, err := c.permissionService.Index(ctx.Request.Context(), request.NewPermissionPagination(ctx.Request.URL.Query()))
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to get all permission", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

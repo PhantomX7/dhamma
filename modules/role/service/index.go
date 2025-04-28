@@ -20,26 +20,15 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 		return
 	}
 
-	// only query specific domain
-	// if contextValues.DomainID != nil {
-	// 	pg.AddCustomScope(func(db *gorm.DB) *gorm.DB {
-	// 		return db.Where("domain_id = ?", *contextValues.DomainID)
-	// 	})
-	// }
-
 	// Combine all scopes into a single AddCustomScope call
 	pg.AddCustomScope(
 		// Base join and preload
 		func(db *gorm.DB) *gorm.DB {
-			return db.
-				Joins("Domain")
-		},
-		// Domain filter scope
-		func(db *gorm.DB) *gorm.DB {
 			if contextValues.DomainID != nil {
 				return db.Where("domain_id = ?", *contextValues.DomainID)
 			}
-			return db
+			return db.
+				Joins("Domain")
 		},
 
 		// Super admin filter scope

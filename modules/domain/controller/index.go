@@ -12,10 +12,7 @@ import (
 func (c *controller) Index(ctx *gin.Context) {
 	res, meta, err := c.domainService.Index(ctx.Request.Context(), request.NewDomainPagination(ctx.Request.URL.Query()))
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to get all domain", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

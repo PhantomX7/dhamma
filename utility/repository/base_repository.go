@@ -26,16 +26,6 @@ func NewBaseRepository[T any](db *gorm.DB) BaseRepository[T] {
 	}
 }
 
-// WithTx returns a new repository instance that uses the provided transaction.
-// If tx is nil, the original repository's DB connection is used.
-// This allows for method chaining in transaction blocks.
-func (r BaseRepository[T]) WithTx(tx *gorm.DB) BaseRepository[T] {
-	if tx != nil {
-		r.DB = tx
-	}
-	return r
-}
-
 // Count returns the number of records matching the given pagination criteria.
 // It applies any filters from the pagination object but ignores limit and offset.
 // Returns the count and any error encountered during the database operation.

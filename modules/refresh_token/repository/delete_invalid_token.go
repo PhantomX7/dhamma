@@ -4,8 +4,11 @@ import (
 	"context"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/utility/errors"
+	"github.com/PhantomX7/dhamma/utility/logger"
 )
 
 func (r *repository) DeleteInvalidToken(ctx context.Context) error {
@@ -14,7 +17,9 @@ func (r *repository) DeleteInvalidToken(ctx context.Context) error {
 		Delete(&entity.RefreshToken{}).Error
 
 	if err != nil {
-		return errors.WrapError(errors.ErrDatabase, "failed to delete invalid tokens")
+		errMessage := "failed to delete invalid refresh token"
+		logger.FromCtx(ctx).Error(errMessage, zap.Error(err))
+		return errors.WrapError(errors.ErrDatabase, errMessage)
 	}
 
 	return nil

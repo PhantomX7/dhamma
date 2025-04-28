@@ -16,7 +16,7 @@ func (m *Middleware) ValidateDomain() gin.HandlerFunc {
 		}
 
 		domainCode := c.Param("domain_code")
-		domain, err := m.domainRepo.FindByCode(c.Request.Context(), domainCode)
+		domain, err := m.domainRepo.FindOneByField(c.Request.Context(), "code", domainCode)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error": "domain not found",

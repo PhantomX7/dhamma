@@ -2,10 +2,15 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+
 	"github.com/PhantomX7/dhamma/entity"
-	"github.com/PhantomX7/dhamma/utility/errors"
+	customErrors "github.com/PhantomX7/dhamma/utility/errors"
+	"github.com/PhantomX7/dhamma/utility/logger"
 )
 
 func (r *repository) FindByID(ctx context.Context, refreshTokenID string) (entity.RefreshToken, error) {
@@ -17,7 +22,15 @@ func (r *repository) FindByID(ctx context.Context, refreshTokenID string) (entit
 		Take(&refreshToken)
 
 	if result.Error != nil {
-		return refreshToken, errors.WrapError(errors.ErrNotFound, "refresh token not found or expired")
+		errMessage := "refresh token not found"
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// Return not found error
+			return refreshToken, customErrors.ErrNotFound
+		}
+
+		// Log the specific error
+		logger.FromCtx(ctx).Error(errMessage, zap.String("id", refreshTokenID), zap.Error(result.Error))
+		return refreshToken, customErrors.WrapError(customErrors.ErrNotFound, "refresh token not found or expired")
 	}
 
 	return refreshToken, nil

@@ -11,19 +11,13 @@ import (
 func (c *controller) Show(ctx *gin.Context) {
 	domainID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to get domain", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 
 	res, err := c.domainService.Show(ctx.Request.Context(), domainID)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to get domain", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

@@ -24,8 +24,6 @@ var Permissions = permission{
 
 type Repository interface {
 	repository.BaseRepositoryInterface[entity.Permission]
-	FindByCode(ctx context.Context, permissionCode string) (entity.Permission, error)
-	FindByCodes(ctx context.Context, permissionCodes []string) ([]entity.Permission, error)
 }
 
 type Service interface {

@@ -11,19 +11,13 @@ import (
 func (c *controller) Show(ctx *gin.Context) {
 	roleID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to get role", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 
 	res, err := c.roleService.Show(ctx.Request.Context(), roleID)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to get role", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

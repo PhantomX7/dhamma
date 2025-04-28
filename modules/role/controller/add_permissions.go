@@ -15,25 +15,22 @@ func (c *controller) AddPermissions(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	roleID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
 		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to add role permission", err.Error()),
+			http.StatusUnprocessableEntity,
+			utility.BuildResponseFailed("invalid role id", err.Error()),
 		)
 		return
 	}
 
 	res, err := c.roleService.AddPermissions(ctx.Request.Context(), roleID, req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to add role permission", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

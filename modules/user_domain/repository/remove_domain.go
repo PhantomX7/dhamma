@@ -23,10 +23,3 @@ func (r *repository) RemoveDomain(ctx context.Context, userID, domainID uint64, 
 
 	return nil
 }
-
-func (r *repository) prepareDB(ctx context.Context, tx *gorm.DB) *gorm.DB {
-	if tx != nil {
-		return tx.WithContext(ctx)
-	}
-	return r.db.WithContext(ctx)
-}

@@ -33,7 +33,6 @@ var Permissions = permission{
 
 type Repository interface {
 	repository.BaseRepositoryInterface[entity.Role]
-	FindByNameAndDomainID(ctx context.Context, name string, domainID uint64) (entity.Role, error)
 }
 
 // Service defines the interface for role-related business logic.

@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
 	"net/http"
 	"strconv"
+
+	"github.com/PhantomX7/dhamma/modules/domain/dto/request"
 
 	"github.com/gin-gonic/gin"
 
@@ -15,25 +16,19 @@ func (c *controller) Update(ctx *gin.Context) {
 
 	// validate request
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, utility.ValidationErrorResponse(err))
+		ctx.Error(err)
 		return
 	}
 
 	domainID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			utility.BuildResponseFailed("failed to update domain", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 
 	res, err := c.domainService.Update(ctx.Request.Context(), domainID, req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(
-			http.StatusUnprocessableEntity,
-			utility.BuildResponseFailed("failed to update domain", err.Error()),
-		)
+		ctx.Error(err)
 		return
 	}
 

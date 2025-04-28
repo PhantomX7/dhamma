@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
-	"errors"
-	"github.com/PhantomX7/dhamma/utility"
+	"net/http"
+
 	"github.com/jinzhu/copier"
-	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/role/dto/request"
+	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (s *service) Create(ctx context.Context, request request.RoleCreateRequest) (role entity.Role, err error) {
@@ -18,9 +19,15 @@ func (s *service) Create(ctx context.Context, request request.RoleCreateRequest)
 		return
 	}
 
+	// Check if domain id is set in context
 	if contextValues.DomainID != nil {
+		// Check if domain id in request is same as domain id in context
 		if request.DomainID != *contextValues.DomainID {
-			return entity.Role{}, errors.New("you are not allowed to create role for another domain")
+			err = &errors.AppError{
+				Message: "you cannot create role for other domain",
+				Status:  http.StatusBadRequest,
+			}
+			return
 		}
 	}
 
@@ -28,13 +35,19 @@ func (s *service) Create(ctx context.Context, request request.RoleCreateRequest)
 		IsActive: true,
 	}
 
-	existingRole, err := s.roleRepo.FindByNameAndDomainID(ctx, request.Name, request.DomainID)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	exist, err := s.roleRepo.Exists(ctx, map[string]any{
+		"name":      request.Name,
+		"domain_id": request.DomainID,
+	})
+	if err != nil {
 		return
 	}
 
-	if existingRole.ID != 0 {
-		err = errors.New("role with this name already exist for this domain")
+	if exist {
+		err = &errors.AppError{
+			Message: "Role already exists",
+			Status:  http.StatusBadRequest,
+		}
 		return
 	}
 
