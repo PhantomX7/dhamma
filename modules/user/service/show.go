@@ -16,7 +16,7 @@ func (s *service) Show(ctx context.Context, userID uint64) (user entity.User, er
 		return
 	}
 
-	user, err = s.userRepo.FindByID(ctx, userID, "Domains", "UserRoles.Role")
+	user, err = s.userRepo.FindByID(ctx, userID, "Domains", "UserRoles.Role", "UserRoles.Domain")
 	if err != nil {
 		return
 	}

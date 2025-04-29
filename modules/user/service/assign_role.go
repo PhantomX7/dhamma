@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
-	"errors"
+	"net/http"
 
 	"github.com/PhantomX7/dhamma/modules/user/dto/request"
 	"github.com/PhantomX7/dhamma/utility"
+	"github.com/PhantomX7/dhamma/utility/errors"
 )
 
 func (s *service) AssignRole(ctx context.Context, userID uint64, request request.AssignRoleRequest) (err error) {
@@ -29,7 +30,22 @@ func (s *service) AssignRole(ctx context.Context, userID uint64, request request
 	// Check domain access if domain ID is set in context
 	if contextValues.DomainID != nil {
 		if role.DomainID != *contextValues.DomainID {
-			return errors.New("you are not allowed to assign role for another domain")
+			return &errors.AppError{
+				Status:  http.StatusBadRequest,
+				Message: "you are not allowed to assign role for another domain",
+			}
+		}
+	}
+
+	// check if user has this role domain
+	hasDomain, err := s.userDomainRepo.HasDomain(ctx, userID, role.DomainID)
+	if err != nil {
+		return
+	}
+	if !hasDomain {
+		return &errors.AppError{
+			Status:  http.StatusBadRequest,
+			Message: "you are not allowed to assign role for another domain",
 		}
 	}
 
@@ -39,7 +55,10 @@ func (s *service) AssignRole(ctx context.Context, userID uint64, request request
 		return err
 	}
 	if hasRole {
-		return errors.New("user already has this role")
+		return &errors.AppError{
+			Status:  http.StatusBadRequest,
+			Message: "user already has the role",
+		}
 	}
 
 	// Assign role in database
