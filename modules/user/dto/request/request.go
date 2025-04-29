@@ -19,6 +19,11 @@ type RemoveDomainRequest struct {
 	DomainID uint64 `json:"domain_id" form:"domain_id" binding:"required"`
 }
 
+// RemoveRoleRequest defines the structure for removing a role from a user.
+type RemoveRoleRequest struct {
+	RoleID uint64 `json:"role_id" form:"role_id" binding:"required,exist=roles.id"`
+}
+
 // NewUserPagination creates a pagination object for user listing with filter definitions.
 func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().

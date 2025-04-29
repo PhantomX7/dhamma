@@ -38,9 +38,10 @@ type Service interface {
 	AssignDomain(ctx context.Context, userID uint64, request request.AssignDomainRequest) error
 	AssignRole(ctx context.Context, userID uint64, request request.AssignRoleRequest) error
 	RemoveDomain(ctx context.Context, userID uint64, request request.RemoveDomainRequest) error
+	RemoveRole(ctx context.Context, userID uint64, request request.RemoveRoleRequest) error
 }
 
-// Update the Controller interface to include RemoveDomain
+// Update the Controller interface to include RemoveDomain and RemoveRole
 type Controller interface {
 	Index(ctx *gin.Context)
 	Show(ctx *gin.Context)
@@ -48,4 +49,5 @@ type Controller interface {
 	AssignDomain(ctx *gin.Context)
 	AssignRole(ctx *gin.Context)
 	RemoveDomain(ctx *gin.Context)
+	RemoveRole(ctx *gin.Context)
 }

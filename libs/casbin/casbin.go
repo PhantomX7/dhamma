@@ -19,6 +19,7 @@ type Client interface {
 	GetRolePermissions(roleID uint64, domainID uint64) []string
 	AddUserRole(userID uint64, roleID uint64, domainID uint64) error
 	GetUserPermissions(userID uint64, domainID uint64) []string
+	RemoveUserRole(userID uint64, roleID uint64, domainID uint64) error
 }
 
 type client struct {
