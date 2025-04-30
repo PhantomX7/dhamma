@@ -2,10 +2,11 @@ package seed
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"log"
 	"os"
 	"strings"
+
+	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/entity"
 
@@ -39,7 +40,8 @@ func (s *UserSeeder) GenerateRootUser() (err error) {
 			continue
 		}
 
-		password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		var password []byte
+		password, err = bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return err
 		}

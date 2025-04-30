@@ -136,14 +136,24 @@ func (s *PermissionSeeder) SyncPermissions() (err error) {
 		if existing, found := existingMap[permissionCode]; found {
 			// Update if description changed
 			if existing.Description != permission.Description ||
-				existing.IsDomainSpecific != permission.IsDomainSpecific {
+				existing.IsDomainSpecific != permission.IsDomainSpecific ||
+				existing.Type != permission.Type ||
+				existing.Name != permission.Name {
+
 				existing.Description = permission.Description
 				existing.IsDomainSpecific = permission.IsDomainSpecific
+				existing.Type = permission.Type
+				existing.Name = permission.Name
+
+				log.Printf("updated permission: %s", permissionCode)
+
 				if err = tx.Save(&existing).Error; err != nil {
 					return err
 				}
-				log.Printf("updated permission: %s", permissionCode)
 			}
+
+			// Remove from map to track what's left
+			delete(existingMap, permissionCode)
 		} else {
 			// Create new permission
 			if err = tx.Create(&permission).Error; err != nil {
