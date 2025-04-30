@@ -28,5 +28,4 @@ type Controller interface {
 	Show(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Create(ctx *gin.Context)
-	//ShowWithRoles(ctx *gin.Context)
 }

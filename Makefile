@@ -23,6 +23,9 @@ refresh:
 seed:
 	go run ./seeder/main.go
 
+sync-permission:
+	cd ./tools/permgen&& go run main.go
+
 build:
 	set GOOS=linux&& set GOARCH=amd64&& go build -o bin/main app/main.go
 

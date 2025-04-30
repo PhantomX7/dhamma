@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/PhantomX7/dhamma/seeder/seed"
 	"log"
 	"os"
+
+	"github.com/PhantomX7/dhamma/seeder/seed"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/subosito/gotenv"
@@ -52,6 +53,11 @@ func main() {
 	permissionSeeder := seed.NewPermissionSeeder(db)
 
 	err = permissionSeeder.GenerateApiPermissions()
+	if err != nil {
+		panic(err)
+	}
+
+	err = permissionSeeder.SyncPermissions()
 	if err != nil {
 		panic(err)
 	}

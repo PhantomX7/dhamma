@@ -13,20 +13,6 @@ import (
 	"github.com/PhantomX7/dhamma/utility/repository"
 )
 
-type permission struct {
-	Key    string
-	Index  string
-	Show   string
-	Create string
-}
-
-var Permissions = permission{
-	Key:    "user",
-	Index:  "index",
-	Show:   "show",
-	Create: "create",
-}
-
 type Repository interface {
 	repository.BaseRepositoryInterface[entity.User]
 }

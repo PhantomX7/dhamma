@@ -13,12 +13,13 @@ import (
 )
 
 type permission struct {
-	Key   string
+	Key string
+	// Index all permissions
 	Index string
 }
 
 var Permissions = permission{
-	Key:   "role",
+	Key:   "permission",
 	Index: "index",
 }
 

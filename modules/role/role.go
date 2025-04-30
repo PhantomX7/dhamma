@@ -11,26 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type permission struct {
-	Key               string
-	Index             string
-	Show              string
-	Create            string
-	Update            string
-	AddPermissions    string
-	DeletePermissions string
-}
-
-var Permissions = permission{
-	Key:               "role",
-	Index:             "index",
-	Show:              "show",
-	Create:            "create",
-	Update:            "update",
-	AddPermissions:    "add-permissions",
-	DeletePermissions: "delete-permissions",
-}
-
 type Repository interface {
 	repository.BaseRepositoryInterface[entity.Role]
 }

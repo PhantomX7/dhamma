@@ -2,24 +2,13 @@ package auth
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 
 	"github.com/PhantomX7/dhamma/modules/auth/dto/request"
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 	"github.com/gin-gonic/gin"
 )
-
-type permission struct {
-	Key            string
-	GetMe          string
-	UpdatePassword string
-}
-
-var Permissions = permission{
-	Key:            "auth",
-	GetMe:          "me",
-	UpdatePassword: "update-password",
-}
 
 type Service interface {
 	SignIn(ctx context.Context, request request.SignInRequest) (response.AuthResponse, error)

@@ -8,7 +8,6 @@ require (
 	github.com/casbin/casbin/v2 v2.103.0
 	github.com/casbin/gorm-adapter/v3 v3.32.0
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
-	github.com/gin-contrib/zap v1.1.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-co-op/gocron/v2 v2.16.0
 	github.com/go-faker/faker/v4 v4.6.0
