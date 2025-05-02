@@ -11,14 +11,6 @@ const PermissionTypeWeb = "WEB"
 // ApiPermissions contains all API permissions generated from module definitions
 var ApiPermissions = []entity.Permission{
 	{
-		Name:             "auth - me",
-		Object:           "auth",
-		Action:           "me",
-		Description:      "Get the current user information",
-		Type:             PermissionTypeApi,
-		IsDomainSpecific: false,
-	},
-	{
 		Name:             "auth - update-password",
 		Object:           "auth",
 		Action:           "update-password",
