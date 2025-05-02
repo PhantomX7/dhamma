@@ -15,24 +15,18 @@ type permission struct {
 	AssignRole string
 	// Remove a role from a user
 	RemoveRole string
-	// Assign a domain from a user
-	AssignDomain string
-	// Remove a domain from a user
-	RemoveDomain string
 	// Force logout a user
 	ForceLogout string
 }
 
 // Permissions defines all permissions for the user module
 var Permissions = permission{
-	Key:          "user",
-	Index:        "index",
-	Show:         "show",
-	Create:       "create",
-	Update:       "update",
-	AssignRole:   "assign-role",
-	RemoveRole:   "remove-role",
-	AssignDomain: "assign-domain",
-	RemoveDomain: "remove-domain",
-	ForceLogout:  "force-logout",
+	Key:         "user",
+	Index:       "index",
+	Show:        "show",
+	Create:      "create",
+	Update:      "update",
+	AssignRole:  "assign-role",
+	RemoveRole:  "remove-role",
+	ForceLogout: "force-logout",
 }

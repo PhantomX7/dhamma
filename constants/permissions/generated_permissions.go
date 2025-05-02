@@ -131,22 +131,6 @@ var ApiPermissions = []entity.Permission{
 		IsDomainSpecific: false,
 	},
 	{
-		Name:             "user - assign-domain",
-		Object:           "user",
-		Action:           "assign-domain",
-		Description:      "Assign a domain from a user",
-		Type:             PermissionTypeApi,
-		IsDomainSpecific: false,
-	},
-	{
-		Name:             "user - remove-domain",
-		Object:           "user",
-		Action:           "remove-domain",
-		Description:      "Remove a domain from a user",
-		Type:             PermissionTypeApi,
-		IsDomainSpecific: false,
-	},
-	{
 		Name:             "user - force-logout",
 		Object:           "user",
 		Action:           "force-logout",
