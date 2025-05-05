@@ -40,12 +40,13 @@ func New(db *gorm.DB) (Client, error) {
 
 	// create casbin RBAC model
 	m := model.NewModel()
-	m.AddDef("r", "r", "sub, dom, obj, act, type")
-	m.AddDef("p", "p", "sub, dom, obj, act, type")
-	m.AddDef("g", "g", "_, _, _")
-	m.AddDef("g2", "g2", "_, _")
-	m.AddDef("e", "e", "some(where (p.eft == allow))")
-	m.AddDef("m", "m", `(g(r.sub, p.sub, r.dom) || g(r.sub, r2, r.dom) && g2(r2, p.sub)) && r.dom == p.dom && keyMatch2(r.obj, p.obj) && keyMatch2(r.act, p.act) && r.type == p.type || r.sub == "root"`)
+	m.AddDef("r", "r", "sub, dom, obj, act, type") // Request definition
+	m.AddDef("p", "p", "sub, dom, obj, act, type") // Policy definition
+	m.AddDef("g", "g", "_, _, _")                  // Role definition (user, role, domain)
+	// m.AddDef("g2", "g2", "_, _")              // Role hierarchy definition (user, role)
+	m.AddDef("e", "e", "some(where (p.eft == allow))") // Effect definition
+	// Simplified matcher using only 'g'
+	m.AddDef("m", "m", `g(r.sub, p.sub, r.dom) && r.dom == p.dom && keyMatch2(r.obj, p.obj) && keyMatch2(r.act, p.act) && r.type == p.type || r.sub == "root"`) // <<< Use simplified matcher
 
 	// Load model configuration file and policy store adapter
 	enforcer, err := casbin.NewEnforcer(m, adapter)

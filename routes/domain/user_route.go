@@ -9,10 +9,10 @@ import (
 func UserRoute(route *gin.Engine, middleware *middleware.Middleware, userController user.Controller) {
 	routes := route.Group(":domain_code/user", middleware.AuthHandle(), middleware.ValidateDomain())
 	{
-		routes.GET("", userController.Index)
-		routes.GET("/:id", userController.Show)
-		routes.POST("", userController.Create)
-		routes.POST("/:id/assign-role", userController.AssignRole)
-		routes.POST("/:id/remove-role", userController.RemoveRole)
+		routes.GET("", middleware.Permission(user.Permissions.Key, user.Permissions.Index), userController.Index)
+		routes.GET("/:id", middleware.Permission(user.Permissions.Key, user.Permissions.Show), userController.Show)
+		routes.POST("", middleware.Permission(user.Permissions.Key, user.Permissions.Create), userController.Create)
+		routes.POST("/:id/assign-role", middleware.Permission(user.Permissions.Key, user.Permissions.AssignRole), userController.AssignRole)
+		routes.POST("/:id/remove-role", middleware.Permission(user.Permissions.Key, user.Permissions.RemoveRole), userController.RemoveRole)
 	}
 }

@@ -12,12 +12,7 @@ import (
 	"github.com/PhantomX7/dhamma/utility/logger"
 )
 
-type PermissionConfig struct {
-	Object string
-	Action string
-}
-
-func (m *Middleware) Permission(config PermissionConfig) gin.HandlerFunc {
+func (m *Middleware) Permission(object string, action string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get value from context
 		contextValues, err := utility.ValuesFromContext(c.Request.Context())
@@ -35,7 +30,7 @@ func (m *Middleware) Permission(config PermissionConfig) gin.HandlerFunc {
 		}
 
 		// --- Permission Check Logic ---
-		permissionCode := fmt.Sprintf("%s/%s", config.Object, config.Action)
+		permissionCode := fmt.Sprintf("%s/%s", object, action)
 		_, exists := m.permissionDefinitions[permissionCode]
 
 		if !exists {
@@ -63,8 +58,8 @@ func (m *Middleware) Permission(config PermissionConfig) gin.HandlerFunc {
 		hasPermission, casbinErr = m.casbin.GetEnforcer().Enforce(
 			fmt.Sprintf("%d", contextValues.UserID),
 			fmt.Sprintf("%d", *contextValues.DomainID),
-			config.Object,
-			config.Action,
+			object,
+			action,
 			permissions.PermissionTypeApi,
 		)
 
