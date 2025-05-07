@@ -8,7 +8,7 @@ import (
 	"github.com/PhantomX7/dhamma/seeder/seed"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/subosito/gotenv"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	err := gotenv.Load()
+	err := godotenv.Load(".env")
 
 	if err != nil {
 		panic(err)
