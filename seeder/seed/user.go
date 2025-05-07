@@ -14,15 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var rootUser = []entity.User{
-	{
-		Username:     os.Getenv("ADMIN_USERNAME"),
-		Password:     os.Getenv("ADMIN_PASSWORD"),
-		IsSuperAdmin: true,
-		IsActive:     true,
-	},
-}
-
 type UserSeeder struct {
 	db *gorm.DB
 }
@@ -32,6 +23,15 @@ func NewUserSeeder(db *gorm.DB) *UserSeeder {
 }
 
 func (s *UserSeeder) GenerateRootUser() (err error) {
+	rootUser := []entity.User{
+		{
+			Username:     os.Getenv("ADMIN_USERNAME"),
+			Password:     os.Getenv("ADMIN_PASSWORD"),
+			IsSuperAdmin: true,
+			IsActive:     true,
+		},
+	}
+
 	log.Print("seeding root user")
 	for _, user := range rootUser {
 		if !errors.Is(s.db.First(&entity.User{}, entity.User{
