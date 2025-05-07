@@ -28,6 +28,7 @@ func (s *service) GetMe(ctx context.Context) (res response.MeResponse, err error
 		user.UserRoles = userRoles
 
 		user.Permissions = s.casbin.GetUserPermissions(user.ID, *contextValues.DomainID)
+		res.DomainID = *contextValues.DomainID
 	}
 
 	res.User = user

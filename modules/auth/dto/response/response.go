@@ -9,4 +9,5 @@ type AuthResponse struct {
 
 type MeResponse struct {
 	entity.User
+	DomainID uint64 `json:"domain_id"`
 }
