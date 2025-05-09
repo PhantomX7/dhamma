@@ -13,6 +13,7 @@ var Module = fx.Invoke(
 	admin.UserRoute,
 	admin.RoleRoute,
 	admin.PermissionRoute,
+	admin.FollowerRoute,
 
 	// domain specific route
 	domain.AuthRoute,

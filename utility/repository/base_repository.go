@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 
 	customErrors "github.com/PhantomX7/dhamma/utility/errors"
 	"github.com/PhantomX7/dhamma/utility/logger"
@@ -63,7 +64,11 @@ func (r BaseRepository[T]) FindByID(ctx context.Context, id uint64, preloads ...
 		errMessage := fmt.Sprintf("failed to find %T entity with ID %d", *new(T), id)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			// Return not found error
-			return entity, customErrors.ErrNotFound
+			return entity, &customErrors.AppError{
+				Message: "not found",
+				Err:     customErrors.ErrNotFound,
+				Status:  http.StatusNotFound,
+			}
 		}
 
 		// Log the specific error

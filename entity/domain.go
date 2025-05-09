@@ -10,6 +10,10 @@ type Domain struct {
 
 	// Has-Many relationship with Role
 	Roles []Role `json:"roles" gorm:"foreignKey:DomainID"`
+	// Has-Many relationship with Follower
+	Followers []Follower `json:"followers" gorm:"foreignKey:DomainID"`
+	// Has-Many relationship with Follower
+	Cards []Card `json:"cards" gorm:"foreignKey:DomainID"`
 	// Many-to-Many with User through UserDomain
 	Users []User `json:"users" gorm:"many2many:user_domains;"`
 }

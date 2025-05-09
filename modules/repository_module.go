@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 
 	domainRepo "github.com/PhantomX7/dhamma/modules/domain/repository"
+	followerRepo "github.com/PhantomX7/dhamma/modules/follower/repository"
 	permissionRepo "github.com/PhantomX7/dhamma/modules/permission/repository"
 	refreshTokenRepo "github.com/PhantomX7/dhamma/modules/refresh_token/repository"
 	roleRepo "github.com/PhantomX7/dhamma/modules/role/repository"
@@ -15,6 +16,7 @@ import (
 var RepositoryModule = fx.Options(
 	fx.Provide(
 		domainRepo.New,
+		followerRepo.New,
 		permissionRepo.New,
 		refreshTokenRepo.New,
 		roleRepo.New,

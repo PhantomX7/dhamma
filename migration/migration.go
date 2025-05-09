@@ -16,5 +16,10 @@ func RunMigration(db *gorm.DB) error {
 		entity.UserDomain{},
 		entity.UserRole{},
 		entity.Permission{},
+		entity.Follower{},
+		entity.Card{},
+		entity.Event{},
+		entity.EventAttendance{},
+		entity.PointMutation{},
 	)
 }

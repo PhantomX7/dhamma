@@ -10,10 +10,11 @@ import (
 	"github.com/PhantomX7/dhamma/utility/pagination"
 )
 
-// Index implements role.Service.
+// Index implements follower.Service.
 func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
-	roles []entity.Role, meta utility.PaginationMeta, err error,
+	followers []entity.Follower, meta utility.PaginationMeta, err error,
 ) {
+
 	// Get value from context
 	contextValues, err := utility.ValuesFromContext(ctx)
 	if err != nil {
@@ -32,12 +33,12 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 		},
 	)
 
-	roles, err = s.roleRepo.FindAll(ctx, pg)
+	followers, err = s.followerRepo.FindAll(ctx, pg)
 	if err != nil {
 		return
 	}
 
-	count, err := s.roleRepo.Count(ctx, pg)
+	count, err := s.followerRepo.Count(ctx, pg)
 	if err != nil {
 		return
 	}
