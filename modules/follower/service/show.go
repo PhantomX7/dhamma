@@ -10,7 +10,7 @@ import (
 // Show handles the logic for retrieving a specific follower.
 // It includes a domain context check to ensure the follower belongs to the allowed domain.
 func (s *service) Show(ctx context.Context, followerID uint64) (follower entity.Follower, err error) {
-	follower, err = s.followerRepo.FindByID(ctx, followerID)
+	follower, err = s.followerRepo.FindByID(ctx, followerID, "Domain")
 	if err != nil {
 		return
 	}

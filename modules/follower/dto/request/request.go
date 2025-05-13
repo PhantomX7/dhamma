@@ -6,27 +6,30 @@ type FollowerCreateRequest struct {
 	DomainID uint64  `json:"domain_id" form:"domain_id" binding:"required,exist=domains.id"`
 	Name     string  `json:"name" form:"name" binding:"required"`
 	Phone    *string `json:"phone" form:"phone" binding:"omitempty"`
-	IsYouth  *bool   `json:"is_muda_mudi" form:"is_muda_mudi" binding:"omitempty"`
+	IsYouth  *bool   `json:"is_youth" form:"is_youth" binding:"omitempty"`
 }
 
 type FollowerUpdateRequest struct {
 	Name    *string `json:"name" form:"name" binding:"omitempty"`
 	Phone   *string `json:"phone" form:"phone" binding:"omitempty"`
-	IsYouth *bool   `json:"is_muda_mudi" form:"is_muda_mudi" binding:"omitempty"`
+	IsYouth *bool   `json:"is_youth" form:"is_youth" binding:"omitempty"`
 }
 
 func NewFollowerPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
-		AddFilter("domain_id", pagination.FilterConfig{
-			Field: "domain_id",
-			Type:  pagination.FilterTypeID,
+		// Add filter for domain name
+		AddFilter("domain_name", pagination.FilterConfig{
+			TableName: "Domain",
+			Field:     "name",
+			Type:      pagination.FilterTypeString,
 			Operators: []pagination.FilterOperator{
-				pagination.OperatorIn, pagination.OperatorEquals,
+				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
 			},
 		}).
 		AddFilter("name", pagination.FilterConfig{
-			Field: "name",
-			Type:  pagination.FilterTypeString,
+			TableName: "followers",
+			Field:     "name",
+			Type:      pagination.FilterTypeString,
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
 			},
@@ -43,6 +46,13 @@ func NewFollowerPagination(conditions map[string][]string) *pagination.Paginatio
 			Type:  pagination.FilterTypeBool,
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorEquals,
+			},
+		}).
+		AddFilter("created_at", pagination.FilterConfig{
+			Field: "created_at",
+			Type:  pagination.FilterTypeDate,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorBetween, pagination.OperatorEquals,
 			},
 		}).
 		AddSort("name", pagination.SortConfig{

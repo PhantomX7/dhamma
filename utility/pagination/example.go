@@ -25,7 +25,7 @@ func ExampleUsage() {
 		}).
 		AddFilter("user_id", FilterConfig{
 			Field:     "id",
-			TableName: "users",
+			TableName: "User",
 			Type:      FilterTypeID,
 			Operators: []FilterOperator{OperatorIn, OperatorEquals},
 		}).
