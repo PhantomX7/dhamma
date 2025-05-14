@@ -39,9 +39,9 @@ func main() {
 
 	// initialize logger
 	logger.NewLogger()
-
+	// initialize fx
 	app := fx.New(
-		fx.NopLogger, // disable logger for fx
+		// fx.NopLogger, // disable logger for fx
 		fx.Provide(
 			setupDatabase,
 			customValidator.New, // initiate custom validator

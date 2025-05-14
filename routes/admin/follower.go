@@ -13,7 +13,7 @@ func FollowerRoute(route *gin.Engine, middleware *middleware.Middleware, followe
 		routes.GET("/:id", followerController.Show)
 		routes.POST("", followerController.Create)
 		routes.PATCH("/:id", followerController.Update)
-		routes.POST("/:id/add-card", followerController.AddCard)
-		routes.POST("/:id/delete-card/:card_id", followerController.DeleteCard)
+		routes.POST("/:id/card", followerController.AddCard)
+		routes.DELETE("/:id/card/:card_id", followerController.DeleteCard)
 	}
 }
