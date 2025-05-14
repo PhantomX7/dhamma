@@ -80,7 +80,7 @@ func NewUserPagination(conditions map[string][]string) *pagination.Pagination {
 		pagination.PaginationOptions{
 			DefaultLimit: 20,
 			MaxLimit:     100,
-			DefaultOrder: "id desc",
+			DefaultOrder: "users.id desc",
 		},
 	)
 

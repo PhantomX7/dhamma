@@ -51,6 +51,22 @@ var ApiPermissions = []entity.Permission{
 		IsDomainSpecific: false,
 	},
 	{
+		Name:             "follower - add_card",
+		Object:           "follower",
+		Action:           "add_card",
+		Description:      "Add a card to a follower",
+		Type:             PermissionTypeApi,
+		IsDomainSpecific: false,
+	},
+	{
+		Name:             "follower - delete_card",
+		Object:           "follower",
+		Action:           "delete_card",
+		Description:      "Delete a card from a follower",
+		Type:             PermissionTypeApi,
+		IsDomainSpecific: false,
+	},
+	{
 		Name:             "permission - index",
 		Object:           "permission",
 		Action:           "index",

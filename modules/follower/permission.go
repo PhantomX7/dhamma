@@ -10,6 +10,10 @@ type permission struct {
 	Create string
 	// Update follower information
 	Update string
+	// Add a card to a follower
+	AddCard string
+	// Delete a card from a follower
+	DeleteCard string
 }
 
 var Permissions = permission{
@@ -18,4 +22,6 @@ var Permissions = permission{
 	Show:   "show",
 	Create: "create",
 	Update: "update",
+	AddCard: "add_card",
+	DeleteCard: "delete_card",
 }

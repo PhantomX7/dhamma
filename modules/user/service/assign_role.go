@@ -10,12 +10,6 @@ import (
 )
 
 func (s *service) AssignRole(ctx context.Context, userID uint64, request request.AssignRoleRequest) (err error) {
-	// Get value from context
-	contextValues, err := utility.ValuesFromContext(ctx)
-	if err != nil {
-		return
-	}
-
 	// Check if user exists
 	user, err := s.userRepo.FindByID(ctx, userID, "Domains", "UserRoles.Role")
 	if err != nil {
@@ -27,14 +21,10 @@ func (s *service) AssignRole(ctx context.Context, userID uint64, request request
 		return
 	}
 
-	// Check domain access if domain ID is set in context
-	if contextValues.DomainID != nil {
-		if role.DomainID != *contextValues.DomainID {
-			return &errors.AppError{
-				Status:  http.StatusBadRequest,
-				Message: "you are not allowed to assign role for another domain",
-			}
-		}
+	// Perform domain context check using DomainID from the request and the generic helper
+	_, err = utility.CheckDomainContext(ctx, role.DomainID, "user", "assign role")
+	if err != nil {
+		return
 	}
 
 	// check if user has this role domain

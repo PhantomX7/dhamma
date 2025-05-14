@@ -23,6 +23,15 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 
 	// Combine all scopes into a single AddCustomScope call
 	pg.AddCustomScope(
+		func(db *gorm.DB) *gorm.DB {
+			// Join users -> user_domains -> domains. Alias domains as 'd' for the filter.
+			// Use Group("users.id") to prevent duplicate user rows if a user belongs to multiple domains
+			// when only filtering by domain name (not context domain ID).
+			return db.
+				Joins("LEFT JOIN cards Card ON Card.follower_id = followers.id").
+				Preload("Cards").
+				Group("followers.id") // Group by user ID to avoid duplicates from joins
+		},
 		// Base join and preload
 		func(db *gorm.DB) *gorm.DB {
 			if contextValues.DomainID != nil {

@@ -15,12 +15,25 @@ type FollowerUpdateRequest struct {
 	IsYouth *bool   `json:"is_youth" form:"is_youth" binding:"omitempty"`
 }
 
+// FollowerAddCardRequest defines the payload for adding a card to a follower.
+type FollowerAddCardRequest struct {
+	Code string `json:"code" form:"code" binding:"required,max=100,unique=cards.code"`
+}
+
 func NewFollowerPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
 		// Add filter for domain name
 		AddFilter("domain_name", pagination.FilterConfig{
 			TableName: "Domain",
 			Field:     "name",
+			Type:      pagination.FilterTypeString,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
+			},
+		}).
+		AddFilter("card_code", pagination.FilterConfig{
+			TableName: "Card",
+			Field:     "code",
 			Type:      pagination.FilterTypeString,
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
@@ -70,7 +83,7 @@ func NewFollowerPagination(conditions map[string][]string) *pagination.Paginatio
 		pagination.PaginationOptions{
 			DefaultLimit: 20,
 			MaxLimit:     100,
-			DefaultOrder: "id desc",
+			DefaultOrder: "followers.id desc",
 		},
 	)
 }

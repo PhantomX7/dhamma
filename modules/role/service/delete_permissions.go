@@ -11,28 +11,16 @@ import (
 
 // DeletePermissions removes specified permissions from a role.
 func (s *service) DeletePermissions(ctx context.Context, roleID uint64, request request.RoleDeletePermissionsRequest) (err error) {
-	// Get value from context
-	contextValues, err := utility.ValuesFromContext(ctx)
-	if err != nil {
-		return err
-	}
-
 	// Find the role by ID
 	role, err := s.roleRepo.FindByID(ctx, roleID)
 	if err != nil {
 		return
 	}
 
-	// Validate domain access if context has a domain ID
-	if contextValues.DomainID != nil {
-		// Check if domain id in request is same as domain id in context
-		if role.DomainID != *contextValues.DomainID {
-			err = &errors.AppError{
-				Message: "you are not allowed to delete permissions to role for another domain",
-				Status:  http.StatusBadRequest,
-			}
-			return
-		}
+	// Perform domain context check using DomainID from the request and the generic helper
+	_, err = utility.CheckDomainContext(ctx, role.DomainID, "role", "delete permissions")
+	if err != nil {
+		return
 	}
 
 	// Call casbin library to remove the permissions

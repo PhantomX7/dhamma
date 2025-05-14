@@ -5,8 +5,10 @@ import (
 
 	"github.com/PhantomX7/dhamma/utility"
 	"github.com/PhantomX7/dhamma/utility/errors"
+	"github.com/PhantomX7/dhamma/utility/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.uber.org/zap"
 )
 
 // ErrorHandler middleware handles application errors
@@ -38,6 +40,8 @@ func (m *Middleware) ErrorHandler() gin.HandlerFunc {
 
 				return
 			}
+
+			logger.Get().Error("error happened", zap.Error(err))
 
 			// Handle generic errors
 			c.AbortWithStatusJSON(

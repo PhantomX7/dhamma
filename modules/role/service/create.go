@@ -13,22 +13,10 @@ import (
 )
 
 func (s *service) Create(ctx context.Context, request request.RoleCreateRequest) (role entity.Role, err error) {
-	// Get value from context
-	contextValues, err := utility.ValuesFromContext(ctx)
+	// Perform domain context check using DomainID from the request and the generic helper
+	_, err = utility.CheckDomainContext(ctx, request.DomainID, "role", "create")
 	if err != nil {
 		return
-	}
-
-	// Check if domain id is set in context
-	if contextValues.DomainID != nil {
-		// Check if domain id in request is same as domain id in context
-		if request.DomainID != *contextValues.DomainID {
-			err = &errors.AppError{
-				Message: "you cannot create role for other domain",
-				Status:  http.StatusBadRequest,
-			}
-			return
-		}
 	}
 
 	role = entity.Role{
