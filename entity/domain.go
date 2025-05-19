@@ -9,11 +9,11 @@ type Domain struct {
 	Timestamp
 
 	// Has-Many relationship with Role
-	Roles []Role `json:"roles" gorm:"foreignKey:DomainID"`
+	Roles *[]Role `json:"roles,omitempty" gorm:"foreignKey:DomainID"`
 	// Has-Many relationship with Follower
-	Followers []Follower `json:"followers" gorm:"foreignKey:DomainID"`
+	Followers *[]Follower `json:"followers,omitempty" gorm:"foreignKey:DomainID"`
 	// Has-Many relationship with Follower
-	Cards []Card `json:"cards" gorm:"foreignKey:DomainID"`
+	Cards *[]Card `json:"cards,omitempty" gorm:"foreignKey:DomainID"`
 	// Many-to-Many with User through UserDomain
-	Users []User `json:"users" gorm:"many2many:user_domains;"`
+	Users *[]User `json:"users,omitempty" gorm:"many2many:user_domains;"`
 }

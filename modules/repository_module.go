@@ -5,6 +5,7 @@ import (
 
 	cardRepo "github.com/PhantomX7/dhamma/modules/card/repository"
 	domainRepo "github.com/PhantomX7/dhamma/modules/domain/repository"
+	eventRepo "github.com/PhantomX7/dhamma/modules/event/repository"
 	followerRepo "github.com/PhantomX7/dhamma/modules/follower/repository"
 	permissionRepo "github.com/PhantomX7/dhamma/modules/permission/repository"
 	refreshTokenRepo "github.com/PhantomX7/dhamma/modules/refresh_token/repository"
@@ -18,6 +19,7 @@ var RepositoryModule = fx.Options(
 	fx.Provide(
 		cardRepo.New,
 		domainRepo.New,
+		eventRepo.New,
 		followerRepo.New,
 		permissionRepo.New,
 		refreshTokenRepo.New,
