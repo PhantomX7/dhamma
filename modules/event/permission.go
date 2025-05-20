@@ -2,14 +2,16 @@ package event
 
 type permission struct {
 	Key string
-	// Index all followers
+	// Index all events
 	Index string
-	// View follower details
+	// View event details
 	Show string
-	// Create a new follower
+	// Create a new event
 	Create string
-	// Update follower information
+	// Update event information
 	Update string
+	// Attend an event
+	Attend string
 }
 
 var Permissions = permission{
@@ -18,4 +20,5 @@ var Permissions = permission{
 	Show:   "show",
 	Create: "create",
 	Update: "update",
+	Attend: "attend",
 }

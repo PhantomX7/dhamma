@@ -10,6 +10,7 @@ import (
 var Module = fx.Invoke(
 	admin.AuthRoute,
 	admin.DomainRoute,
+	admin.EventAttendanceRoute,
 	admin.EventRoute,
 	admin.FollowerRoute,
 	admin.PermissionRoute,
@@ -18,6 +19,7 @@ var Module = fx.Invoke(
 
 	// domain specific route
 	domain.AuthRoute,
+	domain.EventAttendanceRoute,
 	domain.EventRoute,
 	domain.FollowerRoute,
 	domain.PermissionRoute,

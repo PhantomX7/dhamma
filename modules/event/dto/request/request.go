@@ -15,6 +15,11 @@ type EventUpdateRequest struct {
 	PointsAwarded *int    `json:"points_awarded" form:"points_awarded" binding:"omitempty"`
 }
 
+// EventAttendRequest defines the payload for a follower attending an event.
+type EventAttendRequest struct {
+	CardCode string `json:"card_code" form:"card_code" binding:"required,exist=cards.code"`
+}
+
 func NewEventPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
 		AddFilter("name", pagination.FilterConfig{

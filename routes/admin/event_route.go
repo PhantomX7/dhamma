@@ -13,5 +13,6 @@ func EventRoute(route *gin.Engine, middleware *middleware.Middleware, eventContr
 		routes.GET("/:id", eventController.Show)
 		routes.POST("", eventController.Create)
 		routes.PATCH("/:id", eventController.Update)
+		routes.POST("/:id/attend", eventController.Attend)
 	}
 }

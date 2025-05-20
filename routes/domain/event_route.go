@@ -13,5 +13,6 @@ func EventRoute(route *gin.Engine, middleware *middleware.Middleware, eventContr
 		routes.GET("/:id", middleware.Permission(event.Permissions.Key, event.Permissions.Show), eventController.Show)
 		routes.POST("", middleware.Permission(event.Permissions.Key, event.Permissions.Create), eventController.Create)
 		routes.PATCH("/:id", middleware.Permission(event.Permissions.Key, event.Permissions.Update), eventController.Update)
+		routes.POST("/:id/attend", middleware.Permission(event.Permissions.Key, event.Permissions.Attend), eventController.Attend)
 	}
 }

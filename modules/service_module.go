@@ -7,6 +7,7 @@ import (
 	cronService "github.com/PhantomX7/dhamma/modules/cron/service"
 	domainService "github.com/PhantomX7/dhamma/modules/domain/service"
 	eventService "github.com/PhantomX7/dhamma/modules/event/service"
+	eventAttendanceService "github.com/PhantomX7/dhamma/modules/event_attendance/service"
 	followerService "github.com/PhantomX7/dhamma/modules/follower/service"
 	permissionService "github.com/PhantomX7/dhamma/modules/permission/service"
 	roleService "github.com/PhantomX7/dhamma/modules/role/service"
@@ -19,6 +20,7 @@ var ServiceModule = fx.Options(
 		cronService.New,
 		domainService.New,
 		eventService.New,
+		eventAttendanceService.New,
 		followerService.New,
 		permissionService.New,
 		roleService.New,
