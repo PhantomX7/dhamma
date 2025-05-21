@@ -18,50 +18,28 @@ type EventAttendanceUpdateRequest struct {
 
 func NewEventAttendancePagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
-		AddFilter("domain_name", pagination.FilterConfig{
-			TableName: "Domain",
+		AddFilter("event_id", pagination.FilterConfig{
+			Field: "event_id",
+			Type:  pagination.FilterTypeID,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorIn, pagination.OperatorEquals,
+			},
+		}).
+		AddFilter("follower_name", pagination.FilterConfig{
+			TableName: "Follower",
 			Field:     "name",
 			Type:      pagination.FilterTypeString,
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
 			},
 		}).
-		AddFilter("code", pagination.FilterConfig{
-			Field: "code",
-			Type:  pagination.FilterTypeString,
-			Operators: []pagination.FilterOperator{
-				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
-			},
-		}).
-		AddFilter("description", pagination.FilterConfig{
-			Field: "description",
-			Type:  pagination.FilterTypeString,
-			Operators: []pagination.FilterOperator{
-				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
-			},
-		}).
-		AddFilter("is_active", pagination.FilterConfig{
-			Field: "is_active",
-			Type:  pagination.FilterTypeBool,
-			Operators: []pagination.FilterOperator{
-				pagination.OperatorEquals,
-			},
-		}).
 		AddFilter("created_at", pagination.FilterConfig{
 			Field:     "created_at",
 			Type:      pagination.FilterTypeDateTime,
-			Operators: []pagination.FilterOperator{pagination.OperatorBetween},
+			Operators: []pagination.FilterOperator{pagination.OperatorBetween, pagination.OperatorEquals},
 		}).
-		AddSort("name", pagination.SortConfig{
-			Field:   "name",
-			Allowed: true,
-		}).
-		AddSort("code", pagination.SortConfig{
-			Field:   "code",
-			Allowed: true,
-		}).
-		AddSort("description", pagination.SortConfig{
-			Field:   "description",
+		AddSort("created_at", pagination.SortConfig{
+			Field:   "created_at",
 			Allowed: true,
 		})
 

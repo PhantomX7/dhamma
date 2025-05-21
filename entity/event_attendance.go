@@ -13,9 +13,9 @@ type EventAttendance struct {
 	AttendedAt time.Time `json:"attended_at" gorm:"not null"` // Timestamp of when the follower attended
 	Timestamp
 
-	Follower       *Follower     `json:"follower,omitempty" gorm:"foreignKey:FollowerID"`
-	Event          *Event        `json:"event,omitempty" gorm:"foreignKey:EventID"`
-	PointMutations PointMutation `gorm:"polymorphic:Source;"` // "Source" matches the prefix of SourceID & SourceType
+	Follower      *Follower      `json:"follower,omitempty" gorm:"foreignKey:FollowerID"`
+	Event         *Event         `json:"event,omitempty" gorm:"foreignKey:EventID"`
+	PointMutation *PointMutation `json:"point_mutation,omitempty" gorm:"polymorphic:Source;"` // "Source" matches the prefix of SourceID & SourceType
 }
 
 // TableName specifies the table name for the EventAttendance entity.

@@ -91,7 +91,7 @@ func (sb *ScopeBuilder) buildFilterScope(config FilterConfig, values []string) f
 	case FilterTypeBool:
 		return sb.buildBoolScope(fieldName, operation)
 	case FilterTypeDate, FilterTypeDateTime:
-		return sb.buildDateScope(fieldName, operation, config.Type)
+		return sb.buildDateScope(fieldName, operation)
 	case FilterTypeEnum:
 		return sb.buildEnumScope(fieldName, operation, config.EnumValues)
 	}
@@ -230,7 +230,7 @@ func (sb *ScopeBuilder) buildBoolScope(field string, op FilterOperation) func(*g
 	return nil
 }
 
-func (sb *ScopeBuilder) buildDateScope(field string, op FilterOperation, filterType FilterType) func(*gorm.DB) *gorm.DB {
+func (sb *ScopeBuilder) buildDateScope(field string, op FilterOperation) func(*gorm.DB) *gorm.DB {
 	location, err := time.LoadLocation("Asia/Jakarta") // GMT+7
 	if err != nil {
 		return nil
@@ -258,6 +258,9 @@ func (sb *ScopeBuilder) buildDateScope(field string, op FilterOperation, filterT
 		if err != nil {
 			return nil
 		}
+
+		// Adjust end date to include the entire day (23:59:59.999999999)
+		end = end.Add(24 * time.Hour).Add(-time.Nanosecond)
 
 		return func(db *gorm.DB) *gorm.DB {
 			return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field), start, end)

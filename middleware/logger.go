@@ -83,12 +83,14 @@ func (m *Middleware) Logger() gin.HandlerFunc {
 				case *errors.AppError:
 					// Handle application error
 					finalLogFields = append(finalLogFields, zap.Error(e.Err))
+					contextLogger.Warn("request completed with client error", finalLogFields...)
 				case validator.ValidationErrors:
 					// Handle validation errors
 					finalLogFields = append(finalLogFields, zap.String("error", "validation_errors"))
 				default:
 					// Handle other types of errors
 					finalLogFields = append(finalLogFields, zap.Error(e))
+					contextLogger.Warn("request completed with client error", finalLogFields...)
 				}
 			} else {
 				contextLogger.Warn("request completed with client error", finalLogFields...)
