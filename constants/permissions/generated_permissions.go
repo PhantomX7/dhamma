@@ -131,6 +131,22 @@ var ApiPermissions = []entity.Permission{
 		IsDomainSpecific: false,
 	},
 	{
+		Name:             "point-mutation - index",
+		Object:           "point-mutation",
+		Action:           "index",
+		Description:      "Index all event attendances",
+		Type:             PermissionTypeApi,
+		IsDomainSpecific: false,
+	},
+	{
+		Name:             "point-mutation - show",
+		Object:           "point-mutation",
+		Action:           "show",
+		Description:      "View event attendance details",
+		Type:             PermissionTypeApi,
+		IsDomainSpecific: false,
+	},
+	{
 		Name:             "role - index",
 		Object:           "role",
 		Action:           "index",

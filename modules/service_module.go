@@ -10,6 +10,7 @@ import (
 	eventAttendanceService "github.com/PhantomX7/dhamma/modules/event_attendance/service"
 	followerService "github.com/PhantomX7/dhamma/modules/follower/service"
 	permissionService "github.com/PhantomX7/dhamma/modules/permission/service"
+	pointMutationService "github.com/PhantomX7/dhamma/modules/point_mutation/service"
 	roleService "github.com/PhantomX7/dhamma/modules/role/service"
 	userService "github.com/PhantomX7/dhamma/modules/user/service"
 )
@@ -23,6 +24,7 @@ var ServiceModule = fx.Options(
 		eventAttendanceService.New,
 		followerService.New,
 		permissionService.New,
+		pointMutationService.New,
 		roleService.New,
 		userService.New,
 	),

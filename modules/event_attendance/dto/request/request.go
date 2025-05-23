@@ -40,6 +40,14 @@ func NewEventAttendancePagination(conditions map[string][]string) *pagination.Pa
 				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
 			},
 		}).
+		AddFilter("event_name", pagination.FilterConfig{
+			TableName: "Event",
+			Field:     "name",
+			Type:      pagination.FilterTypeString,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
+			},
+		}).
 		AddFilter("created_at", pagination.FilterConfig{
 			Field:     "created_at",
 			Type:      pagination.FilterTypeDateTime,

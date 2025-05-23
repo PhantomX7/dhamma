@@ -14,6 +14,7 @@ var Module = fx.Invoke(
 	admin.EventRoute,
 	admin.FollowerRoute,
 	admin.PermissionRoute,
+	admin.PointMutationRoute,
 	admin.UserRoute,
 	admin.RoleRoute,
 
@@ -23,6 +24,7 @@ var Module = fx.Invoke(
 	domain.EventRoute,
 	domain.FollowerRoute,
 	domain.PermissionRoute,
+	domain.PointMutationRoute,
 	domain.UserRoute,
 	domain.RoleRoute,
 

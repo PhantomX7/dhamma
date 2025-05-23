@@ -19,7 +19,7 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 		// Base join and preload
 		func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("Follower").Preload("Event")
+				Joins("Follower").Joins("Event")
 		},
 	)
 
