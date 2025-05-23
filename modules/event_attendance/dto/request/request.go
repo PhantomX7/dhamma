@@ -25,6 +25,13 @@ func NewEventAttendancePagination(conditions map[string][]string) *pagination.Pa
 				pagination.OperatorIn, pagination.OperatorEquals,
 			},
 		}).
+		AddFilter("follower_id", pagination.FilterConfig{
+			Field: "follower_id",
+			Type:  pagination.FilterTypeID,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorIn, pagination.OperatorEquals,
+			},
+		}).
 		AddFilter("follower_name", pagination.FilterConfig{
 			TableName: "Follower",
 			Field:     "name",
