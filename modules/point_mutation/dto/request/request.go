@@ -14,7 +14,7 @@ func NewPointMutationPagination(conditions map[string][]string) *pagination.Pagi
 		AddFilter("created_at", pagination.FilterConfig{
 			Field:     "created_at",
 			Type:      pagination.FilterTypeDateTime,
-			Operators: []pagination.FilterOperator{pagination.OperatorBetween},
+			Operators: []pagination.FilterOperator{pagination.OperatorBetween, pagination.OperatorEquals},
 		}).
 		AddSort("created_at", pagination.SortConfig{
 			Field:   "created_at",

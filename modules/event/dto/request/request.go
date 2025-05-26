@@ -30,9 +30,10 @@ func NewEventPagination(conditions map[string][]string) *pagination.Pagination {
 			},
 		}).
 		AddFilter("created_at", pagination.FilterConfig{
+			TableName: "events",
 			Field:     "created_at",
 			Type:      pagination.FilterTypeDateTime,
-			Operators: []pagination.FilterOperator{pagination.OperatorBetween},
+			Operators: []pagination.FilterOperator{pagination.OperatorBetween, pagination.OperatorEquals},
 		}).
 		AddSort("name", pagination.SortConfig{
 			Field:   "name",
