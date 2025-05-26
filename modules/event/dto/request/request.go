@@ -23,8 +23,9 @@ type EventAttendRequest struct {
 func NewEventPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
 		AddFilter("name", pagination.FilterConfig{
-			Field: "name",
-			Type:  pagination.FilterTypeString,
+			TableName: "events",
+			Field:     "name",
+			Type:      pagination.FilterTypeString,
 			Operators: []pagination.FilterOperator{
 				pagination.OperatorIn, pagination.OperatorEquals, pagination.OperatorLike,
 			},
@@ -36,8 +37,9 @@ func NewEventPagination(conditions map[string][]string) *pagination.Pagination {
 			Operators: []pagination.FilterOperator{pagination.OperatorBetween, pagination.OperatorEquals},
 		}).
 		AddSort("name", pagination.SortConfig{
-			Field:   "name",
-			Allowed: true,
+			TableName: "events",
+			Field:     "name",
+			Allowed:   true,
 		}).
 		AddSort("points_awarded", pagination.SortConfig{
 			Field:   "points_awarded",

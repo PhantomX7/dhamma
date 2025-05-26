@@ -55,8 +55,9 @@ func NewEventAttendancePagination(conditions map[string][]string) *pagination.Pa
 			Operators: []pagination.FilterOperator{pagination.OperatorBetween, pagination.OperatorEquals},
 		}).
 		AddSort("created_at", pagination.SortConfig{
-			Field:   "created_at",
-			Allowed: true,
+			TableName: "event_attendances",
+			Field:     "created_at",
+			Allowed:   true,
 		})
 
 	return pagination.NewPagination(
