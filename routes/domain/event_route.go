@@ -7,7 +7,7 @@ import (
 )
 
 func EventRoute(route *gin.Engine, middleware *middleware.Middleware, eventController event.Controller) {
-	routes := route.Group(":domain_code/auth", middleware.AuthHandle(), middleware.ValidateDomain())
+	routes := route.Group(":domain_code/event", middleware.AuthHandle(), middleware.ValidateDomain())
 	{
 		routes.GET("", middleware.Permission(event.Permissions.Key, event.Permissions.Index), eventController.Index)
 		routes.GET("/:id", middleware.Permission(event.Permissions.Key, event.Permissions.Show), eventController.Show)

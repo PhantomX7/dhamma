@@ -32,7 +32,7 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 		// Base join and preload
 		func(db *gorm.DB) *gorm.DB {
 			if contextValues.DomainID != nil {
-				return db.Where("domain_id = ?", *contextValues.DomainID)
+				return db.Where("followers.domain_id = ?", *contextValues.DomainID)
 			}
 			return db.
 				Joins("Domain")

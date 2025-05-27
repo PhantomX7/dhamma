@@ -17,11 +17,11 @@ type permission struct {
 }
 
 var Permissions = permission{
-	Key:    "follower",
-	Index:  "index",
-	Show:   "show",
-	Create: "create",
-	Update: "update",
-	AddCard: "add_card",
-	DeleteCard: "delete_card",
+	Key:        "follower",
+	Index:      "index",
+	Show:       "show",
+	Create:     "create",
+	Update:     "update",
+	AddCard:    "add-card",
+	DeleteCard: "delete-card",
 }
