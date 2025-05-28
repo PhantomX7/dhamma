@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 
 	cardRepo "github.com/PhantomX7/dhamma/modules/card/repository"
+	chatTemplateRepo "github.com/PhantomX7/dhamma/modules/chat_template/repository"
 	domainRepo "github.com/PhantomX7/dhamma/modules/domain/repository"
 	eventRepo "github.com/PhantomX7/dhamma/modules/event/repository"
 	eventAttendanceRepo "github.com/PhantomX7/dhamma/modules/event_attendance/repository"
@@ -20,6 +21,7 @@ import (
 var RepositoryModule = fx.Options(
 	fx.Provide(
 		cardRepo.New,
+		chatTemplateRepo.New,
 		domainRepo.New,
 		eventRepo.New,
 		eventAttendanceRepo.New,

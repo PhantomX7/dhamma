@@ -8,7 +8,7 @@ import (
 
 // Show implements event.Service
 func (s *service) Show(ctx context.Context, eventID uint64) (event entity.Event, err error) {
-	event, err = s.eventRepo.FindByID(ctx, eventID)
+	event, err = s.eventRepo.FindByID(ctx, eventID, "Domain")
 	if err != nil {
 		return
 	}

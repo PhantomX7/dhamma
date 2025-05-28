@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 
 	authService "github.com/PhantomX7/dhamma/modules/auth/service"
+	chatTemplateService "github.com/PhantomX7/dhamma/modules/chat_template/service"
 	cronService "github.com/PhantomX7/dhamma/modules/cron/service"
 	domainService "github.com/PhantomX7/dhamma/modules/domain/service"
 	eventService "github.com/PhantomX7/dhamma/modules/event/service"
@@ -18,6 +19,7 @@ import (
 var ServiceModule = fx.Options(
 	fx.Provide(
 		authService.New,
+		chatTemplateService.New,
 		cronService.New,
 		domainService.New,
 		eventService.New,

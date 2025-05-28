@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 
 	authController "github.com/PhantomX7/dhamma/modules/auth/controller"
+	chatTemplateController "github.com/PhantomX7/dhamma/modules/chat_template/controller"
 	cronController "github.com/PhantomX7/dhamma/modules/cron/controller"
 	domainController "github.com/PhantomX7/dhamma/modules/domain/controller"
 	eventController "github.com/PhantomX7/dhamma/modules/event/controller"
@@ -18,6 +19,7 @@ import (
 var ControllerModule = fx.Options(
 	fx.Provide(
 		authController.New,
+		chatTemplateController.New,
 		cronController.New,
 		domainController.New,
 		eventController.New,

@@ -18,6 +18,7 @@ func RunMigration(db *gorm.DB) error {
 		entity.Permission{},
 		entity.Follower{},
 		entity.Card{},
+		entity.ChatTemplate{},
 		entity.Event{},
 		entity.EventAttendance{},
 		entity.PointMutation{},

@@ -12,8 +12,10 @@ type Domain struct {
 	Roles *[]Role `json:"roles,omitempty" gorm:"foreignKey:DomainID"`
 	// Has-Many relationship with Follower
 	Followers *[]Follower `json:"followers,omitempty" gorm:"foreignKey:DomainID"`
-	// Has-Many relationship with Follower
+	// Has-Many relationship with Card
 	Cards *[]Card `json:"cards,omitempty" gorm:"foreignKey:DomainID"`
+	// Has-Many relationship with ChatTemplate
+	ChatTemplates *[]ChatTemplate `json:"chat_templates,omitempty" gorm:"foreignKey:DomainID"`
 	// Many-to-Many with User through UserDomain
 	Users *[]User `json:"users,omitempty" gorm:"many2many:user_domains;"`
 }
