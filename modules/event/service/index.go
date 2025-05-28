@@ -24,11 +24,11 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 	pg.AddCustomScope(
 		// Base join and preload
 		func(db *gorm.DB) *gorm.DB {
+			db.Joins("Domain")
 			if contextValues.DomainID != nil {
 				return db.Where("domain_id = ?", *contextValues.DomainID)
 			}
-			return db.
-				Joins("Domain")
+			return db
 		},
 	)
 

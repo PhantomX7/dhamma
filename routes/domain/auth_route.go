@@ -9,7 +9,7 @@ import (
 func AuthRoute(route *gin.Engine, middleware *middleware.Middleware, authController auth.Controller) {
 	routes := route.Group(":domain_code/auth")
 	{
-		routes.POST("/signin", authController.SignIn)
+		routes.POST("/signin", authController.SignInWithDomain) // Use domain-specific sign-in
 		routes.POST("/refresh", authController.Refresh)
 		authenticated := routes.Use(middleware.AuthHandle(), middleware.ValidateDomain())
 		{

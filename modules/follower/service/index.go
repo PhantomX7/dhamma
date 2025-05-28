@@ -27,6 +27,7 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 			return db.
 				Joins("LEFT JOIN cards Card ON Card.follower_id = followers.id").
 				Preload("Cards").
+				Joins("Domain").
 				Group("followers.id") // Group by user ID to avoid duplicates from joins
 		},
 		// Base join and preload
@@ -34,8 +35,7 @@ func (s *service) Index(ctx context.Context, pg *pagination.Pagination) (
 			if contextValues.DomainID != nil {
 				return db.Where("followers.domain_id = ?", *contextValues.DomainID)
 			}
-			return db.
-				Joins("Domain")
+			return db
 		},
 	)
 

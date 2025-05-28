@@ -14,6 +14,7 @@ import (
 	"github.com/PhantomX7/dhamma/modules/auth/dto/response"
 )
 
+// SignIn handles root/admin authentication only
 func (s *service) SignIn(ctx context.Context, request request.SignInRequest) (res response.AuthResponse, err error) {
 	user := entity.User{}
 
@@ -25,16 +26,19 @@ func (s *service) SignIn(ctx context.Context, request request.SignInRequest) (re
 		return
 	}
 
+	// Only allow super admin users to sign in through root route
+	if !user.IsSuperAdmin {
+		err = errors.NewServiceError("access denied: only root users can sign in through this route", nil)
+		return
+	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
 		err = errors.NewServiceError("invalid username or password", nil)
 		return
 	}
 
-	role := constants.EnumRoleAdmin
-	if user.IsSuperAdmin {
-		role = constants.EnumRoleRoot
-	}
+	role := constants.EnumRoleRoot // Root users always get root role
 
 	accessToken, err := s.GenerateAccessToken(user.ID, role)
 	if err != nil {

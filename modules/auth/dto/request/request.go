@@ -1,8 +1,9 @@
 package request
 
 type SignInRequest struct {
-	Username string `form:"username" json:"username" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
+	Username   string  `form:"username" json:"username" binding:"required"`
+	Password   string  `form:"password" json:"password" binding:"required"`
+	DomainCode *string `form:"domain_code" json:"domain_code,omitempty"`
 }
 
 type SignUpRequest struct {

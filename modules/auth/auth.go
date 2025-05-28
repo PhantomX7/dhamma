@@ -12,6 +12,7 @@ import (
 
 type Service interface {
 	SignIn(ctx context.Context, request request.SignInRequest) (response.AuthResponse, error)
+	SignInWithDomain(ctx context.Context, request request.SignInRequest, domainCode string) (response.AuthResponse, error) // New method for domain-specific sign-in
 	SignUp(ctx context.Context, request request.SignUpRequest) (response.AuthResponse, error)
 	Refresh(ctx context.Context, request request.RefreshRequest) (response.AuthResponse, error)
 	UpdatePassword(ctx context.Context, request request.UpdatePasswordRequest) error
@@ -23,6 +24,7 @@ type Service interface {
 type Controller interface {
 	GetMe(ctx *gin.Context)
 	SignIn(ctx *gin.Context)
+	SignInWithDomain(ctx *gin.Context) // Add new method for domain-specific sign-in
 	SignUp(ctx *gin.Context)
 	Refresh(ctx *gin.Context)
 	UpdatePassword(ctx *gin.Context)

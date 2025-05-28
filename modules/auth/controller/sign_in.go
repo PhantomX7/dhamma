@@ -9,6 +9,7 @@ import (
 	"github.com/PhantomX7/dhamma/utility"
 )
 
+// SignIn handles root/admin sign-in
 func (c *controller) SignIn(ctx *gin.Context) {
 	var req request.SignInRequest
 
