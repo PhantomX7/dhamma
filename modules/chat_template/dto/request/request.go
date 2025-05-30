@@ -8,6 +8,7 @@ type ChatTemplateCreateRequest struct {
 	Description *string `json:"description" form:"description"`
 	Content     string  `json:"content" form:"content" binding:"required"`
 	IsDefault   *bool   `json:"is_default" form:"is_default"`
+	IsActive    *bool   `json:"is_active" form:"is_active"`
 }
 
 type ChatTemplateUpdateRequest struct {
@@ -15,6 +16,7 @@ type ChatTemplateUpdateRequest struct {
 	Description *string `json:"description" form:"description" binding:"omitempty"`
 	Content     *string `json:"content" form:"content" binding:"omitempty"`
 	IsDefault   *bool   `json:"is_default" form:"is_default"`
+	IsActive    *bool   `json:"is_active" form:"is_active"`
 }
 
 func NewChatTemplatePagination(conditions map[string][]string) *pagination.Pagination {

@@ -15,6 +15,6 @@ func ChatTemplateRoute(route *gin.Engine, middleware *middleware.Middleware, cha
 		routes.POST("", middleware.Permission(chat_template.Permissions.Key, chat_template.Permissions.Create), chatTemplateController.Create)
 		routes.PATCH("/:id", middleware.Permission(chat_template.Permissions.Key, chat_template.Permissions.Update), chatTemplateController.Update)
 		routes.POST("/:id/set-default", middleware.Permission(chat_template.Permissions.Key, chat_template.Permissions.SetAsDefault), chatTemplateController.SetAsDefault)
-		routes.GET("/default", middleware.Permission(chat_template.Permissions.Key, chat_template.Permissions.GetDefault), chatTemplateController.GetDefaultByDomain)
+		routes.GET("/domain/:domain_id/default", middleware.Permission(chat_template.Permissions.Key, chat_template.Permissions.GetDefault), chatTemplateController.GetDefaultByDomain)
 	}
 }

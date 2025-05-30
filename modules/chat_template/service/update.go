@@ -8,10 +8,16 @@ import (
 
 	"github.com/PhantomX7/dhamma/entity"
 	"github.com/PhantomX7/dhamma/modules/chat_template/dto/request"
+	"github.com/PhantomX7/dhamma/utility"
 )
 
 func (s *service) Update(ctx context.Context, templateID uint64, req request.ChatTemplateUpdateRequest) (template entity.ChatTemplate, err error) {
 	template, err = s.chatTemplateRepo.FindByID(ctx, templateID)
+	if err != nil {
+		return
+	}
+
+	_, err = utility.CheckDomainContext(ctx, template.DomainID, "chat template", "update")
 	if err != nil {
 		return
 	}
