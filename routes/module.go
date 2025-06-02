@@ -14,6 +14,7 @@ var Module = fx.Invoke(
 	admin.EventAttendanceRoute,
 	admin.EventRoute,
 	admin.FollowerRoute,
+	admin.HealthRoute,
 	admin.PermissionRoute,
 	admin.PointMutationRoute,
 	admin.UserRoute,

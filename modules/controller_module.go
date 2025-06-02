@@ -10,6 +10,7 @@ import (
 	eventController "github.com/PhantomX7/dhamma/modules/event/controller"
 	eventAttendanceController "github.com/PhantomX7/dhamma/modules/event_attendance/controller"
 	followerController "github.com/PhantomX7/dhamma/modules/follower/controller"
+	healthController "github.com/PhantomX7/dhamma/modules/health/controller"
 	permissionController "github.com/PhantomX7/dhamma/modules/permission/controller"
 	pointMutationController "github.com/PhantomX7/dhamma/modules/point_mutation/controller"
 	roleController "github.com/PhantomX7/dhamma/modules/role/controller"
@@ -25,6 +26,7 @@ var ControllerModule = fx.Options(
 		eventController.New,
 		eventAttendanceController.New,
 		followerController.New,
+		healthController.New,
 		permissionController.New,
 		pointMutationController.New,
 		roleController.New,

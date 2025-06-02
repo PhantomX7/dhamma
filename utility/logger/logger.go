@@ -3,9 +3,14 @@ package logger
 import (
 	"context"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
+
+	"github.com/PhantomX7/dhamma/config"
 )
 
 // loggerKeyType is an unexported type used for the context key.
@@ -18,57 +23,138 @@ var loggerContextKey = loggerKeyType{}
 // Logger is a global instance of the zap logger.
 var logger *zap.Logger
 
-// NewLogger creates a new zap logger instance based on the APP_ENV environment variable.
-// It uses Console encoding for "development" and JSON encoding otherwise (production).
+// NewLogger creates a new zap logger instance based on configuration.
+// It supports configurable log levels, formats, file rotation, and environment-specific settings.
 func NewLogger() error {
-	var config zap.Config
+	// Create write syncers for different outputs
+	writeSyncers := createWriteSyncers()
+
+	// Create core with multiple outputs
+	core := zapcore.NewTee(writeSyncers...)
+
+	// Build logger with options
+	options := []zap.Option{
+		zap.AddCallerSkip(1),
+	}
+
+	// Add caller if enabled
+	if config.LOG_CALLER_ENABLED {
+		options = append(options, zap.AddCaller())
+	}
+
+	// Add stack trace if enabled
+	if config.LOG_STACKTRACE_ENABLED {
+		options = append(options, zap.AddStacktrace(zapcore.ErrorLevel))
+	}
+
+	// Create logger
+	logger = zap.New(core, options...)
+
+	return nil
+}
+
+// createEncoderConfig creates encoder configuration based on environment and settings
+func createEncoderConfig() zapcore.EncoderConfig {
 	var encoderConfig zapcore.EncoderConfig
 
-	// Check the environment variable to decide on base config and encoding
-	env := os.Getenv("APP_ENV")
-	if env == "development" {
-		// Use development config (defaults to console encoding)
-		config = zap.NewDevelopmentConfig()
+	if config.APP_ENV == "development" {
 		encoderConfig = zap.NewDevelopmentEncoderConfig()
-
-		// Customize development encoder
-		config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-		encoderConfig.TimeKey = "timestamp"
-		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-		// encoderConfig.StacktraceKey = "stacktrace"
-		encoderConfig.StacktraceKey = ""
-		encoderConfig.CallerKey = "caller"
-		encoderConfig.MessageKey = "msg"
-		encoderConfig.NameKey = "name"
-
-	} else {
-		// Use production config (defaults to JSON encoding)
-		config = zap.NewProductionConfig()
-		encoderConfig = zap.NewProductionEncoderConfig()
-
-		// Customize production encoder (JSON)
-		encoderConfig.TimeKey = "timestamp"
 		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	} else {
+		encoderConfig = zap.NewProductionEncoderConfig()
+		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
+	}
+
+	// Common configuration
+	encoderConfig.TimeKey = "timestamp"
+	encoderConfig.MessageKey = "message"
+	encoderConfig.LevelKey = "level"
+	encoderConfig.NameKey = "logger"
+
+	// Configure caller and stacktrace keys
+	if config.LOG_CALLER_ENABLED {
+		encoderConfig.CallerKey = "caller"
+		encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	} else {
+		encoderConfig.CallerKey = ""
+	}
+
+	if config.LOG_STACKTRACE_ENABLED {
+		encoderConfig.StacktraceKey = "stacktrace"
+	} else {
 		encoderConfig.StacktraceKey = ""
-		// LevelKey, CallerKey, MessageKey, NameKey are standard in production JSON encoder
 	}
 
-	// Apply the configured encoder settings
-	config.EncoderConfig = encoderConfig
+	return encoderConfig
+}
 
-	// Set output paths
-	config.OutputPaths = []string{"stdout"}
-	config.ErrorOutputPaths = []string{"stderr"}
+// createWriteSyncers creates write syncers for different output destinations
+func createWriteSyncers() []zapcore.Core {
+	var cores []zapcore.Core
 
-	var err error
-	// Build the logger from the final configuration
-	// AddCallerSkip(1) helps ensure the caller field shows the correct location in your code
-	logger, err = config.Build(zap.AddCallerSkip(1))
-	if err != nil {
-		return err
+	// Parse log level
+	level, _ := zapcore.ParseLevel(config.LOG_LEVEL)
+
+	// Create encoder
+	encoderConfig := createEncoderConfig()
+	var encoder zapcore.Encoder
+	if strings.ToLower(config.LOG_FORMAT) == "console" {
+		encoder = zapcore.NewConsoleEncoder(encoderConfig)
+	} else {
+		encoder = zapcore.NewJSONEncoder(encoderConfig)
 	}
-	return nil
+
+	// Add stdout/stderr cores
+	for _, path := range config.LOG_OUTPUT_PATHS {
+		if path == "stdout" {
+			cores = append(cores, zapcore.NewCore(
+				encoder,
+				zapcore.AddSync(os.Stdout),
+				level,
+			))
+		} else if path == "stderr" {
+			cores = append(cores, zapcore.NewCore(
+				encoder,
+				zapcore.AddSync(os.Stderr),
+				level,
+			))
+		} else {
+			// File output with rotation
+			fileCore := createFileCore(path, encoder, level)
+			if fileCore != nil {
+				cores = append(cores, fileCore)
+			}
+		}
+	}
+
+	return cores
+}
+
+// createFileCore creates a file-based core with log rotation
+func createFileCore(filePath string, encoder zapcore.Encoder, level zapcore.Level) zapcore.Core {
+	// Ensure directory exists
+	dir := filepath.Dir(filePath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		// If we can't create the directory, skip file logging
+		return nil
+	}
+
+	// Create lumberjack logger for rotation
+	lumberjackLogger := &lumberjack.Logger{
+		Filename:   filePath,
+		MaxSize:    config.LOG_MAX_SIZE,
+		MaxBackups: config.LOG_MAX_BACKUPS,
+		MaxAge:     config.LOG_MAX_AGE,
+		Compress:   config.LOG_COMPRESS,
+	}
+
+	return zapcore.NewCore(
+		encoder,
+		zapcore.AddSync(lumberjackLogger),
+		level,
+	)
 }
 
 // Get returns the global logger instance.
