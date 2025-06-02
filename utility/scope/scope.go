@@ -9,8 +9,12 @@ import (
 type Scope = func(*gorm.DB) *gorm.DB
 
 // LimitScope will return a scope with limit
+// If limit is 0, no limit will be applied
 func LimitScope(limit int) Scope {
 	return func(db *gorm.DB) *gorm.DB {
+		if limit <= 0 {
+			return db
+		}
 		return db.Limit(limit)
 	}
 }
@@ -31,8 +35,13 @@ func OrderScope(order string) Scope {
 
 // WhereNotInScope will return a scope with WHERE NOT IN condition
 // the argument must be slice of something
+// If the slice is empty, no condition will be applied
 func WhereNotInScope(key string, value interface{}) Scope {
 	return func(db *gorm.DB) *gorm.DB {
+		// Handle empty slice case
+		if slice, ok := value.([]interface{}); ok && len(slice) == 0 {
+			return db
+		}
 		return db.Where(fmt.Sprintf("`%s` NOT IN ?", key), value)
 	}
 }
@@ -59,10 +68,11 @@ func WhereIsNotScope(key string, value interface{}) Scope {
 	}
 }
 
-// WhereIsScope will return a scope with = condition
+// WhereLikeScope will return a scope with LIKE condition
+// The value should include wildcard characters (%) as needed
 func WhereLikeScope(key string, value string) Scope {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where(fmt.Sprintf("`%s` LIKE ?", key), "%"+value+"%")
+		return db.Where(fmt.Sprintf("`%s` LIKE ?", key), value)
 	}
 }
 

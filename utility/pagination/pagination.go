@@ -92,6 +92,8 @@ type Pagination struct {
 	FilterDef    *FilterDefinition
 	Options      PaginationOptions
 	customScopes []scope.Scope
+	Preloads     []string
+	Filters      map[string]interface{}
 }
 
 func NewPagination(conditions map[string][]string, filterDef *FilterDefinition, options PaginationOptions) *Pagination {

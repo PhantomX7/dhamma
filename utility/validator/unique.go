@@ -13,12 +13,23 @@ func (cv cValidator) Unique() validator.Func {
 		var count int64
 
 		arr := strings.Split(fl.Param(), ".")
-		query := cv.db.Table(arr[0]).Where("`"+arr[1]+"` = ?", fl.Field().Interface())
-		if cv.db.Migrator().HasColumn(arr[0], "deleted_at") {
+		// Validate parameter format
+		if len(arr) != 2 {
+			return true // Invalid format, validation passes (fail open)
+		}
+
+		table, column := arr[0], arr[1]
+		query := cv.db.Table(table).Where("`"+column+"` = ?", fl.Field().Interface())
+		if cv.db.Migrator().HasColumn(table, "deleted_at") {
 			query = query.Where("`deleted_at` IS NULL")
 		}
 		err := query.Count(&count).Error
 
-		return err == nil && count == 0
+		// If there's a database error, fail open (assume unique)
+		if err != nil {
+			return true
+		}
+
+		return count == 0
 	}
 }

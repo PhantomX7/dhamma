@@ -1,7 +1,5 @@
 package pagination
 
-import "gorm.io/gorm"
-
 // Example usage:
 func ExampleUsage() {
 	// # String filter with like operator
@@ -66,9 +64,12 @@ func ExampleUsage() {
 		ID   int
 		Name string
 	}
-	// Use in GORM query
+	// Use in GORM query (example - requires actual database connection)
+	// var db *gorm.DB
+	// var results []YourModel
+	// db.Scopes(metaScopes...).Scopes(filterScopes...).Find(&results)
 
-	var db *gorm.DB
-	var results []YourModel
-	db.Scopes(metaScopes...).Scopes(filterScopes...).Find(&results)
+	// For demonstration purposes, just verify scopes are created
+	_ = filterScopes
+	_ = metaScopes
 }
