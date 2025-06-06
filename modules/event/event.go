@@ -22,6 +22,7 @@ type Service interface {
 	Create(ctx context.Context, request request.EventCreateRequest) (entity.Event, error)
 	Update(ctx context.Context, eventID uint64, request request.EventUpdateRequest) (entity.Event, error)
 	Attend(ctx context.Context, eventID uint64, req request.EventAttendRequest) (entity.EventAttendance, error)
+	AttendById(ctx context.Context, eventID uint64, req request.EventAttendByIDRequest) (entity.EventAttendance, error)
 }
 
 type Controller interface {
@@ -30,4 +31,5 @@ type Controller interface {
 	Create(c *gin.Context)
 	Update(c *gin.Context)
 	Attend(c *gin.Context)
+	AttendById(c *gin.Context)
 }
