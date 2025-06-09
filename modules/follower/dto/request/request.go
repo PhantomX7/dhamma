@@ -22,6 +22,14 @@ type FollowerAddCardRequest struct {
 
 func NewFollowerPagination(conditions map[string][]string) *pagination.Pagination {
 	filterDef := pagination.NewFilterDefinition().
+		AddFilter("search", pagination.FilterConfig{
+			TableName:    "followers",
+			SearchFields: []string{"name", "phone"},
+			Type:         pagination.FilterTypeString,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorLike,
+			},
+		}).
 		// Add filter for domain name
 		AddFilter("domain_name", pagination.FilterConfig{
 			TableName: "Domain",

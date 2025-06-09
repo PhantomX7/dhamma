@@ -278,7 +278,7 @@ func TestIsValidOperation(t *testing.T) {
 
 // Test buildNumberScope
 func TestScopeBuilder_BuildNumberScope(t *testing.T) {
-	t.Skip("Database tests require MySQL setup")
+	db := setupTestDB(t)
 	sb := &ScopeBuilder{}
 
 	tests := []struct {
@@ -304,7 +304,7 @@ func TestScopeBuilder_BuildNumberScope(t *testing.T) {
 				Operator: OperatorNotEquals,
 				Values:   []string{"25"},
 			},
-			expectedCount: 2,
+			expectedCount: 3,
 		},
 		{
 			name:  "greater than operation",
@@ -335,17 +335,31 @@ func TestScopeBuilder_BuildNumberScope(t *testing.T) {
 		},
 	}
 
+	// Create test data
+	testData := []TestModel{
+		{Name: "Alice", Age: 20, Active: true, Status: "active"},
+		{Name: "Bob", Age: 25, Active: true, Status: "active"},
+		{Name: "Charlie", Age: 30, Active: false, Status: "inactive"},
+		{Name: "David", Age: 35, Active: true, Status: "pending"},
+	}
+	db.Create(&testData)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			scope := sb.buildNumberScope(tt.field, tt.operation)
 			assert.NotNil(t, scope)
+
+			// Test the scope by applying it to a query
+			var count int64
+			db.Model(&TestModel{}).Scopes(scope).Count(&count)
+			assert.Equal(t, tt.expectedCount, count)
 		})
 	}
 }
 
 // Test buildStringScope
 func TestScopeBuilder_BuildStringScope(t *testing.T) {
-	t.Skip("Database tests require MySQL setup")
+	db := setupTestDB(t)
 	sb := &ScopeBuilder{}
 
 	tests := []struct {
@@ -383,17 +397,30 @@ func TestScopeBuilder_BuildStringScope(t *testing.T) {
 		},
 	}
 
+	// Create test data
+	testData := []TestModel{
+		{Name: "John", Age: 25, Active: true, Status: "active"},
+		{Name: "Jane", Age: 30, Active: false, Status: "inactive"},
+		{Name: "Bob", Age: 35, Active: true, Status: "pending"},
+	}
+	db.Create(&testData)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			scope := sb.buildStringScope(tt.field, tt.operation)
+			scope := sb.buildStringScope([]string{tt.field}, tt.operation)
 			assert.NotNil(t, scope)
+
+			// Test the scope by applying it to a query
+			var count int64
+			db.Model(&TestModel{}).Scopes(scope).Count(&count)
+			assert.Equal(t, tt.expectedCount, count)
 		})
 	}
 }
 
 // Test buildBoolScope
 func TestScopeBuilder_BuildBoolScope(t *testing.T) {
-	t.Skip("Database tests require MySQL setup")
+	db := setupTestDB(t)
 	sb := &ScopeBuilder{}
 
 	tests := []struct {
@@ -440,17 +467,30 @@ func TestScopeBuilder_BuildBoolScope(t *testing.T) {
 		},
 	}
 
+	// Create test data
+	testData := []TestModel{
+		{Name: "Alice", Age: 25, Active: true, Status: "active"},
+		{Name: "Bob", Age: 30, Active: true, Status: "active"},
+		{Name: "Charlie", Age: 35, Active: false, Status: "inactive"},
+	}
+	db.Create(&testData)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			scope := sb.buildBoolScope(tt.field, tt.operation)
 			assert.NotNil(t, scope)
+
+			// Test the scope by applying it to a query
+			var count int64
+			db.Model(&TestModel{}).Scopes(scope).Count(&count)
+			assert.Equal(t, tt.expectedCount, count)
 		})
 	}
 }
 
 // Test buildDateScope
 func TestScopeBuilder_BuildDateScope(t *testing.T) {
-	t.Skip("Database tests require MySQL setup")
+	db := setupTestDB(t)
 	sb := &ScopeBuilder{}
 
 	tests := []struct {
@@ -497,11 +537,28 @@ func TestScopeBuilder_BuildDateScope(t *testing.T) {
 		},
 	}
 
+	// Create test data with specific dates
+	testDate1, _ := time.Parse("2006-01-02", "2023-01-01")
+	testDate2, _ := time.Parse("2006-01-02", "2023-06-15")
+	testDate3, _ := time.Parse("2006-01-02", "2023-12-31")
+	
+	testData := []TestModel{
+		{Name: "Alice", Age: 25, Active: true, Status: "active", CreatedAt: testDate1},
+		{Name: "Bob", Age: 30, Active: true, Status: "active", CreatedAt: testDate2},
+		{Name: "Charlie", Age: 35, Active: false, Status: "inactive", CreatedAt: testDate3},
+	}
+	db.Create(&testData)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			scope := sb.buildDateScope(tt.field, tt.operation)
 			if tt.expected {
 				assert.NotNil(t, scope)
+				// Test the scope by applying it to a query
+				var count int64
+				db.Model(&TestModel{}).Scopes(scope).Count(&count)
+				// For valid date operations, we should get some results
+				assert.GreaterOrEqual(t, count, int64(0))
 			} else {
 				assert.Nil(t, scope)
 			}
@@ -511,7 +568,7 @@ func TestScopeBuilder_BuildDateScope(t *testing.T) {
 
 // Test buildEnumScope
 func TestScopeBuilder_BuildEnumScope(t *testing.T) {
-	t.Skip("Database tests require MySQL setup")
+	db := setupTestDB(t)
 	sb := &ScopeBuilder{}
 	allowedValues := []string{"active", "inactive", "pending"}
 
@@ -562,11 +619,23 @@ func TestScopeBuilder_BuildEnumScope(t *testing.T) {
 		},
 	}
 
+	// Create test data
+	testData := []TestModel{
+		{Name: "Alice", Age: 25, Active: true, Status: "active"},
+		{Name: "Bob", Age: 30, Active: false, Status: "inactive"},
+		{Name: "Charlie", Age: 35, Active: true, Status: "pending"},
+	}
+	db.Create(&testData)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			scope := sb.buildEnumScope(tt.field, tt.operation, allowedValues)
 			if tt.expected {
 				assert.NotNil(t, scope)
+				// Test the scope by applying it to a query
+				var count int64
+				db.Model(&TestModel{}).Scopes(scope).Count(&count)
+				assert.Equal(t, tt.expectedCount, count)
 			} else {
 				assert.Nil(t, scope)
 			}

@@ -42,11 +42,12 @@ const (
 )
 
 type FilterConfig struct {
-	Field      string
-	Type       FilterType
-	TableName  string // For joined tables, use the struct name for Joined field, otherwise use the plural name for own field
-	Operators  []FilterOperator
-	EnumValues []string // For enum type validation
+	Field        string
+	SearchFields []string // For searching across multiple fields with OR condition
+	Type         FilterType
+	TableName    string // For joined tables, use the struct name for Joined field, otherwise use the plural name for own field
+	Operators    []FilterOperator
+	EnumValues   []string // For enum type validation
 }
 
 type SortConfig struct {

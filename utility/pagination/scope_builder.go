@@ -24,24 +24,38 @@ func NewScopeBuilder(pagination *Pagination) *ScopeBuilder {
 }
 
 func (sb *ScopeBuilder) Build() ([]func(*gorm.DB) *gorm.DB, []func(*gorm.DB) *gorm.DB) {
-	sb.buildFilterScopes()
-	sb.buildMetaScopes()
+	if sb.pagination != nil {
+		sb.buildFilterScopes()
+		sb.buildMetaScopes()
+	}
 	return sb.scopes, sb.metaScopes
 }
 
 func (sb *ScopeBuilder) buildFilterScopes() {
+	if sb.pagination == nil || sb.pagination.Conditions == nil {
+		return
+	}
+	
 	for field, values := range sb.pagination.Conditions {
-		if config, exists := sb.pagination.FilterDef.configs[field]; exists {
-			if scope := sb.buildFilterScope(config, values); scope != nil {
-				sb.scopes = append(sb.scopes, scope)
+		if sb.pagination.FilterDef != nil {
+			if config, exists := sb.pagination.FilterDef.configs[field]; exists {
+				if scope := sb.buildFilterScope(config, values); scope != nil {
+					sb.scopes = append(sb.scopes, scope)
+				}
 			}
 		}
 	}
 
-	sb.scopes = append(sb.scopes, sb.pagination.customScopes...)
+	if sb.pagination.customScopes != nil {
+		sb.scopes = append(sb.scopes, sb.pagination.customScopes...)
+	}
 }
 
 func (sb *ScopeBuilder) buildMetaScopes() {
+	if sb.pagination == nil {
+		return
+	}
+	
 	// Build limit scope
 	limit := sb.pagination.Options.DefaultLimit
 	if sb.pagination.Limit > 0 && sb.pagination.Limit <= sb.pagination.Options.MaxLimit {
@@ -78,22 +92,38 @@ func (sb *ScopeBuilder) buildFilterScope(config FilterConfig, values []string) f
 		return nil
 	}
 
-	fieldName := config.Field
-	if config.TableName != "" {
-		fieldName = fmt.Sprintf("%s.%s", config.TableName, config.Field)
+	// Use SearchFields if available, otherwise use Field
+	fieldsToSearch := config.SearchFields
+	if len(fieldsToSearch) == 0 {
+		fieldsToSearch = []string{config.Field}
+	}
+
+	// Apply TableName prefix if specified
+	for i, field := range fieldsToSearch {
+		if config.TableName != "" {
+			fieldsToSearch[i] = fmt.Sprintf("%s.%s", config.TableName, field)
+		} else {
+			// Ensure the field name is not empty if TableName is not used
+			if field == "" && len(config.SearchFields) == 0 { // only check if it's the original single Field
+				return nil // Or handle error appropriately
+			}
+		}
 	}
 
 	switch config.Type {
 	case FilterTypeID, FilterTypeNumber:
-		return sb.buildNumberScope(fieldName, operation)
+		// For numbers, typically we don't search across multiple fields with OR using a single query param.
+		// If SearchFields is used with Number type, it will apply the condition to the first field in SearchFields.
+		// Consider if this behavior needs adjustment based on specific use cases.
+		return sb.buildNumberScope(fieldsToSearch[0], operation)
 	case FilterTypeString:
-		return sb.buildStringScope(fieldName, operation)
+		return sb.buildStringScope(fieldsToSearch, operation)
 	case FilterTypeBool:
-		return sb.buildBoolScope(fieldName, operation)
+		return sb.buildBoolScope(fieldsToSearch[0], operation) // Similar to Number, applies to the first field
 	case FilterTypeDate, FilterTypeDateTime:
-		return sb.buildDateScope(fieldName, operation)
+		return sb.buildDateScope(fieldsToSearch[0], operation) // Similar to Number, applies to the first field
 	case FilterTypeEnum:
-		return sb.buildEnumScope(fieldName, operation, config.EnumValues)
+		return sb.buildEnumScope(fieldsToSearch[0], operation, config.EnumValues) // Similar to Number, applies to the first field
 	}
 
 	return nil
@@ -193,30 +223,39 @@ func (sb *ScopeBuilder) buildNumberScope(field string, op FilterOperation) func(
 	return nil
 }
 
-func (sb *ScopeBuilder) buildStringScope(field string, op FilterOperation) func(*gorm.DB) *gorm.DB {
-	switch op.Operator {
-	case OperatorEquals:
-		return func(db *gorm.DB) *gorm.DB {
-			return db.Where(fmt.Sprintf("%s = ?", field), op.Values[0])
-		}
-	case OperatorNotEquals:
-		return func(db *gorm.DB) *gorm.DB {
-			return db.Where(fmt.Sprintf("%s != ?", field), op.Values[0])
-		}
-	case OperatorLike:
-		return func(db *gorm.DB) *gorm.DB {
-			return db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%s%%", op.Values[0]))
-		}
-	case OperatorIn:
-		return func(db *gorm.DB) *gorm.DB {
-			return db.Where(fmt.Sprintf("%s IN (?)", field), op.Values)
-		}
-	case OperatorNotIn:
-		return func(db *gorm.DB) *gorm.DB {
-			return db.Where(fmt.Sprintf("%s NOT IN (?)", field), op.Values)
-		}
+func (sb *ScopeBuilder) buildStringScope(fields []string, op FilterOperation) func(*gorm.DB) *gorm.DB {
+	if len(fields) == 0 {
+		return nil
 	}
-	return nil
+
+	return func(db *gorm.DB) *gorm.DB {
+		orConditions := db.Session(&gorm.Session{NewDB: true})
+		for _, field := range fields {
+			switch op.Operator {
+			case OperatorEquals:
+				orConditions = orConditions.Or(fmt.Sprintf("%s = ?", field), op.Values[0])
+			case OperatorNotEquals:
+				// For NotEquals, applying OR across multiple fields might not be standard.
+				// Usually, NEQ is an AND condition (field1 != val AND field2 != val).
+				// If OR is intended (field1 != val OR field2 != val), this is how it would be.
+				// However, this specific case might need clarification on desired behavior.
+				// For now, we'll assume an OR condition similar to others for consistency of multi-field search.
+				orConditions = orConditions.Or(fmt.Sprintf("%s != ?", field), op.Values[0])
+			case OperatorLike:
+				orConditions = orConditions.Or(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%s%%", op.Values[0]))
+			case OperatorIn:
+				orConditions = orConditions.Or(fmt.Sprintf("%s IN (?)", field), op.Values)
+			case OperatorNotIn:
+				// Similar to NotEquals, NotIn with OR across fields might be unusual.
+				// (field1 NOT IN (...) OR field2 NOT IN (...))
+				orConditions = orConditions.Or(fmt.Sprintf("%s NOT IN (?)", field), op.Values)
+			default:
+				// Skip unsupported operator for this field
+				continue
+			}
+		}
+		return db.Where(orConditions)
+	}
 }
 
 func (sb *ScopeBuilder) buildBoolScope(field string, op FilterOperation) func(*gorm.DB) *gorm.DB {
@@ -264,6 +303,24 @@ func (sb *ScopeBuilder) buildDateScope(field string, op FilterOperation) func(*g
 
 		return func(db *gorm.DB) *gorm.DB {
 			return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field), start, end)
+		}
+	case OperatorGte:
+		t, err := time.ParseInLocation("2006-01-02", op.Values[0], location)
+		if err != nil {
+			return nil
+		}
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Where(fmt.Sprintf("%s >= ?", field), t)
+		}
+	case OperatorLte:
+		t, err := time.ParseInLocation("2006-01-02", op.Values[0], location)
+		if err != nil {
+			return nil
+		}
+		// Adjust to include the entire day (23:59:59.999999999)
+		t = t.Add(24 * time.Hour).Add(-time.Nanosecond)
+		return func(db *gorm.DB) *gorm.DB {
+			return db.Where(fmt.Sprintf("%s <= ?", field), t)
 		}
 	}
 	return nil
