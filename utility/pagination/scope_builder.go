@@ -35,7 +35,7 @@ func (sb *ScopeBuilder) buildFilterScopes() {
 	if sb.pagination == nil || sb.pagination.Conditions == nil {
 		return
 	}
-	
+
 	for field, values := range sb.pagination.Conditions {
 		if sb.pagination.FilterDef != nil {
 			if config, exists := sb.pagination.FilterDef.configs[field]; exists {
@@ -55,7 +55,7 @@ func (sb *ScopeBuilder) buildMetaScopes() {
 	if sb.pagination == nil {
 		return
 	}
-	
+
 	// Build limit scope
 	limit := sb.pagination.Options.DefaultLimit
 	if sb.pagination.Limit > 0 && sb.pagination.Limit <= sb.pagination.Options.MaxLimit {
@@ -98,9 +98,9 @@ func (sb *ScopeBuilder) buildFilterScope(config FilterConfig, values []string) f
 		fieldsToSearch = []string{config.Field}
 	}
 
-	// Apply TableName prefix if specified
+	// Apply TableName prefix if specified and field doesn't already have a table prefix
 	for i, field := range fieldsToSearch {
-		if config.TableName != "" {
+		if config.TableName != "" && !strings.Contains(field, ".") {
 			fieldsToSearch[i] = fmt.Sprintf("%s.%s", config.TableName, field)
 		} else {
 			// Ensure the field name is not empty if TableName is not used
@@ -229,7 +229,7 @@ func (sb *ScopeBuilder) buildStringScope(fields []string, op FilterOperation) fu
 	}
 
 	return func(db *gorm.DB) *gorm.DB {
-		orConditions := db.Session(&gorm.Session{NewDB: true})
+		orConditions := db
 		for _, field := range fields {
 			switch op.Operator {
 			case OperatorEquals:

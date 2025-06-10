@@ -39,6 +39,14 @@ func NewFollowerPagination(conditions map[string][]string) *pagination.Paginatio
 				pagination.OperatorLike, pagination.OperatorEquals, pagination.OperatorIn,
 			},
 		}).
+		AddFilter("domain_id", pagination.FilterConfig{
+			TableName: "Domain",
+			Field:     "id",
+			Type:      pagination.FilterTypeID,
+			Operators: []pagination.FilterOperator{
+				pagination.OperatorEquals,
+			},
+		}).
 		AddFilter("card_code", pagination.FilterConfig{
 			TableName: "Card",
 			Field:     "code",
