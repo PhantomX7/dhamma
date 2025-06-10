@@ -3,13 +3,13 @@ package middleware
 import (
 	"net/http"
 	"runtime/debug"
-	"strings"
 
 	"github.com/PhantomX7/dhamma/constants"
 	"github.com/PhantomX7/dhamma/utility/errors"
 	"github.com/PhantomX7/dhamma/utility/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/stoewer/go-strcase"
 	"go.uber.org/zap"
 )
 
@@ -185,7 +185,8 @@ func (m *Middleware) formatValidationErrors(validationErrors validator.Validatio
 	fieldErrors := make(map[string]string)
 
 	for _, err := range validationErrors {
-		fieldName := strings.ToLower(err.Field())
+
+		fieldName := strcase.SnakeCase(err.Field())
 		tag := err.Tag()
 		_ = err.Value() // Acknowledge but don't use the value
 

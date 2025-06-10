@@ -541,7 +541,7 @@ func TestScopeBuilder_BuildDateScope(t *testing.T) {
 	testDate1, _ := time.Parse("2006-01-02", "2023-01-01")
 	testDate2, _ := time.Parse("2006-01-02", "2023-06-15")
 	testDate3, _ := time.Parse("2006-01-02", "2023-12-31")
-	
+
 	testData := []TestModel{
 		{Name: "Alice", Age: 25, Active: true, Status: "active", CreatedAt: testDate1},
 		{Name: "Bob", Age: 30, Active: true, Status: "active", CreatedAt: testDate2},

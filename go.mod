@@ -21,6 +21,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.21.0
 	github.com/sony/gobreaker v1.0.0
+	github.com/stoewer/go-strcase v1.3.0
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/fx v1.22.1
 	go.uber.org/zap v1.27.0

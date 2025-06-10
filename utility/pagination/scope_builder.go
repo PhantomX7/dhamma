@@ -228,33 +228,73 @@ func (sb *ScopeBuilder) buildStringScope(fields []string, op FilterOperation) fu
 		return nil
 	}
 
+	// If only one field, use simple WHERE clause
+	if len(fields) == 1 {
+		field := fields[0]
+		switch op.Operator {
+		case OperatorEquals:
+			return func(db *gorm.DB) *gorm.DB {
+				return db.Where(fmt.Sprintf("%s = ?", field), op.Values[0])
+			}
+		case OperatorNotEquals:
+			return func(db *gorm.DB) *gorm.DB {
+				return db.Where(fmt.Sprintf("%s != ?", field), op.Values[0])
+			}
+		case OperatorLike:
+			return func(db *gorm.DB) *gorm.DB {
+				return db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%s%%", op.Values[0]))
+			}
+		case OperatorIn:
+			return func(db *gorm.DB) *gorm.DB {
+				return db.Where(fmt.Sprintf("%s IN (?)", field), op.Values)
+			}
+		case OperatorNotIn:
+			return func(db *gorm.DB) *gorm.DB {
+				return db.Where(fmt.Sprintf("%s NOT IN (?)", field), op.Values)
+			}
+		default:
+			// Return no-op scope for unsupported operators instead of nil
+			return func(db *gorm.DB) *gorm.DB {
+				return db
+			}
+		}
+	}
+
+	// For multiple fields, build OR conditions properly
 	return func(db *gorm.DB) *gorm.DB {
-		orConditions := db
+		var conditions []string
+		var args []interface{}
+
 		for _, field := range fields {
 			switch op.Operator {
 			case OperatorEquals:
-				orConditions = orConditions.Or(fmt.Sprintf("%s = ?", field), op.Values[0])
+				conditions = append(conditions, fmt.Sprintf("%s = ?", field))
+				args = append(args, op.Values[0])
 			case OperatorNotEquals:
-				// For NotEquals, applying OR across multiple fields might not be standard.
-				// Usually, NEQ is an AND condition (field1 != val AND field2 != val).
-				// If OR is intended (field1 != val OR field2 != val), this is how it would be.
-				// However, this specific case might need clarification on desired behavior.
-				// For now, we'll assume an OR condition similar to others for consistency of multi-field search.
-				orConditions = orConditions.Or(fmt.Sprintf("%s != ?", field), op.Values[0])
+				conditions = append(conditions, fmt.Sprintf("%s != ?", field))
+				args = append(args, op.Values[0])
 			case OperatorLike:
-				orConditions = orConditions.Or(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%s%%", op.Values[0]))
+				conditions = append(conditions, fmt.Sprintf("%s LIKE ?", field))
+				args = append(args, fmt.Sprintf("%%%s%%", op.Values[0]))
 			case OperatorIn:
-				orConditions = orConditions.Or(fmt.Sprintf("%s IN (?)", field), op.Values)
+				conditions = append(conditions, fmt.Sprintf("%s IN (?)", field))
+				args = append(args, op.Values)
 			case OperatorNotIn:
-				// Similar to NotEquals, NotIn with OR across fields might be unusual.
-				// (field1 NOT IN (...) OR field2 NOT IN (...))
-				orConditions = orConditions.Or(fmt.Sprintf("%s NOT IN (?)", field), op.Values)
+				conditions = append(conditions, fmt.Sprintf("%s NOT IN (?)", field))
+				args = append(args, op.Values)
 			default:
 				// Skip unsupported operator for this field
 				continue
 			}
 		}
-		return db.Where(orConditions)
+
+		if len(conditions) == 0 {
+			return db
+		}
+
+		// Join conditions with OR and wrap in parentheses
+		orClause := fmt.Sprintf("(%s)", strings.Join(conditions, " OR "))
+		return db.Where(orClause, args...)
 	}
 }
 
